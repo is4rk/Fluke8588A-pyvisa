@@ -3,6 +3,8 @@ A Python library and GUI (in development for INRIM) to control the Fluke 8588A h
 
 It will work with direct ethernet, GPIB, and USB. Will try to implement remote communication.
 
+<img width="675" height="221" alt="image" src="https://github.com/user-attachments/assets/8736ae4a-2fa0-4576-852b-eaea4142c8ef" />
+
 # Structure
 There exist two categories of files:
 - Fluke8588A library files:
