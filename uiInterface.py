@@ -3,7 +3,7 @@ import os
 import SpinBoxValues as sbv
 # Import the custom instrument class module
 import Fluke8588A as Fluke
-from PyQt6.QtWidgets import QApplication, QWidget
+from PyQt6.QtWidgets import QApplication, QWidget, QDialog, QSpinBox, QDoubleSpinBox
 # Import the module that handles runtime loading of .ui files
 from PyQt6 import uic 
 # Import the specific error type to catch connection issues
@@ -48,8 +48,10 @@ class MainWindow:
 		self.statusLabel = get_widget('status_label', required=True)
 		self.measureDisplay = get_widget('measure_display_label', required=True)
 		self.modeCombo = get_widget('mode_combo', required=True)
-		self.nplcLabel = get_widget('nplc_label', required=False)
+		self.measureModeLabel= get_widget('measure_mode_label', required=True)
+		self.plcLabel = get_widget('plc_label', required=False)
 		self.timeLabel= get_widget('time_label', required=False)
+
 
 		# DCV Controls
 		self.dcv_range_label = get_widget('dcv_range_label', required=False)
@@ -79,7 +81,8 @@ class MainWindow:
 			except Exception as e:
 				print(f"Error configuring 'gpib_addr_spin': {e}")
 		self.mode=""
-		self.nplc=-1
+		self.measureMode=""
+		self.plc=-1
 		self.time=-1
 		
 		# Confugure labels
@@ -87,10 +90,13 @@ class MainWindow:
 			self.statusLabel.setText("Ready. Click 'Initialize DMM' to connect.")
 		if self.measureDisplay:
 			self.measureDisplay.setText("---")
-		if self.nplcLabel:
-			self.nplcLabel.setText("NPLC: N/A") if self.nplc < 0 else self.nplcLabel.setText(f"NPLC: {self.nplc}")
+		if self.measureModeLabel:
+			self.measureModeLabel.setText("Mode: N/A") if self.mode == "" else self.measureModeLabel.setText(f"Mode: {self.mode}")
+		if self.plcLabel:
+			self.plcLabel.setText("PLC: N/A") if self.plc < 0 else self.plcLabel.setText(f"PLC: {self.plc}")
 		if self.timeLabel:
 			self.timeLabel.setText("Time: N/A") if self.time < 0 else self.timeLabel.setText(f"Time: {self.time} s")
+		
 		# Configure DCV resolution spinbox
 		if self.dcv_res_spin:
 			max_digits = getattr(self.fluke_dmm, 'max_digits', 8)
@@ -283,12 +289,19 @@ class MainWindow:
 				"""
 				label_1: range, has 6 possible values
 				label_2: resolution, 4-8
-				label_3: z in, has 3 possible
+				label_3: z in, has 3 possible values
 				label_4: empty
 				label_5: measure set up, opens pop up
 				"""
 				try:
-					instr.init_dcv(self.fluke_dmm, self.time.value(), self.nplc.value(), self.dcv_zin_combo.currentText(), 1, self.dcv_range_combo.currentText())
+					instr.init_dcv(
+						self.fluke_dmm, 
+						self.dcv_range_combo.currentText(), 
+						self.dcv_res_spin.value(),  
+						self.plc.value(), 
+						self.measureDisplay.text(),
+						self.dcv_zin_combo.currentText(), 
+						)
 				except TypeError:
 					# different signature — try calling without args
 					try:
@@ -329,26 +342,37 @@ class MainWindow:
 		ui_path = os.path.join(os.path.dirname(__file__), "measSetupDC.ui")
 		try:
 			if self.dcv_measure_setup_window is None:
-				self.dcv_measure_setup_window = uic.loadUi(ui_path)
+				# Create a QDialog and load the UI into it
+				self.dcv_measure_setup_window = QDialog(self.ui)
+				uic.loadUi(ui_path, self.dcv_measure_setup_window)
+				
+				# Connect the existing buttons from Qt Designer
+				buttonBox = self.dcv_measure_setup_window.findChild(QWidget, "buttonBox")
+				if buttonBox:
+					buttonBox.accepted.connect(self.dcv_measure_setup_window.accept)
+					buttonBox.rejected.connect(self.dcv_measure_setup_window.reject)
 			
 			# Use exec() to block until dialog closes
 			result = self.dcv_measure_setup_window.exec()
 			
 			# After dialog closes, capture values
 			if result == 1:  # 1 = Accepted/OK, 0 = Rejected/Cancel
-				# Retrieve widget values here
-				self.nplc = self.dcv_measure_setup_window.findChild(QSpinBox, "nplc_spinbox").value()
-				actualNplc=self.fluke_dmm.set_nplc(self.nplc) # Set NPLC on instrument and get actual value (in case it was adjusted)
-				self.nplcLabel.setText(f"NPLC: {actualNplc}")
-				self.time = self.dcv_measure_setup_window.dcv_range_combo.currentText()
-				self.fluke_dmm.set_time(self.time)
-				# ... capture other values ...
-				print(f"Settings saved: NPLC={self.nplc}, Time={self.time}")
+				# Retrieve widget values from measSetupDC.ui
+				self.plc = self.dcv_measure_setup_window.plc_spin.value()
+				self.time = self.dcv_measure_setup_window.time_spin.value()
+				
+				if self.fluke_dmm:
+					actualPlc = self.fluke_dmm.set_plc(self.plc)
+					if self.plcLabel:
+						self.plcLabel.setText(f"PLC: {actualPlc}")
+					if self.timeLabel:
+						self.timeLabel.setText(f"Time: {self.time} s")
+					print(f"Settings saved: PLC={self.plc}, Time={self.time}")
+				else:
+					print("Instrument not initialized. Settings stored but not applied to device.")
 			
 		except FileNotFoundError:
 			print(f"Error: The file '{ui_path}' was not found.")
-		except Exception as e:
-			print(f"Error opening DC Measure Setup window: {e}")
 		
 # --- Application Entry Point ---
 if __name__ == "__main__":

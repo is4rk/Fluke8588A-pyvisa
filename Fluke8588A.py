@@ -11,7 +11,7 @@ class Fluke8588A(object):
 	query(message) : write and read in a single command
 	read() : outputs returned text or times out
 	reset() : resets instrument to power on settings
-	set_nplc() : sets nplc value (1nplc=50HZ in eu)
+	set_plc() : sets plc value (1plc=50HZ in eu)
 	close() : close the connection
 	"""
 	"""initialization"""
@@ -25,7 +25,7 @@ class Fluke8588A(object):
 		self._instr.timeout = 10e3
 		self.max_digits = 8
 		self.min_digits = 4
-		self.nplc_max = 500
+		self.plc_max = 500
 
 		try:
 			self.write("*RST")
@@ -88,25 +88,25 @@ class Fluke8588A(object):
 	def close(self):
 		self._instr.close()
 
-	def set_nplc(self, nplc):
+	def set_plc(self, plc):
 		'''
-		Change NPLC value
+		Change PLC value
 		'''
-		if nplc > self.nplc_max: nplc = self.nplc_max
-		self._instr.write(":SENSE:VOLT:DC:NPLC %.3f" % nplc) 
+		if plc > self.plc_max: plc = self.plc_max
+		self._instr.write(":SENSE:VOLT:DC:PLC %.3f" % plc) 
  
-	def init_dcv(self, aperture, auto_aperture, nplc, imp_str, auto_range, range_value):
+	def init_dcv(self, range, resolution, zin, plc):
 		'''
 		Set the machine to dcv mode, and set up parameters
 		'''
 		root_commands=":VOLT:DC"
 		initStatus=[]
-		self.write(":FUNC '"+root_commands+"'")
+		self.write(":FUNC \":VOLT:DC\"")
+		initStatus.append(self.setRange(root_commands, range))
 		initStatus.append(self.setAperture(root_commands, aperture))
-		initStatus.append(self.setNplc(root_commands, nplc))
+		initStatus.append(self.setPlc(root_commands, plc))
 		initStatus.append(self.setImp(root_commands, imp_str))
 		initStatus.append(self.setRangeAutomatic(root_commands, auto_aperture))
-		initStatus.append(self.setRangeNumber(root_commands, range_value))
 
 	def getAperture(self, root):
 		return int(self.query(root+":APER?"))
@@ -132,15 +132,15 @@ class Fluke8588A(object):
 		return 0
 	
 	def getNplc(self, root):
-		return self.query(root+":NPLC?")
+		return self.query(root+":PLC?")
 
 	def setNplc(self, root, value):
 		try:
-			self.write(root+":NPLC "+str(float(value)))
+			self.write(root+":PLC "+str(float(value)))
 		except (ValueError, TypeError):
-			print("nplc variable out of range")
+			print("plc variable out of range")
 			return -1
-		return self.query(root+":NPLC?")
+		return self.query(root+":PLC?")
 
 	def getImp(self, root):
 		return self.query(root+":IMP?")
@@ -163,32 +163,18 @@ class Fluke8588A(object):
 	# def getDef(self, root, branch):
 	# 	return int(self.query(root+branch+":? DEF"))
 	
-	def getRangeAuto(self, root):
-		is_auto= self.query(root+":RANG:AUTO?")
-		if int(is_auto)==1:
-			return True
-		return False
 	
 	def getRange(self, root):
+		"""returns set range"""
 		return int(self.query(root+":RANG?"))
 		
-	def setRangeAutomatic(self, root, value):
+	def setRange(self, root, value):
+		"""sets given range, return actual set range"""
 		try:
-			value = int(value)
-			if value not in (0, 1):
-				raise ValueError("Value must be 0 or 1")
-		except (ValueError, TypeError):
-			print("the automatic range variable has to be an int or str, with value 0 or 1")
-			return -1
-		self.write(root+":RANG:AUTO "+str(value))
-		return 0
-	# MISSING DEF MAX MIN
-	def setRangeNumber(self, root, value):
-		try:
-			value = float(value)
-		except (ValueError, TypeError):
-			print("The manual range has to be a number (int, float, or scientific notation)")
-			return -1
-		self.write(root+":RANG "+ str(value))
-		return 0
-	
+			if (root == "DCV" and value not in sbv.getDcvRange()) or (root == "DCI" and value not in sbv.getDciRange()):				
+				raise ValueError("range not in " + root +" range List")
+		except:
+			return self.getRange(root)
+		self.write(root+":RANG: "+str(sbv.getDcvRangeVal(value)))
+		return self.getRange(root)
+		
