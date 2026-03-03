@@ -393,40 +393,58 @@ class MainWindow:
 			if widget_name == 'dcv_range':
 				# Set DCV range using Fluke8588A library
 				actual_value = self.fluke_dmm.setRange(":VOLT:DC", value)
-				print(f"DCV range set to: {value} (actual: {actual_value})")
+				print(f"DCV range set to: {actual_value}")
+				if self.dcv_range_combo:
+					self.dcv_range_combo.setCurrentText(str(actual_value))
 			
 			elif widget_name == 'dcv_resolution':
 				# Set DCV resolution (digits) using Fluke8588A library
 				actual_value = self.fluke_dmm.setResolution(":VOLT:DC", str(value))
-				print(f"DCV resolution set to: {value} digits (actual: {actual_value})")
+				print(f"DCV resolution set to: {actual_value} digits")
+				if self.dcv_res_spin:
+					self.dcv_res_spin.setValue(int(actual_value))
 			
 			elif widget_name == 'dcv_zin':
 				# Set DCV input impedance using Fluke8588A library
 				actual_value = self.fluke_dmm.setImpedence(":VOLT:DC", value)
-				print(f"DCV input impedance set to: {value} (actual: {actual_value})")
+				print(f"DCV input impedance set to: {actual_value}")
+				if self.dcv_zin_combo:
+					self.dcv_zin_combo.setCurrentText(str(actual_value))
 			
 			elif widget_name == 'dci_range':
 				# Set DCI range using Fluke8588A library
 				actual_value = self.fluke_dmm.setRange(":CURR:DC", value)
-				print(f"DCI range set to: {value} (actual: {actual_value})")
+				print(f"DCI range set to: {actual_value}")
+				if self.dci_range_combo:
+					self.dci_range_combo.setCurrentText(str(actual_value))
 			
 			elif widget_name == 'dci_resolution':
 				# Set DCI resolution (digits) using Fluke8588A library
 				actual_value = self.fluke_dmm.setResolution(":CURR:DC", str(value))
-				print(f"DCI resolution set to: {value} digits (actual: {actual_value})")
+				print(f"DCI resolution set to: {actual_value} digits")
+				if self.dci_res_spin:
+					self.dci_res_spin.setValue(int(actual_value))
 			
 			elif widget_name == 'nplc':
 				# Set NPLC for the current mode using Fluke8588A library
 				root_command = ":VOLT:DC" if self.mode == "DCV" else ":CURR:DC"
 				actual_value = self.fluke_dmm.setNplc(root_command, self.measureMode, value)
-				print(f"NPLC set to: {value} (actual: {actual_value})")
-				# Update internal nplc value
-				self.nplc = value
+				print(f"NPLC set to: {actual_value}")
+				# Update internal nplc value with the actual value set
+				self.nplc = float(actual_value) if actual_value else value
+				if self.nplcLabel:
+					self.nplcLabel.setText(f"NPLC: {self.nplc}")
+				if self.dcv_measure_setup_window and hasattr(self.dcv_measure_setup_window, 'nplc_spin'):
+					self.dcv_measure_setup_window.nplc_spin.setValue(self.nplc)
 			
 			elif widget_name == 'time':
 				# Store time setting (note: time is typically a UI-only setting)
 				self.time = value
 				print(f"Measurement time set to: {value} s")
+				if self.timeLabel:
+					self.timeLabel.setText(f"Time: {self.time} s")
+				if self.dcv_measure_setup_window and hasattr(self.dcv_measure_setup_window, 'time_spin'):
+					self.dcv_measure_setup_window.time_spin.setValue(self.time)
 			
 			elif widget_name == 'measure_mode':
 				# Set measure mode using Fluke8588A library
@@ -444,6 +462,11 @@ class MainWindow:
 						# Fall back to setting auto range mode via SCPI
 						self.fluke_dmm.write(f"{root_command}:RANG:AUTO {auto_mode}")
 					print(f"Measure mode set to: {value}")
+					if self.measureModeLabel:
+						self.measureModeLabel.setText(f"Mode: {self.measureMode}")
+					# Update dialog checkbox
+					if self.dcv_measure_setup_window:
+						self._update_measure_mode_checkboxes(value)
 				except Exception as e:
 					print(f"Error setting measure mode: {e}")
 		
@@ -582,6 +605,27 @@ class MainWindow:
 			return "Manual"
 		
 		return ""
+
+	def _update_measure_mode_checkboxes(self, mode):
+		"""Update the dialog checkboxes to reflect the measure mode."""
+		if self.dcv_measure_setup_window is None:
+			return
+		
+		# Uncheck all first
+		if hasattr(self.dcv_measure_setup_window, 'checkBox_1'):
+			self.dcv_measure_setup_window.checkBox_1.setChecked(False)
+		if hasattr(self.dcv_measure_setup_window, 'checkBox_2'):
+			self.dcv_measure_setup_window.checkBox_2.setChecked(False)
+		if hasattr(self.dcv_measure_setup_window, 'checkBox_3'):
+			self.dcv_measure_setup_window.checkBox_3.setChecked(False)
+		
+		# Check the appropriate one
+		if mode == "Auto" and hasattr(self.dcv_measure_setup_window, 'checkBox_1'):
+			self.dcv_measure_setup_window.checkBox_1.setChecked(True)
+		elif mode == "Auto fast" and hasattr(self.dcv_measure_setup_window, 'checkBox_2'):
+			self.dcv_measure_setup_window.checkBox_2.setChecked(True)
+		elif mode == "Manual" and hasattr(self.dcv_measure_setup_window, 'checkBox_3'):
+			self.dcv_measure_setup_window.checkBox_3.setChecked(True)
 		
 # --- Application Entry Point ---
 if __name__ == "__main__":
