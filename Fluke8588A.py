@@ -23,8 +23,6 @@ class Fluke8588A(object):
 		self._address = address
 		self._instr = rm.open_resource("GPIB0::" + str(self._address) + "::INSTR")
 		self._instr.timeout = 10e3
-		self.max_digits = 8
-		self.min_digits = 4
 		self.plc_max = 500
 
 		try:
@@ -90,12 +88,12 @@ class Fluke8588A(object):
 
 	def set_plc(self, plc):
 		'''
-		Change PLC value
+		Change NPLC value
 		'''
 		if plc > self.plc_max: plc = self.plc_max
-		self._instr.write(":SENSE:VOLT:DC:PLC %.3f" % plc) 
+		self._instr.write(":SENSE:VOLT:DC:NPLC %.3f" % plc) 
  
-	def init_dcv(self, range, resolution, zin, plc):
+	def init_dcv(self, range, resolution, zin, measure_mode, nplc):
 		'''
 		Set the machine to dcv mode, and set up parameters
 		'''
@@ -103,71 +101,35 @@ class Fluke8588A(object):
 		initStatus=[]
 		self.write(":FUNC \":VOLT:DC\"")
 		initStatus.append(self.setRange(root_commands, range))
-		initStatus.append(self.setAperture(root_commands, aperture))
-		initStatus.append(self.setPlc(root_commands, plc))
-		initStatus.append(self.setImp(root_commands, imp_str))
-		initStatus.append(self.setRangeAutomatic(root_commands, auto_aperture))
-
-	def getAperture(self, root):
-		return int(self.query(root+":APER?"))
-	def getApertureMode(self, root):
-		return str(self.query(root+":APER:MODE?"))
-	
-	def setAperture(self, root, value):
-		try:
-			value=float(value)
-		except (ValueError, TypeError):
-			print("the aperture variable variable has to be a number (int, float, or scientific notation)")
-			return -1
-		self.write(root+":APER "+str(value))
-		return 0
-	def setApertureMode(self, root ,value):
-		try:
-			if not value in sbv.getApertureMode():
-				raise ValueError("aperture mode has to be AUTO FAST MAN")
-		except (ValueError, TypeError):
-			print("Aperture value error")
-			return -1
-		self.write(root+"APER:MODE "+value)
-		return 0
+		initStatus.append(self.setResolution(root_commands, resolution))
+		initStatus.append(self.setImpedence(root_commands, zin))
+		initStatus.append(self.setNplc(root_commands, measure_mode, nplc))
 	
 	def getNplc(self, root):
-		return self.query(root+":PLC?")
-
+		return self.query(root+":NPLC?")
 	def setNplc(self, root, value):
 		try:
-			self.write(root+":PLC "+str(float(value)))
-		except (ValueError, TypeError):
-			print("plc variable out of range")
+			self.write(root+":NPLC "+str((value)))
+		except Exception as e:
+			print(f"plc variable out of range {e}")
 			return -1
-		return self.query(root+":PLC?")
+		return self.query(root+":NPLC?")
 
 	def getImp(self, root):
 		return self.query(root+":IMP?")
-
-	def setImp(self, root, value):
+	def setImpedence(self, root, value):
 		try:
 			if not value in sbv.getDcvZin():
-				raise ValueError("impedance has to be AUTO 10M 1M")
+				raise ValueError("impedance has to be" + str(sbv.getDcvZin()))
 		except (ValueError, TypeError):
 			print("Impedance value error")
 			return self.getImp(root)
 		self.write(root+":IMP "+value)
 		return self.getImp(root)
-
-	
-	# def getMax(self, root, branch):
-	# 	return int(self.query(root+branch+"? MAX"))
-	# def getMin(self, root, branch):
-	# 	return int(self.query(root+branch+"? MIN"))
-	# def getDef(self, root, branch):
-	# 	return int(self.query(root+branch+":? DEF"))
-	
 	
 	def getRange(self, root):
 		"""returns set range"""
 		return int(self.query(root+":RANG?"))
-		
 	def setRange(self, root, value):
 		"""sets given range, return actual set range"""
 		try:
@@ -177,4 +139,14 @@ class Fluke8588A(object):
 			return self.getRange(root)
 		self.write(root+":RANG: "+str(sbv.getDcvRangeVal(value)))
 		return self.getRange(root)
-		
+	
+	def getResolution(self, root):
+		return int(self.query(root+":RES?"))
+	def setResolution(self, root, value):
+		try:
+			if not value in sbv.getDcDigitVal(): #doesnt work with AC right now
+				raise ValueError("resolution has to be " + str(sbv.getDcResolution()))
+		except ValueError:
+			return self.getResolution(root)
+		self.write(root+":RES "+value)
+		return self.getResolution(root)
