@@ -418,7 +418,7 @@ class MainWindow:
 			elif widget_name == 'nplc':
 				# Set NPLC for the current mode using Fluke8588A library
 				root_command = ":VOLT:DC" if self.mode == "DCV" else ":CURR:DC"
-				actual_value = self.fluke_dmm.setNplc(root_command, value)
+				actual_value = self.fluke_dmm.setNplc(root_command, self.measureMode, value)
 				print(f"NPLC set to: {value} (actual: {actual_value})")
 				# Update internal nplc value
 				self.nplc = value
@@ -429,9 +429,23 @@ class MainWindow:
 				print(f"Measurement time set to: {value} s")
 			
 			elif widget_name == 'measure_mode':
-				# Set measure mode (typically passed to init functions)
+				# Set measure mode using Fluke8588A library
 				self.measureMode = value
-				print(f"Measure mode set to: {value}")
+				
+				# Map measure mode to auto mode setting
+				auto_mode = "ON" if value in ["Auto", "Auto fast"] else "OFF"
+				root_command = ":VOLT:DC" if self.mode == "DCV" else ":CURR:DC"
+				
+				try:
+					# Try to call a setMeasureMode method if it exists
+					if hasattr(self.fluke_dmm, 'setMeasureMode'):
+						self.fluke_dmm.setMeasureMode(root_command, value)
+					else:
+						# Fall back to setting auto range mode via SCPI
+						self.fluke_dmm.write(f"{root_command}:RANG:AUTO {auto_mode}")
+					print(f"Measure mode set to: {value}")
+				except Exception as e:
+					print(f"Error setting measure mode: {e}")
 		
 		except Exception as e:
 			print(f"Error applying {widget_name} change to machine: {e}")
