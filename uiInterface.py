@@ -299,8 +299,6 @@ class MainWindow:
 				common_widgets['nplc'] = self.dcv_measure_setup_window.nplc_spin
 			if hasattr(self.dcv_measure_setup_window, 'time_spin'):
 				common_widgets['time'] = self.dcv_measure_setup_window.time_spin
-			if hasattr(self.dcv_measure_setup_window, 'measure_mode_combo'):
-				common_widgets['measure_mode'] = self.dcv_measure_setup_window.measure_mode_combo
 		
 		try:
 			# Check DCV widgets if in DCV mode
@@ -352,6 +350,18 @@ class MainWindow:
 					
 					# Always update the previous state
 					self.previous_widget_states[widget_name] = current_value
+			
+			# Check measure mode from dialog checkboxes
+			current_measure_mode = self._get_measure_mode_from_dialog()
+			prev_measure_mode = self.previous_widget_states.get('measure_mode')
+			
+			if current_measure_mode and (prev_measure_mode is None or prev_measure_mode != current_measure_mode):
+				changed_widgets['measure_mode'] = current_measure_mode
+				self._apply_widget_change_to_machine('measure_mode', current_measure_mode)
+			
+			# Update measure mode state
+			if current_measure_mode:
+				self.previous_widget_states['measure_mode'] = current_measure_mode
 			
 			# Log changes if any
 			if changed_widgets:
@@ -520,21 +530,44 @@ class MainWindow:
 			# After dialog closes, capture values
 			if result == 1:  # 1 = Accepted/OK, 0 = Rejected/Cancel
 				# Retrieve widget values from measSetupDC.ui
-				self.nplc = self.dcv_measure_setup_window.nplc_spin.value()
-				self.time = self.dcv_measure_setup_window.time_spin.value()
+				if hasattr(self.dcv_measure_setup_window, 'nplc_spin'):
+					self.nplc = self.dcv_measure_setup_window.nplc_spin.value()
+				if hasattr(self.dcv_measure_setup_window, 'time_spin'):
+					self.time = self.dcv_measure_setup_window.time_spin.value()
 				
-				if self.fluke_dmm:
-					actualNplc = self.fluke_dmm.set_nplc(self.nplc)
-					if self.nplcLabel:
-						self.nplcLabel.setText(f"NPLC: {actualNplc}")
-					if self.timeLabel:
-						self.timeLabel.setText(f"Time: {self.time} s")
-					print(f"Settings saved: NPLC={self.nplc}, Time={self.time}")
-				else:
-					print("Instrument not initialized. Settings stored but not applied to device.")
+				# Get measure mode from the button group checkboxes
+				self.measureMode = self._get_measure_mode_from_dialog()
+				
+				# Update labels
+				if self.nplcLabel:
+					self.nplcLabel.setText(f"NPLC: {self.nplc}")
+				if self.timeLabel:
+					self.timeLabel.setText(f"Time: {self.time} s")
+				if self.measureModeLabel:
+					self.measureModeLabel.setText(f"Mode: {self.measureMode}")
+				
+				print(f"Settings saved: NPLC={self.nplc}, Time={self.time}, Measure Mode={self.measureMode}")
+				
+				# Update previous widget states and apply changes to machine
+				self.check_and_update_widgets()
 			
 		except FileNotFoundError:
 			print(f"Error: The file '{ui_path}' was not found.")
+
+	def _get_measure_mode_from_dialog(self):
+		"""Extract the measure mode from the dialog's checkboxes."""
+		if self.dcv_measure_setup_window is None:
+			return ""
+		
+		# Check which checkbox is selected in the button group
+		if hasattr(self.dcv_measure_setup_window, 'checkBox_1') and self.dcv_measure_setup_window.checkBox_1.isChecked():
+			return "Auto"
+		elif hasattr(self.dcv_measure_setup_window, 'checkBox_2') and self.dcv_measure_setup_window.checkBox_2.isChecked():
+			return "Auto fast"
+		elif hasattr(self.dcv_measure_setup_window, 'checkBox_3') and self.dcv_measure_setup_window.checkBox_3.isChecked():
+			return "Manual"
+		
+		return ""
 		
 # --- Application Entry Point ---
 if __name__ == "__main__":
