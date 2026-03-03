@@ -25,6 +25,9 @@ class MainWindow:
 		# Initialize the instrument state
 		self.fluke_dmm = None
 		self.dcv_measure_setup_window = None
+		
+		# Initialize previous widget states dictionary for change detection
+		self.previous_widget_states = {}
 
 		# Helper to fetch widgets and warn when missing so user sees clear issues
 		def get_widget(name, required=False):
@@ -49,7 +52,7 @@ class MainWindow:
 		self.measureDisplay = get_widget('measure_display_label', required=True)
 		self.modeCombo = get_widget('mode_combo', required=True)
 		self.measureModeLabel= get_widget('measure_mode_label', required=True)
-		self.plcLabel = get_widget('plc_label', required=False)
+		self.nplcLabel = get_widget('nplc_label', required=False)
 		self.timeLabel= get_widget('time_label', required=False)
 
 
@@ -82,8 +85,9 @@ class MainWindow:
 				print(f"Error configuring 'gpib_addr_spin': {e}")
 		self.mode=""
 		self.measureMode=""
-		self.plc=-1
+		self.nplc=-1
 		self.time=-1
+		self.defaultDigitVal=7
 		
 		# Confugure labels
 		if self.statusLabel:
@@ -92,37 +96,28 @@ class MainWindow:
 			self.measureDisplay.setText("---")
 		if self.measureModeLabel:
 			self.measureModeLabel.setText("Mode: N/A") if self.mode == "" else self.measureModeLabel.setText(f"Mode: {self.mode}")
-		if self.plcLabel:
-			self.plcLabel.setText("PLC: N/A") if self.plc < 0 else self.plcLabel.setText(f"PLC: {self.plc}")
+		if self.nplcLabel:
+			self.nplcLabel.setText("NPLC: N/A") if self.nplc < 0 else self.nplcLabel.setText(f"NPLC: {self.nplc}")
 		if self.timeLabel:
 			self.timeLabel.setText("Time: N/A") if self.time < 0 else self.timeLabel.setText(f"Time: {self.time} s")
 		
 		# Configure DCV resolution spinbox
 		if self.dcv_res_spin:
-			max_digits = getattr(self.fluke_dmm, 'max_digits', 8)
-			min_digits = getattr(self.fluke_dmm, 'min_digits', 4)
-			try:
-				self.dcv_res_spin.setRange(min_digits, max_digits)
-			except Exception:
-				self.dcv_res_spin.setRange(4, 8)
-			self.dcv_res_spin.setValue(7)
+			max_digits = sbv.getDcDigitVal()[0]
+			min_digits = sbv.getDcDigitVal()[-1]
+			self.dcv_res_spin.setRange(min_digits, max_digits)
+			self.dcv_res_spin.setValue(self.defaultDigitVal)
 		if self.dcv_measure_setup_button:
 			self.dcv_measure_setup_button.clicked.connect(self.open_dc_measure_setup)
 
 		# Configure DCI resolution spinbox
 		if self.dci_res_spin:
-			max_digits = getattr(self.fluke_dmm, 'max_digits', 8)
-			min_digits = getattr(self.fluke_dmm, 'min_digits', 4)
-			try:
-				self.dci_res_spin.setRange(min_digits, max_digits)
-			except Exception:
-				self.dci_res_spin.setRange(4, 8)
-			self.dci_res_spin.setValue(7)
+			max_digits = sbv.getDcDigitVal()[0]
+			min_digits = sbv.getDcDigitVal()[-1]
+			self.dci_res_spin.setRange(min_digits, max_digits)
+			self.dci_res_spin.setValue(self.defaultDigitVal)
 		if self.dci_measure_setup_button:
-			self.dci_measure_setup_button.clicked.connect(self.open_dc_measure_setup)
-		# Set initial text
-		
-		
+			self.dci_measure_setup_button.clicked.connect(self.open_dc_measure_setup)		
 
 
 		# Connect Signals 
@@ -162,7 +157,7 @@ class MainWindow:
 			if self.gpibSpin:
 				try:
 					addr = int(self.gpibSpin.value())
-				except Exception:
+				except Exception as e:
 					addr = 9
 			else:
 				addr = 9
@@ -184,7 +179,7 @@ class MainWindow:
 				if self.statusLabel:
 					self.statusLabel.setText(error_msg)
 				self.fluke_dmm = None 
-				
+	
 			except Exception as e:
 				error_msg = f"ERROR: Initialization Failed (General). Details: {e}"
 				print(error_msg)
@@ -268,6 +263,171 @@ class MainWindow:
 					widget.setVisible(False)
 					widget.setEnabled(False)
 
+	def check_and_update_widgets(self):
+		"""
+		Check if any widgets have changed and update the machine values accordingly.
+		This function tracks the previous state of all configuration widgets (including 
+		pop-up window widgets like NPLC, time, and measure mode) and applies changes to 
+		the Fluke DMM whenever a change is detected.
+		
+		Returns:
+			dict: A dictionary containing the changed widget names as keys and their new values.
+		"""
+		if self.fluke_dmm is None:
+			return {}
+		
+		changed_widgets = {}
+		current_states = {}
+		
+		# Define widget mappings for DCV mode
+		dcv_widgets = {
+			'dcv_range': self.dcv_range_combo,
+			'dcv_resolution': self.dcv_res_spin,
+			'dcv_zin': self.dcv_zin_combo,
+		}
+		
+		# Define widget mappings for DCI mode
+		dci_widgets = {
+			'dci_range': self.dci_range_combo,
+			'dci_resolution': self.dci_res_spin,
+		}
+		
+		# Common widgets for both modes (from pop-up window)
+		common_widgets = {}
+		if self.dcv_measure_setup_window is not None:
+			if hasattr(self.dcv_measure_setup_window, 'nplc_spin'):
+				common_widgets['nplc'] = self.dcv_measure_setup_window.nplc_spin
+			if hasattr(self.dcv_measure_setup_window, 'time_spin'):
+				common_widgets['time'] = self.dcv_measure_setup_window.time_spin
+			if hasattr(self.dcv_measure_setup_window, 'measure_mode_combo'):
+				common_widgets['measure_mode'] = self.dcv_measure_setup_window.measure_mode_combo
+		
+		try:
+			# Check DCV widgets if in DCV mode
+			if self.mode == "DCV":
+				for widget_name, widget in dcv_widgets.items():
+					if widget is not None:
+						current_value = widget.currentText() if hasattr(widget, 'currentText') else widget.value()
+						current_states[widget_name] = current_value
+						
+						prev_value = self.previous_widget_states.get(widget_name)
+						
+						# If value changed, update machine and record change
+						if prev_value is not None and prev_value != current_value:
+							changed_widgets[widget_name] = current_value
+							self._apply_widget_change_to_machine(widget_name, current_value)
+						
+						# Always update the previous state
+						self.previous_widget_states[widget_name] = current_value
+			
+			# Check DCI widgets if in DCI mode
+			elif self.mode == "DCI":
+				for widget_name, widget in dci_widgets.items():
+					if widget is not None:
+						current_value = widget.currentText() if hasattr(widget, 'currentText') else widget.value()
+						current_states[widget_name] = current_value
+						
+						prev_value = self.previous_widget_states.get(widget_name)
+						
+						# If value changed, update machine and record change
+						if prev_value is not None and prev_value != current_value:
+							changed_widgets[widget_name] = current_value
+							self._apply_widget_change_to_machine(widget_name, current_value)
+						
+						# Always update the previous state
+						self.previous_widget_states[widget_name] = current_value
+			
+			# Check common widgets (pop-up window widgets) for all modes
+			for widget_name, widget in common_widgets.items():
+				if widget is not None:
+					current_value = widget.currentText() if hasattr(widget, 'currentText') else widget.value()
+					current_states[widget_name] = current_value
+					
+					prev_value = self.previous_widget_states.get(widget_name)
+					
+					# If value changed, update machine and record change
+					if prev_value is not None and prev_value != current_value:
+						changed_widgets[widget_name] = current_value
+						self._apply_widget_change_to_machine(widget_name, current_value)
+					
+					# Always update the previous state
+					self.previous_widget_states[widget_name] = current_value
+			
+			# Log changes if any
+			if changed_widgets:
+				print(f"Widget changes detected: {changed_widgets}")
+				if self.statusLabel:
+					self.statusLabel.setText(f"Settings updated: {', '.join(changed_widgets.keys())}")
+		
+		except Exception as e:
+			print(f"Error checking widget changes: {e}")
+			if self.statusLabel:
+				self.statusLabel.setText(f"ERROR checking widget changes: {e}")
+		
+		return changed_widgets
+
+	def _apply_widget_change_to_machine(self, widget_name, value):
+		"""
+		Apply a specific widget change to the machine using Fluke8588A library methods.
+		Handles both mode-specific widgets (DCV/DCI) and common pop-up window widgets 
+		(NPLC, time, measure mode).
+		
+		Args:
+			widget_name (str): The name of the widget that changed
+			value: The new value of the widget
+		"""
+		if self.fluke_dmm is None:
+			return
+		
+		try:
+			if widget_name == 'dcv_range':
+				# Set DCV range using Fluke8588A library
+				actual_value = self.fluke_dmm.setRange(":VOLT:DC", value)
+				print(f"DCV range set to: {value} (actual: {actual_value})")
+			
+			elif widget_name == 'dcv_resolution':
+				# Set DCV resolution (digits) using Fluke8588A library
+				actual_value = self.fluke_dmm.setResolution(":VOLT:DC", str(value))
+				print(f"DCV resolution set to: {value} digits (actual: {actual_value})")
+			
+			elif widget_name == 'dcv_zin':
+				# Set DCV input impedance using Fluke8588A library
+				actual_value = self.fluke_dmm.setImpedence(":VOLT:DC", value)
+				print(f"DCV input impedance set to: {value} (actual: {actual_value})")
+			
+			elif widget_name == 'dci_range':
+				# Set DCI range using Fluke8588A library
+				actual_value = self.fluke_dmm.setRange(":CURR:DC", value)
+				print(f"DCI range set to: {value} (actual: {actual_value})")
+			
+			elif widget_name == 'dci_resolution':
+				# Set DCI resolution (digits) using Fluke8588A library
+				actual_value = self.fluke_dmm.setResolution(":CURR:DC", str(value))
+				print(f"DCI resolution set to: {value} digits (actual: {actual_value})")
+			
+			elif widget_name == 'nplc':
+				# Set NPLC for the current mode using Fluke8588A library
+				root_command = ":VOLT:DC" if self.mode == "DCV" else ":CURR:DC"
+				actual_value = self.fluke_dmm.setNplc(root_command, value)
+				print(f"NPLC set to: {value} (actual: {actual_value})")
+				# Update internal nplc value
+				self.nplc = value
+			
+			elif widget_name == 'time':
+				# Store time setting (note: time is typically a UI-only setting)
+				self.time = value
+				print(f"Measurement time set to: {value} s")
+			
+			elif widget_name == 'measure_mode':
+				# Set measure mode (typically passed to init functions)
+				self.measureMode = value
+				print(f"Measure mode set to: {value}")
+		
+		except Exception as e:
+			print(f"Error applying {widget_name} change to machine: {e}")
+			if self.statusLabel:
+				self.statusLabel.setText(f"ERROR applying {widget_name}: {e}")
+
 	def set_mode(self, mode):
 		"""
 		Set UI mode and (if connected) configure the instrument.
@@ -297,8 +457,10 @@ class MainWindow:
 					instr.init_dcv(
 						self.fluke_dmm, 
 						self.dcv_range_combo.currentText(), 
-						self.dcv_res_spin.value(),  
-						self.plc.value(), 
+						self.dcv_res_spin.value(), 
+						self.dcv_zin_combo.currentText(),
+						self.measureMode,
+						self.nplc.value(), 
 						self.measureDisplay.text(),
 						self.dcv_zin_combo.currentText(), 
 						)
@@ -324,8 +486,8 @@ class MainWindow:
 				elif hasattr(instr, 'init_dci'):
 					try:
 						instr.init_dci()
-					except Exception:
-						print("init_dci exists but failed when called without args")
+					except Exception as e:
+						print(f"init_dci exists but failed when called without args: {e}")
 				else:
 					# Best-effort: set current DC function via SCPI
 					try:
@@ -358,16 +520,16 @@ class MainWindow:
 			# After dialog closes, capture values
 			if result == 1:  # 1 = Accepted/OK, 0 = Rejected/Cancel
 				# Retrieve widget values from measSetupDC.ui
-				self.plc = self.dcv_measure_setup_window.plc_spin.value()
+				self.nplc = self.dcv_measure_setup_window.nplc_spin.value()
 				self.time = self.dcv_measure_setup_window.time_spin.value()
 				
 				if self.fluke_dmm:
-					actualPlc = self.fluke_dmm.set_plc(self.plc)
-					if self.plcLabel:
-						self.plcLabel.setText(f"PLC: {actualPlc}")
+					actualNplc = self.fluke_dmm.set_nplc(self.nplc)
+					if self.nplcLabel:
+						self.nplcLabel.setText(f"NPLC: {actualNplc}")
 					if self.timeLabel:
 						self.timeLabel.setText(f"Time: {self.time} s")
-					print(f"Settings saved: PLC={self.plc}, Time={self.time}")
+					print(f"Settings saved: NPLC={self.nplc}, Time={self.time}")
 				else:
 					print("Instrument not initialized. Settings stored but not applied to device.")
 			

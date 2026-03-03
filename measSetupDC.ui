@@ -80,7 +80,7 @@
     </attribute>
    </widget>
   </widget>
-  <widget class="QDoubleSpinBox" name="plc_spin">
+  <widget class="QDoubleSpinBox" name="nplc_spin">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -110,7 +110,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>PLC</string>
+    <string>NPLC</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignmentFlag::AlignCenter</set>
