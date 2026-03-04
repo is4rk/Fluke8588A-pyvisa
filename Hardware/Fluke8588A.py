@@ -1,6 +1,6 @@
 import pyvisa
 import logging
-import spin_box_values as sbv
+from Config_Data.spin_box_values import VALID_RESOLUTIONS_DC
 #CLASSE DEL DMM Fluke 8588A
 class Fluke8588A(object):
 	"""
@@ -24,18 +24,15 @@ class Fluke8588A(object):
 
 	def __init__(self, address):
 		logging.info(__name__ + ' : Initializing instrument Fluke 8588A')
-		self.__connect(address)
 		self._instr.timeout = 10e3
 		self.plc_max = 500
 
 		try:
-			self.write("*RST")
+			self.__connect(address)
+			self.reset()
 			idn_string = self.identify()
 		except pyvisa.VisaIOError:
 			print("Instrument not detected. Check GPIB address!")
-
-		# self.write(":SENSE:VOLT:DC")
-		# self.write(":SENSE:VOLT:DC:RANG:AUTO ON")        
 		print("\nInstrument %s successfully initialized. \n" % idn_string)
 
 	def __connect(self, address): #private to be only used by init
@@ -51,9 +48,18 @@ class Fluke8588A(object):
 		Output:
 			machine identifiers 
 		'''
-		return self._instr.query("*IDN?")
+		return self.query("*IDN?")
 	
-	'''does write(text)'''
+	def reset(self):
+		'''
+		Resets instrument with *RST
+		Input:
+			none
+		Output:
+			none
+		'''
+		self.write("*RST")
+
 	def write(self, text):
 		'''
 		Write function
@@ -130,7 +136,7 @@ class Fluke8588A(object):
 		Output:
 			set value
 		'''
-		self.write(root+":NPLC "+str((value)))
+		self.write(root+":NPLC "+str(value))
 		return self.getNplc(root)
 
 	def getImp(self, root):
@@ -150,7 +156,7 @@ class Fluke8588A(object):
 		Output:
 			set value
 		'''
-		self.write(root+":IMP "+value)
+		self.write(root+":IMP "+str(value))
 		return self.getImp(root)
 	
 	def getRange(self, root):
@@ -170,7 +176,7 @@ class Fluke8588A(object):
 		Output:
 			set value
 		'''
-		self.write(root+":RANG "+value)
+		self.write(root+":RANG "+str(value))
 		return self.getRange(root)
 	
 	def getResolution(self, root):
@@ -181,15 +187,37 @@ class Fluke8588A(object):
 		Output:
 			set value
 		'''
-		return int(self.query(root+":RES?"))
+		return self.query(root+":RES?")
 	
 	def setResolution(self, root, value):
 		'''
-		Get resolution value for given root
+		Set number of digits after 0 to measure, for a given root
 		Input:
-			root
+			root, int value
 		Output:
 			set value
+
+		Example:
+			setResolution(":VOLT:DC", 4)-->1.2348 V
+			setResolution(":VOLT:DC", "4")-->1.2348 V
+			setResolution(":VOLT:DC", 6)-->1.234778 V
 		'''
-		self.write(root+":RES "+value)
-		return self.getResolution(root)
+		converted_resolution = self.__convert_resolution(int(value))
+		self.write(root+":RES "+str(converted_resolution))
+		set_resolution=self.getResolution(root)
+		return self.__anti_convert_resolution(set_resolution)
+	
+	def __convert_resolution(value):
+		return 10**(-value)
+
+	# Fluke for 4 digit precision returns 1E-4, python can do errors in saving the value, so this function returns how many points of precision after the zero the machine is saving. To do so, given 1E-4 that might get saved as 0.0001000005, the program counts how many zeros are present from . to 1. In this case there are 3 zeros, so the machine is measuring 4 digit precision 
+	def __anti_convert_resolution(value):
+		after_decimal_point=list(str(value).split(".")[1]) #takes 1.00200000003 -> [0, 0, 2, 0, 0, ..., 3]
+		i=1
+		for digit in after_decimal_point:
+			if digit==1 : 
+				return i
+			elif digit==0:
+				i+=1
+			else: # Machine/SCPI error
+				raise ValueError(f"Unexpected resolution from instrument: {value}. Expected one of {VALID_RESOLUTIONS_DC}")
