@@ -48,16 +48,6 @@ class Fluke8588A(object):
 			machine identifiers 
 		'''
 		return self.query("*IDN?")
-	
-	def reset(self):
-		'''
-		Resets instrument with *RST
-		Input:
-			none
-		Output:
-			none
-		'''
-		self.write("*RST")
 
 	def write(self, text):
 		'''
@@ -90,9 +80,7 @@ class Fluke8588A(object):
 			text
 		'''  
 		return self.query(":READ?")
-					
-	# class methods
-	
+						
 	def reset(self):
 		'''
 		Return Fluke 8588A to power up state...
@@ -104,6 +92,13 @@ class Fluke8588A(object):
 		self.write("*RST")
 	
 	def close(self):
+		'''
+		Closes connection with machine
+		Input:
+			none
+		Output:
+			none
+		'''
 		self._instr.close()
 
 	def init_dcv(self, range, resolution, zin, measure_mode, nplc):
@@ -111,12 +106,11 @@ class Fluke8588A(object):
 		Set the machine to dcv mode, and set up parameters
 		'''
 		root=":VOLT:DC"
-		initStatus=[]
 		self.write(":FUNC \":VOLT:DC\"")
 		initStatus.append(self.setRange(root, range))
 		initStatus.append(self.setResolution(root, resolution))
 		initStatus.append(self.setImpedence(root, zin))
-		initStatus.append(self.setNplc(root, measure_mode, nplc))
+		initStatus.append(self.setNplc(root, nplc))
 
 	def getNplc(self, root):
 		'''
@@ -206,11 +200,12 @@ class Fluke8588A(object):
 		set_resolution=self.getResolution(root)
 		return self.__anti_convert_resolution(set_resolution)
 	
-	def __convert_resolution(value):
+	def __convert_resolution(self, value):
 		return 10**(-value)
 
 	# Fluke for 4 digit precision returns 1E-4, python can do errors in saving the value, so this function returns how many points of precision after the zero the machine is saving. To do so, given 1E-4 that might get saved as 0.0001000005, the program counts how many zeros are present from . to 1. In this case there are 3 zeros, so the machine is measuring 4 digit precision 
-	def __anti_convert_resolution(value):
+	def __anti_convert_resolution(self, value):
+		value = f"{value:.17f}"
 		after_decimal_point=list(str(value).split(".")[1]) #takes 1.00200000003 -> [0, 0, 2, 0, 0, ..., 3]
 		i=1
 		for digit in after_decimal_point:
