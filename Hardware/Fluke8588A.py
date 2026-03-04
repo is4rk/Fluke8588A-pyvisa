@@ -1,6 +1,6 @@
 import pyvisa
 import logging
-import SpinBoxValues as sbv
+import spin_box_values as sbv
 #CLASSE DEL DMM Fluke 8588A
 class Fluke8588A(object):
 	"""

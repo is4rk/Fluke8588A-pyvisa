@@ -17,6 +17,11 @@ graph TD
         setup_dlg["setup_dialog.py\nSetupDialog"]
     end
 
+    subgraph ui_files ["ui/  (Qt Designer files)"]
+        mainwindow_ui["ui/mainwindow.ui"]
+        meassetup_ui["ui/measSetupDC.ui"]
+    end
+
     subgraph hardware ["Hardware"]
         fluke["fluke8588A.py\nFluke8588A"]
     end
@@ -39,6 +44,9 @@ graph TD
     main_win --> sbv
     fluke --> exc
     instr_ctrl --> exc
+
+    main_win -- "uic.loadUi()" --> mainwindow_ui
+    setup_dlg -- "uic.loadUi()" --> meassetup_ui
 ```
 
 ---
