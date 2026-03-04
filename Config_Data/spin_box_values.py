@@ -6,7 +6,7 @@ dci_range_val=["AUTO ON", 1E-7, 10E-7, 1E-3, 10E-3, 100E-3, 1, 1E1, 3E1]
 dc_digit_val=[4, 5, 6, 7, 8]
 ac_digit_val=[4, 5, 6, 7]
 dcv_zin=["Auto", "10 MΩ", "1 MΩ"]
-
+VALID_RESOLUTIONS_DC = {1e-4, 1e-5, 1e-6, 1e-7, 1e-8}
 auto_fast_values=[1E-2, 1E-1, 1, 1E1, 1E2] #values for autofast at 4, 5, 6, 7 8 digits of resolution
 
 def getFunctions():
