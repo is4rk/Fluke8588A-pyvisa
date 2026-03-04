@@ -4,18 +4,23 @@ import SpinBoxValues as sbv
 #CLASSE DEL DMM Fluke 8588A
 class Fluke8588A(object):
 	"""
-	Class for communicating with  FLuke8588A
-		
+	Class for communicating with Fluke 8588A DMM
+	
+	Public Methods:
 	identify() : returns read value of *IDN? query
-	write(message) : writes to instrument, no return
-	query(message) : write and read in a single command
-	read() : outputs returned text or times out
+	write(text) : writes command to instrument
+	query(text) : write and read in a single command
+	read() : outputs measurement with ":READ?" query
 	reset() : resets instrument to power on settings
-	set_plc() : sets plc value (1plc=50HZ in eu)
 	close() : close the connection
+	
+	Configuration Methods:
+	init_dcv(range, resolution, zin, measure_mode, nplc) : initialize DC voltage mode
+	setRange(root, value) / getRange(root) : set/get measurement range
+	setResolution(root, value) / getResolution(root) : set/get resolution
+	setNplc(root, value) / getNplc(root) : set/get NPLC value (1plc=50Hz in EU)
+	setImpedence(root, value) / getImp(root) : set/get input impedance
 	"""
-	"""initialization"""
-
 
 	def __init__(self, address):
 		logging.info(__name__ + ' : Initializing instrument Fluke 8588A')
@@ -126,7 +131,7 @@ class Fluke8588A(object):
 			set value
 		'''
 		self.write(root+":NPLC "+str((value)))
-		return self.getNplc
+		return self.getNplc(root)
 
 	def getImp(self, root):
 		'''
@@ -165,7 +170,7 @@ class Fluke8588A(object):
 		Output:
 			set value
 		'''
-		self.write(root+":RANG: "+value)
+		self.write(root+":RANG "+value)
 		return self.getRange(root)
 	
 	def getResolution(self, root):
