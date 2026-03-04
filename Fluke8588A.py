@@ -38,8 +38,14 @@ class Fluke8588A(object):
 		self._address = address
 		self._instr = rm.open_resource("GPIB0::" + str(self._address) + "::INSTR")
 		
-	'''returns *IDN?'''
 	def identify(self):
+		'''
+		Sends query *IDN?
+		Input:
+			none
+		Output:
+			machine identifiers 
+		'''
 		return self._instr.query("*IDN?")
 	
 	'''does write(text)'''
