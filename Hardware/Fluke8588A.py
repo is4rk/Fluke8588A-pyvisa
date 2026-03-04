@@ -107,10 +107,10 @@ class Fluke8588A(object):
 		'''
 		root=":VOLT:DC"
 		self.write(":FUNC \":VOLT:DC\"")
-		initStatus.append(self.setRange(root, range))
-		initStatus.append(self.setResolution(root, resolution))
-		initStatus.append(self.setImpedence(root, zin))
-		initStatus.append(self.setNplc(root, nplc))
+		self.setRange(root, range)
+		self.setResolution(root, resolution)
+		self.setImpedence(root, zin)
+		self.setNplc(root, nplc)
 
 	def getNplc(self, root):
 		'''
