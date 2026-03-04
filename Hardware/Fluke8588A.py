@@ -209,9 +209,9 @@ class Fluke8588A(object):
 		after_decimal_point=list(str(value).split(".")[1]) #takes 1.00200000003 -> [0, 0, 2, 0, 0, ..., 3]
 		i=1
 		for digit in after_decimal_point:
-			if digit==1 : 
+			if digit=='1': 
 				return i
-			elif digit==0:
+			elif digit=='0':
 				i+=1
 			else: # Machine/SCPI error
 				raise ValueError(f"Unexpected resolution from instrument: {value}. Expected one of {VALID_RESOLUTIONS_DC}")
