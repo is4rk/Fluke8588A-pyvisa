@@ -24,11 +24,10 @@ class Fluke8588A(object):
 
 	def __init__(self, address):
 		logging.info(__name__ + ' : Initializing instrument Fluke 8588A')
-		self._instr.timeout = 10e3
-		self.plc_max = 500
-
 		try:
 			self.__connect(address)
+			self._instr.timeout = 10e3
+			self.plc_max = 500
 			self.reset()
 			idn_string = self.identify()
 		except pyvisa.VisaIOError:
