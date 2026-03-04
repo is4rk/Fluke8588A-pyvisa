@@ -205,7 +205,7 @@ class Fluke8588A(object):
 
 	# Fluke for 4 digit precision returns 1E-4, python can do errors in saving the value, so this function returns how many points of precision after the zero the machine is saving. To do so, given 1E-4 that might get saved as 0.0001000005, the program counts how many zeros are present from . to 1. In this case there are 3 zeros, so the machine is measuring 4 digit precision 
 	def __anti_convert_resolution(self, value):
-		value = f"{value:.17f}"
+		value = f"{float(value):.17f}"
 		after_decimal_point=list(str(value).split(".")[1]) #takes 1.00200000003 -> [0, 0, 2, 0, 0, ..., 3]
 		i=1
 		for digit in after_decimal_point:
