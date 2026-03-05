@@ -1,34 +1,45 @@
-functions=["DCV", "DCI", "ACV", "ACI", "OHMS", "DIGITIZE"]
-dcv_range=["Auto", "100 mV", "1 V", "10 V", "100 V", "1 kV"]
-dcv_range_val=["Auto", 1E-1, 1, 1E1, 1E2, 1E3]
-dci_range=["AUTO ON", "10 μA", "100 μA", "1 mA", "10 mA" "100 mA", "1 A", "10 A", "30 A"]
-dci_range_val=["AUTO ON", 1E-7, 10E-7, 1E-3, 10E-3, 100E-3, 1, 1E1, 3E1]
-dc_digit_val=[4, 5, 6, 7, 8]
-ac_digit_val=[4, 5, 6, 7]
-dcv_zin=["Auto", "10 MΩ", "1 MΩ"]
-VALID_RESOLUTIONS_DC = {1e-4, 1e-5, 1e-6, 1e-7, 1e-8}
-auto_fast_values=[1E-2, 1E-1, 1, 1E1, 1E2] #values for autofast at 4, 5, 6, 7 8 digits of resolution
+from Config_Data.config import InstrumentConfig
 
-def getFunctions():
-    return functions
+# UI display lists — what gets shown in combo boxes and spinboxes
+# These are the values the user sees and selects in the interface.
+# Instrument validation lives in InstrumentConfig, not here.
 
-def getDcvRange():
-    return dcv_range
+FUNCTIONS = ["DCV", "DCI", "ACV", "ACI", "OHMS", "DIGITIZE"]
 
-def getDciRange():
-    return dci_range
+DCV_RANGE =     ["Auto", "100 mV", "1 V", "10 V", "100 V", "1 kV"]
+DCV_RANGE_VAL = ["Auto", 1e-1, 1, 1e1, 1e2, 1e3]
 
-def getDcvZin():
-    return dcv_zin
+DCI_RANGE =     ["AUTO ON", "10 μA", "100 μA", "1 mA", "10 mA", "100 mA", "1 A", "10 A", "30 A"]
+DCI_RANGE_VAL = ["AUTO ON", 1e-7, 1e-6, 1e-3, 1e-2, 1e-1, 1, 1e1, 3e1]
 
-def getDcvRangeVal(value):
-    return dcv_range_val[dcv_range.index(value)]
+DCV_ZIN = ["Auto", "10 MΩ", "1 MΩ"]
 
-def getDciRangeVal(value):
-    return dcv_range_val[dci_range.index(value)]
+DC_DIGIT_VAL = sorted(InstrumentConfig.VALID_RESOLUTIONS_DC)  # single source of truth
+AC_DIGIT_VAL = sorted(InstrumentConfig.VALID_RESOLUTIONS_AC)
 
-def getDcDigitVal():
-    return dc_digit_val
+AUTO_FAST_VALUES = [1e-2, 1e-1, 1, 1e1, 1e2]  # values for autofast at 4,5,6,7,8 digits
 
-def getAcDigitVal():
-    return ac_digit_val
+
+def get_functions():
+    return FUNCTIONS
+
+def get_dcv_range():
+    return DCV_RANGE
+
+def get_dci_range():
+    return DCI_RANGE
+
+def get_dcv_zin():
+    return DCV_ZIN
+
+def get_dcv_range_val(value):
+    return DCV_RANGE_VAL[DCV_RANGE.index(value)]
+
+def get_dci_range_val(value):
+    return DCI_RANGE_VAL[DCI_RANGE.index(value)]  # fixed: was using DCV_RANGE_VAL
+
+def get_dc_digit_val():
+    return DC_DIGIT_VAL
+
+def get_ac_digit_val():
+    return AC_DIGIT_VAL
