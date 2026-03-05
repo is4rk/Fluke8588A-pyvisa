@@ -1,7 +1,7 @@
 class InstrumentConfig:
     DEFAULT_ADDRESS = 9
     TIMEOUT_MS = 10_000
-    PLC_MAX = 500
+    NPLC_MAX = 500
     NPLC_MIN = 0.001  # 20 microseconds at 50Hz
     GPIB_PREFIX = "GPIB0::"
     GPIB_SUFFIX = "::INSTR"
@@ -11,6 +11,7 @@ class InstrumentConfig:
     RANGE_MODE_MAN = 0
     RANGE_MODE_AUTO_STR = "AUTO"
     RANGE_MODE_MAN_STR = "MAN"
+    DEFAULT_RESOLUTION=4
 
     # Instrument-defined valid values — used by Fluke8588A for input validation
     VALID_APERTURE_MODES = {"AUTO", "FAST", "MAN"}
