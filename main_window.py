@@ -1,16 +1,14 @@
-import os
 from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from ..Config_Data.spin_box_values import (
+from spin_box_values import (
     get_functions, get_dcv_range, get_dci_range,
     get_dcv_zin, get_dc_digit_val
 )
-from ..Config_Data.config import InstrumentConfig
+from config import InstrumentConfig
+import os
 
 UI_PATH = os.path.join(os.path.dirname(__file__), "ui", "mainwindow.ui")
-
-# Widget names from mainwindow.ui:
 #
 # Buttons:    init_button, read_button, set_button
 #             dcv_measure_setup_button, dci_measure_setup_button

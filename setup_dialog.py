@@ -1,7 +1,7 @@
 import os
 from PyQt6 import uic
 from PyQt6.QtWidgets import QDialog, QWidget
-from ..Config_Data.config import InstrumentConfig
+from config import InstrumentConfig
 
 UI_PATH = os.path.join(os.path.dirname(__file__), "ui", "measSetupDC.ui")
 
