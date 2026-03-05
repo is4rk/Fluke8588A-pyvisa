@@ -180,7 +180,7 @@ class Fluke8588A(object):
 		Output:
 			set value
 		'''
-		return int(self.query(root+":RANG?"))
+		return self.query(root+":RANG?")
 	def setRange(self, root, value):
 		'''
 		Set range value for given root
