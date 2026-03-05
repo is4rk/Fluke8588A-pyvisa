@@ -1,9 +1,8 @@
 import pyvisa
 import logging
-from Config_Data.spin_box_values import VALID_RESOLUTIONS_DC
 from Config_Data.config import InstrumentConfig
 #CLASSE DEL DMM Fluke 8588A
-class Fluke8588A(object):
+class Fluke8588A():
 	"""
 	Class for communicating with Fluke 8588A DMM
 	
@@ -25,15 +24,12 @@ class Fluke8588A(object):
 
 	def __init__(self, address):
 		logging.info(__name__ + ' : Initializing instrument Fluke 8588A')
-		try:
-			self.__connect(address)
-			self._instr.timeout = InstrumentConfig.TIMEOUT_MS
-			self.plc_max = InstrumentConfig.PLC_MAX
-			self.reset()
-			idn_string = self.identify()
-		except pyvisa.VisaIOError:
-			print("Instrument not detected. Check GPIB address!")
-		print("\nInstrument %s successfully initialized. \n" % idn_string)
+		self.__connect(address)
+		self._instr.timeout = InstrumentConfig.TIMEOUT_MS
+		self.plc_max = InstrumentConfig.PLC_MAX
+		self.reset()
+		idn_string = self.identify()
+		logging.info("Instrument %s successfully initialized." % idn_string)
 
 	def __connect(self, address): #private to be only used by init
 		rm = pyvisa.ResourceManager()
@@ -102,16 +98,18 @@ class Fluke8588A(object):
 		'''
 		self._instr.close()
 
-	def init_dcv(self, range, resolution, zin, measure_mode, nplc):
+	def init_dcv(self, range_mode, range_val,  resolution_val, zin_val, aperture_mode, nplc_val):
 		'''
 		Set the machine to dcv mode, and set up parameters
 		'''
 		root=InstrumentConfig.ROOT_DCV
 		self.write(":FUNC \"" + root + "\"")
-		self.setRange(root, range)
-		self.setResolution(root, resolution)
-		self.setImpedence(root, zin)
-		self.setNplc(root, nplc)
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setImpedence(root, zin_val)		
+		self.setApertureMode(root, aperture_mode)
+		self.setNplc(root, nplc_val)
 
 	def getApertureMode(self, root):
 		'''
@@ -124,13 +122,19 @@ class Fluke8588A(object):
 		return self.query(root+":APER:MODE?")
 	def setApertureMode(self, root, value):
 		'''
-		Set aperture mode for given root
+		Sets aperture mode for given root.
 		Input:
-			Root, desired value "AUTO", "FAST", "MAN"
+			root  : SCPI root string e.g. ":VOLT:DC"
+			value : "AUTO", "FAST", or "MAN"
 		Output:
-			set value: "AUTO", "FAST", "MAN"
+			set value: "AUTO", "FAST", or "MAN"
 		'''
-		self.write(root+":APER:MODE "+str(value))
+		if value not in InstrumentConfig.VALID_APERTURE_MODES:
+			raise ValueError(
+				f"Invalid aperture mode '{value}'. "
+				f"Expected one of {InstrumentConfig.VALID_APERTURE_MODES}"
+			)
+		self.write(root + ":APER:MODE " + str(value))
 		return self.getApertureMode(root)
 	
 	def getNplc(self, root):
@@ -144,13 +148,20 @@ class Fluke8588A(object):
 		return self.query(root+":NPLC?")
 	def setNplc(self, root, value):
 		'''
-		Set NPLC value for given root
+		Sets NPLC value for given root.
+		1 PLC = 20ms at 50Hz (EU).
 		Input:
-			root, desired value
+			root  : SCPI root string e.g. ":VOLT:DC"
+			value : float between 0.001 (20μs) and 500 (10s)
 		Output:
-			set value
+			set value as string
 		'''
-		self.write(root+":NPLC "+str(value))
+		if not InstrumentConfig.NPLC_MIN <= float(value) <= InstrumentConfig.PLC_MAX:
+			raise ValueError(
+				f"NPLC must be between {InstrumentConfig.NPLC_MIN} "
+				f"and {InstrumentConfig.PLC_MAX}, got {value}"
+			)
+		self.write(root + ":NPLC " + str(value))
 		return self.getNplc(root)
 
 	def getImp(self, root):
@@ -164,17 +175,23 @@ class Fluke8588A(object):
 		return self.query(root+":IMP?")
 	def setImpedence(self, root, value):
 		'''
-		Set Impedence value for given root
+		Sets input impedance for given root.
 		Input:
-			root, desired value
+			root  : SCPI root string e.g. ":VOLT:DC"
+			value : "AUTO", "1M", or "10M"
 		Output:
-			set value
+			set value: "AUTO", "1M", or "10M"
 		'''
-		self.write(root+":IMP "+str(value))
+		if value not in InstrumentConfig.VALID_IMPEDANCES_DCV:
+			raise ValueError(
+				f"Invalid impedance '{value}'. "
+				f"Expected one of {InstrumentConfig.VALID_IMPEDANCES_DCV}"
+			)
+		self.write(root + ":IMP " + str(value))
 		return self.getImp(root)
 	
 
-	def getRangeMode(self, root, value):
+	def getRangeMode(self, root):
 		'''
 		Get range mode for given root
 		Input:
@@ -192,18 +209,25 @@ class Fluke8588A(object):
 			raise ValueError(f"Unexpected range mode value: {response}")
 	def setRangeMode(self, root, value):
 		'''
-		Set range mode for given root
+		Sets range mode for given root.
 		Input:
-			root, desired value "AUTO" or "MAN"
+			root  : SCPI root string e.g. ":VOLT:DC"
+			value : "AUTO" or "MAN"
 		Output:
 			set value: "AUTO" or "MAN"
 		'''
 		if value == InstrumentConfig.RANGE_MODE_AUTO_STR:
 			converted_value = InstrumentConfig.RANGE_MODE_AUTO
 		elif value == InstrumentConfig.RANGE_MODE_MAN_STR:
-			converted_value = InstrumentConfig.RANGE_MODE_MAN		
-		self.write(root+":RANG:AUTO "+str(converted_value))
-		return self.getRangeMode(root, None)
+			converted_value = InstrumentConfig.RANGE_MODE_MAN
+		else:
+			raise ValueError(
+				f"Invalid range mode '{value}'. "
+				f"Expected '{InstrumentConfig.RANGE_MODE_AUTO_STR}' "
+				f"or '{InstrumentConfig.RANGE_MODE_MAN_STR}'"
+			)
+		self.write(root + ":RANG:AUTO " + str(converted_value))
+		return self.getRangeMode(root)
 	
 
 	def getRange(self, root):
@@ -237,34 +261,56 @@ class Fluke8588A(object):
 		return self.query(root+":RES?")
 	def setResolution(self, root, value):
 		'''
-		Set number of digits after 0 to measure, for a given root
+		Sets resolution in digits for given root.
+		Converts digit count to the resolution value the instrument expects.
 		Input:
-			root, int value
+			root  : SCPI root string e.g. ":VOLT:DC"
+			value : int or str, number of digits (4–8 for DC, 4–7 for AC)
 		Output:
-			set value
+			set value in digits (int)
 
 		Example:
-			setResolution(":VOLT:DC", 4)-->1.2348 V
-			setResolution(":VOLT:DC", "4")-->1.2348 V
-			setResolution(":VOLT:DC", 6)-->1.234778 V
+			setResolution(":VOLT:DC", 4) --> measures 1.2348 V  (returns 4)
+			setResolution(":VOLT:DC", 6) --> measures 1.234778 V (returns 6)
 		'''
-		converted_resolution = self.__convert_resolution(int(value))
-		self.write(root+":RES "+str(converted_resolution))
-		set_resolution=self.getResolution(root)
+		digit_value = int(value)
+		is_ac = "AC" in root.upper()
+		
+		if is_ac:
+			if digit_value not in InstrumentConfig.VALID_RESOLUTIONS_AC_DIGITS:
+				raise ValueError(
+					f"AC resolution must be one of {InstrumentConfig.VALID_RESOLUTIONS_AC_DIGITS}, got {digit_value}"
+				)
+		else:
+			if digit_value not in InstrumentConfig.VALID_RESOLUTIONS_DC_DIGITS:
+				raise ValueError(
+					f"DC resolution must be one of {InstrumentConfig.VALID_RESOLUTIONS_DC_DIGITS}, got {digit_value}"
+				)
+		
+		converted_resolution = self.__convert_resolution(digit_value)
+		self.write(root + ":RES " + str(converted_resolution))
+		set_resolution = self.getResolution(root)
 		return self.__anti_convert_resolution(set_resolution)
 	
 	def __convert_resolution(self, value):
 		return 10**(-value)
 
-	# Fluke for 4 digit precision returns 1E-4, python can do errors in saving the value, so this function returns how many points of precision after the zero the machine is saving. To do so, given 1E-4 that might get saved as 0.0001000005, the program counts how many zeros are present from . to 1. In this case there are 3 zeros, so the machine is measuring 4 digit precision 
+	# Fluke returns resolution as a float e.g. 1E-4.
+	# Python floating point may store this as 0.00010000000000000005.
+	# This function recovers the digit count by counting leading zeros after
+	# the decimal point until the first '1' is found.
 	def __anti_convert_resolution(self, value):
-		value = f"{float(value):.17f}"
-		after_decimal_point=list(str(value).split(".")[1]) #takes 1.00200000003 -> [0, 0, 2, 0, 0, ..., 3]
-		i=1
-		for digit in after_decimal_point:
-			if digit=='1': 
+		formatted = f"{float(value):.17f}"
+		after_decimal = formatted.split(".")[1]
+		for i, digit in enumerate(after_decimal, start=1):
+			if digit == '1':
 				return i
-			elif digit=='0':
-				i+=1
-			else: # Machine/SCPI error
-				raise ValueError(f"Unexpected resolution from instrument: {value}. Expected one of {VALID_RESOLUTIONS_DC}")
+			elif digit != '0':
+				raise ValueError(
+					f"Unexpected resolution from instrument: {value}. "
+				)
+		raise ValueError(
+			f"No significant digit found in resolution value: {value}"
+		)
+
+	
