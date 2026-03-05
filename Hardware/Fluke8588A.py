@@ -112,6 +112,26 @@ class Fluke8588A(object):
 		self.setImpedence(root, zin)
 		self.setNplc(root, nplc)
 
+	def getApertureMode(self, root):
+		'''
+		Get aperture mode for given root
+		Input:
+			Root
+		Output:
+			"AUTO", "FAST", "MAN"
+		'''
+		return self.query(root, ":APERT:MODE?")
+	def setApertureMode(self, root, value):
+		'''
+		Get aperture mode for given root
+		Input:
+			Root, desired value "AUTO", "FAST", "MAN
+		Output:
+			set value: "AUTO", "FAST", "MAN"
+		'''
+		self.write(root, str(value))
+		return self.getApertureMode(root)
+	
 	def getNplc(self, root):
 		'''
 		Get Nplc value for given root
