@@ -1,6 +1,7 @@
 import pyvisa
 import logging
 from Config_Data.spin_box_values import VALID_RESOLUTIONS_DC
+from Config_Data.config import InstrumentConfig
 #CLASSE DEL DMM Fluke 8588A
 class Fluke8588A(object):
 	"""
@@ -26,8 +27,8 @@ class Fluke8588A(object):
 		logging.info(__name__ + ' : Initializing instrument Fluke 8588A')
 		try:
 			self.__connect(address)
-			self._instr.timeout = 10e3
-			self.plc_max = 500
+			self._instr.timeout = InstrumentConfig.TIMEOUT_MS
+			self.plc_max = InstrumentConfig.PLC_MAX
 			self.reset()
 			idn_string = self.identify()
 		except pyvisa.VisaIOError:
@@ -37,7 +38,7 @@ class Fluke8588A(object):
 	def __connect(self, address): #private to be only used by init
 		rm = pyvisa.ResourceManager()
 		self._address = address
-		self._instr = rm.open_resource("GPIB0::" + str(self._address) + "::INSTR")
+		self._instr = rm.open_resource(InstrumentConfig.GPIB_PREFIX + str(self._address) + InstrumentConfig.GPIB_SUFFIX)
 		
 	def identify(self):
 		'''
@@ -105,8 +106,8 @@ class Fluke8588A(object):
 		'''
 		Set the machine to dcv mode, and set up parameters
 		'''
-		root=":VOLT:DC"
-		self.write(":FUNC \":VOLT:DC\"")
+		root=InstrumentConfig.ROOT_DCV
+		self.write(":FUNC \"" + root + "\"")
 		self.setRange(root, range)
 		self.setResolution(root, resolution)
 		self.setImpedence(root, zin)
@@ -183,10 +184,10 @@ class Fluke8588A(object):
 		'''
 		response = self.query(root+":RANG:AUTO?")
 		value_int = int(float(response))
-		if value_int == 1:
-			return "AUTO"
-		elif value_int == 0:
-			return "MAN"
+		if value_int == InstrumentConfig.RANGE_MODE_AUTO:
+			return InstrumentConfig.RANGE_MODE_AUTO_STR
+		elif value_int == InstrumentConfig.RANGE_MODE_MAN:
+			return InstrumentConfig.RANGE_MODE_MAN_STR
 		else:
 			raise ValueError(f"Unexpected range mode value: {response}")
 	def setRangeMode(self, root, value):
@@ -197,10 +198,10 @@ class Fluke8588A(object):
 		Output:
 			set value: "AUTO" or "MAN"
 		'''
-		if value == "AUTO":
-			converted_value = 1
-		elif value == "MAN":
-			converted_value = 0		
+		if value == InstrumentConfig.RANGE_MODE_AUTO_STR:
+			converted_value = InstrumentConfig.RANGE_MODE_AUTO
+		elif value == InstrumentConfig.RANGE_MODE_MAN_STR:
+			converted_value = InstrumentConfig.RANGE_MODE_MAN		
 		self.write(root+":RANG:AUTO "+str(converted_value))
 		return self.getRangeMode(root, None)
 	
