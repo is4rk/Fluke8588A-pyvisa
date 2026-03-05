@@ -314,5 +314,3 @@ class Fluke8588A():
 		raise ValueError(
 			f"No significant digit found in resolution value: {value}"
 		)
-
-	
