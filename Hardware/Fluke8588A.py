@@ -123,9 +123,9 @@ class Fluke8588A(object):
 		return self.query(root+":APER:MODE?")
 	def setApertureMode(self, root, value):
 		'''
-		Get aperture mode for given root
+		Set aperture mode for given root
 		Input:
-			Root, desired value "AUTO", "FAST", "MAN
+			Root, desired value "AUTO", "FAST", "MAN"
 		Output:
 			set value: "AUTO", "FAST", "MAN"
 		'''
@@ -172,6 +172,39 @@ class Fluke8588A(object):
 		self.write(root+":IMP "+str(value))
 		return self.getImp(root)
 	
+
+	def getRangeMode(self, root, value):
+		'''
+		Get range mode for given root
+		Input:
+			root, value
+		Output:
+			"AUTO" or "MAN"
+		'''
+		response = self.query(root+":RANG:AUTO?")
+		value_int = int(float(response))
+		if value_int == 1:
+			return "AUTO"
+		elif value_int == 0:
+			return "MAN"
+		else:
+			raise ValueError(f"Unexpected range mode value: {response}")
+	def setRangeMode(self, root, value):
+		'''
+		Set range mode for given root
+		Input:
+			root, desired value "AUTO" or "MAN"
+		Output:
+			set value: "AUTO" or "MAN"
+		'''
+		if value == "AUTO":
+			converted_value = 1
+		elif value == "MAN":
+			converted_value = 0		
+		self.write(root+":RANG:AUTO "+str(converted_value))
+		return self.getRangeMode(root, None)
+	
+
 	def getRange(self, root):
 		'''
 		Get range value for given root
@@ -201,7 +234,6 @@ class Fluke8588A(object):
 			set value
 		'''
 		return self.query(root+":RES?")
-	
 	def setResolution(self, root, value):
 		'''
 		Set number of digits after 0 to measure, for a given root
