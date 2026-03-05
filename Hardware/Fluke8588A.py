@@ -15,11 +15,13 @@ class Fluke8588A():
 	close() : close the connection
 	
 	Configuration Methods:
-	init_dcv(range, resolution, zin, measure_mode, nplc) : initialize DC voltage mode
+	init_dcv(range_mode, range_val, resolution_val, zin_val, aperture_mode, nplc_val) : initialize DC voltage mode
 	setRange(root, value) / getRange(root) : set/get measurement range
 	setResolution(root, value) / getResolution(root) : set/get resolution
 	setNplc(root, value) / getNplc(root) : set/get NPLC value (1plc=50Hz in EU)
 	setImpedence(root, value) / getImp(root) : set/get input impedance
+	setRangeMode(root, value) / getRangeMode(root) : set/get range mode ("AUTO" or "MAN")
+	setApertureMode(root, value) / getApertureMode(root) : set/get aperture mode ("AUTO", "FAST", or "MAN")
 	"""
 
 	def __init__(self, address):
