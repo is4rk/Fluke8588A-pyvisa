@@ -1,6 +1,6 @@
 import pyvisa
 import logging
-from Config_Data.config import InstrumentConfig
+from ..Config_Data.config import InstrumentConfig
 #CLASSE DEL DMM Fluke 8588A
 class Fluke8588A():
 	"""
