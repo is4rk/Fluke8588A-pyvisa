@@ -120,7 +120,7 @@ class Fluke8588A(object):
 		Output:
 			"AUTO", "FAST", "MAN"
 		'''
-		return self.query(root+":APERT:MODE?")
+		return self.query(root+":APER:MODE?")
 	def setApertureMode(self, root, value):
 		'''
 		Get aperture mode for given root
