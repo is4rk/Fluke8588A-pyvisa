@@ -1,3 +1,12 @@
-GPIB = 9
-timeout=5
-plc_max=500
+class InstrumentConfig: 
+    DEFAULT_ADRESS = 9    
+    TIMEOUT_MS=  10e3 
+    PLC_MAX =500
+    GPIB_PREFIX = "GPIB0::"
+    GPIB_SUFFIX = "::INSTR"
+    ROOT_DCV=":VOLT:DC"
+    ROOT_DCI=":CURR:DC"
+    RANGE_MODE_AUTO = 1
+    RANGE_MODE_MAN = 0
+    RANGE_MODE_AUTO_STR = "AUTO"
+    RANGE_MODE_MAN_STR = "MAN"
