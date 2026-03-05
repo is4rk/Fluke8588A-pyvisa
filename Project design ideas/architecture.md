@@ -29,7 +29,6 @@ graph TD
     subgraph data ["Config / Data"]
         config["config.py\nInstrumentConfig"]
         sbv["spinbox_values.py\nSpinBoxValues"]
-        exc["exceptions.py\nCustom Exceptions"]
     end
 
     main --> app_ctrl
@@ -42,8 +41,8 @@ graph TD
     meas_ctrl --> sbv
     meas_ctrl --> setup_dlg
     main_win --> sbv
-    fluke --> exc
-    instr_ctrl --> exc
+    fluke --> config
+    sbv --> config
 
     main_win -- "uic.loadUi()" --> mainwindow_ui
     setup_dlg -- "uic.loadUi()" --> meassetup_ui
@@ -59,22 +58,26 @@ classDiagram
     class Fluke8588A {
         -_instr : Resource
         -_address : int
+        -__connect(address)
         +identify() str
         +write(text)
         +query(text) str
         +read() str
         +reset()
         +close()
-        +init_dcv(range, res, zin, nplc)
-        +get_range(root) str
-        +set_range(root, value) str
-        +get_resolution(root) int
-        +set_resolution(root, value) int
-        +get_nplc(root) float
-        +set_nplc(root, value) float
-        +get_impedance(root) str
-        +set_impedance(root, value) str
-        -__connect(address)
+        +init_dcv(range_val, resolution, zin, nplc)
+        +getRange(root) str
+        +setRange(root, value) str
+        +getResolution(root) str
+        +setResolution(root, value) int
+        +getNplc(root) str
+        +setNplc(root, value) str
+        +getImp(root) str
+        +setImpedence(root, value) str
+        +getRangeMode(root) str
+        +setRangeMode(root, value) str
+        +getApertureMode(root) str
+        +setApertureMode(root, value) str
     }
 
     class InstrumentController {
@@ -140,8 +143,9 @@ classDiagram
     }
 
     class MeasConfig {
+        <<dataclass>>
         +mode : str
-        +range : str
+        +range_val : str
         +resolution : int
         +nplc : float
         +zin : str
@@ -157,13 +161,46 @@ classDiagram
     }
 
     class InstrumentConfig {
-        <<dataclass>>
-        GPIB_PREFIX$ = GPIB0..
+        <<class>>
+        DEFAULT_ADDRESS$ = 9
         TIMEOUT_MS$ = 10000
         PLC_MAX$ = 500
-        DEFAULT_ADDRESS$ = 9
+        NPLC_MIN$ = 0.001
+        GPIB_PREFIX$ = GPIB0..
+        GPIB_SUFFIX$ = ..INSTR
         ROOT_DCV$ = :VOLT:DC
         ROOT_DCI$ = :CURR:DC
+        RANGE_MODE_AUTO$ = 1
+        RANGE_MODE_MAN$ = 0
+        RANGE_MODE_AUTO_STR$ = AUTO
+        RANGE_MODE_MAN_STR$ = MAN
+        VALID_APERTURE_MODES$ = AUTO FAST MAN
+        VALID_IMPEDANCES_DCV$ = AUTO 1M 10M
+        VALID_RESOLUTIONS_DC$ = 1e-4..1e-8
+        VALID_RESOLUTIONS_AC$ = 1e-4..1e-7
+        VALID_RESOLUTIONS_DC_DIGITS$ = 4..8
+        VALID_RESOLUTIONS_AC_DIGITS$ = 4..7
+    }
+
+    class SpinBoxValues {
+        <<module>>
+        FUNCTIONS$
+        DCV_RANGE$
+        DCV_RANGE_VAL$
+        DCI_RANGE$
+        DCI_RANGE_VAL$
+        DCV_ZIN$
+        DC_DIGIT_VAL$
+        AC_DIGIT_VAL$
+        AUTO_FAST_VALUES$
+        +get_functions() list
+        +get_dcv_range() list
+        +get_dci_range() list
+        +get_dcv_zin() list
+        +get_dcv_range_val(value) float
+        +get_dci_range_val(value) float
+        +get_dc_digit_val() list
+        +get_ac_digit_val() list
     }
 
     AppController *-- InstrumentController : owns
@@ -171,9 +208,13 @@ classDiagram
     AppController *-- MainWindow : owns
     InstrumentController *-- Fluke8588A : owns
     InstrumentController --> InstrumentState : uses
+    InstrumentController --> InstrumentConfig : uses
     MeasurementController --> InstrumentController : uses
     MeasurementController --> MeasConfig : uses
     MeasurementController --> SetupDialog : opens
+    MeasurementController --> SpinBoxValues : uses
     AppController --> MeasConfig : creates
     Fluke8588A --> InstrumentConfig : uses
+    MainWindow --> SpinBoxValues : uses
+    SpinBoxValues --> InstrumentConfig : uses
 ```
