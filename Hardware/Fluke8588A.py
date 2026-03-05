@@ -129,7 +129,7 @@ class Fluke8588A(object):
 		Output:
 			set value: "AUTO", "FAST", "MAN"
 		'''
-		self.write(root+":APER:MODE:"str(value))
+		self.write(root+":APER:MODE:"+str(value))
 		return self.getApertureMode(root)
 	
 	def getNplc(self, root):
