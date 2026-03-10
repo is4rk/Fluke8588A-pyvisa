@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>242</width>
+    <width>251</width>
     <height>310</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>201</width>
+     <width>211</width>
      <height>161</height>
     </rect>
    </property>
@@ -31,7 +31,7 @@
    <property name="checkable">
     <bool>false</bool>
    </property>
-   <widget class="QCheckBox" name="checkBox_3">
+   <widget class="QCheckBox" name="manual_check">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -47,7 +47,7 @@
      <string notr="true">buttonGroup</string>
     </attribute>
    </widget>
-   <widget class="QCheckBox" name="checkBox_1">
+   <widget class="QCheckBox" name="auto_check">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -63,7 +63,7 @@
      <string notr="true">buttonGroup</string>
     </attribute>
    </widget>
-   <widget class="QCheckBox" name="checkBox_2">
+   <widget class="QCheckBox" name="fast_check">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -80,70 +80,62 @@
     </attribute>
    </widget>
   </widget>
-  <widget class="QDoubleSpinBox" name="nplc_spin">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>220</y>
-     <width>71</width>
-     <height>32</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="time_spin">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>220</y>
-     <width>71</width>
-     <height>32</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="plc_label">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>200</y>
-     <width>58</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>NPLC</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="time_label">
-   <property name="geometry">
-    <rect>
-     <x>140</x>
-     <y>200</y>
-     <width>58</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Time</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
-   </property>
-  </widget>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>40</x>
      <y>270</y>
-     <width>174</width>
-     <height>34</height>
+     <width>171</width>
+     <height>41</height>
     </rect>
    </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
    </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::StandardButton::Apply|QDialogButtonBox::StandardButton::Cancel</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>200</y>
+     <width>191</width>
+     <height>58</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="nplc_time_layour">
+    <item row="0" column="0">
+     <widget class="QLabel" name="plc_label">
+      <property name="text">
+       <string>NPLC</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="time_label">
+      <property name="text">
+       <string>Time</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QDoubleSpinBox" name="nplc_spin"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QDoubleSpinBox" name="time_spin"/>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

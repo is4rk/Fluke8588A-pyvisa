@@ -209,3 +209,4 @@ __marimo__/
 # My stuff
 tmp/
 claude/
+.uiInterface.py
