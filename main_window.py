@@ -20,7 +20,6 @@ class MainWindow(QMainWindow):
 		self._connect_signals()
 
 	def _init_always_visible(self):
-		self.init_button.setVisible(True)
 		for widget in self.findChildren(QWidget):
 			widget.setVisible(False)
 		self.init_button.setVisible(True)
