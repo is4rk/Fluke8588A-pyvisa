@@ -28,7 +28,7 @@ class Fluke8588A():
 		logging.info(__name__ + ' : Initializing instrument Fluke 8588A')
 		self.__connect(address)
 		self._instr.timeout = InstrumentConfig.TIMEOUT_MS
-		self.plc_max = InstrumentConfig.PLC_MAX
+		self.plc_max = InstrumentConfig.NPLC_MAX
 		self.reset()
 		idn_string = self.identify()
 		logging.info("Instrument %s successfully initialized." % idn_string)
