@@ -26,6 +26,7 @@ class Fluke8588A():
 
 	def __init__(self, address):
 		logging.info(__name__ + ' : Initializing instrument Fluke 8588A')
+		self.is_connected = False
 		self.__connect(address)
 		self._instr.timeout = InstrumentConfig.TIMEOUT_MS
 		self.plc_max = InstrumentConfig.NPLC_MAX
@@ -37,6 +38,7 @@ class Fluke8588A():
 		rm = pyvisa.ResourceManager()
 		self._address = address
 		self._instr = rm.open_resource(InstrumentConfig.GPIB_PREFIX + str(self._address) + InstrumentConfig.GPIB_SUFFIX)
+		self.is_connected = True
 		
 	def identify(self):
 		'''
@@ -99,6 +101,7 @@ class Fluke8588A():
 			none
 		'''
 		self._instr.close()
+		self.is_connected = False
 
 	def init_dcv(self, range_mode, range_val,  resolution_val, zin_val, aperture_mode, nplc_val):
 		'''
