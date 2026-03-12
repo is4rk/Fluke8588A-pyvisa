@@ -3,7 +3,7 @@ from config import InstrumentConfig
 # These are the values the user sees and selects in the interface.
 # Instrument validation lives in InstrumentConfig, not here.
 
-FUNCTIONS = ["DCV", "DCI", "ACV", "ACI", "OHMS", "DIGITIZE"]
+FUNCTIONS = ["", "DCV", "DCI", "ACV", "ACI", "OHMS", "DIGITIZE"]
 
 DCV_RANGE =     ["Auto", "100 mV", "1 V", "10 V", "100 V", "1 kV"]
 DCV_RANGE_VAL = ["Auto", 1e-1, 1, 1e1, 1e2, 1e3]
