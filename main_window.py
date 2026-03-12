@@ -78,5 +78,5 @@ class MainWindow(QMainWindow):
 		# self.acv_widget.setVisible(mode == "ACV")
 		# self.aci_widget.setVisible(mode == "ACI")
 
-	def set_status(self, startus: str):
-		self.status_label.setText(str)
+	def set_status(self, status: str):
+		self.status_label.setText(status)
