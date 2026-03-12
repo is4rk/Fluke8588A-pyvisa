@@ -2,6 +2,8 @@ from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QMainWindow, QWidget
 import os
+from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_zin, get_dc_digit_val
+from config import InstrumentConfig
 main_window_loc = os.path.join(os.path.dirname(__file__), "ui", "mainwindow.ui")
 
 class MainWindow(QMainWindow):
@@ -42,7 +44,8 @@ class MainWindow(QMainWindow):
 		self.init_button.setEnabled(True)
 		self.read_button.setEnabled(True)
 		self.mode_combo.setEnabled(True)
-		self.set_button.setEnabled(True)	
+		self.set_button.setEnabled(True)
+		self.populate_mode_combo()	
 		#add fucntion that shows current mode widgets
 
 	def set_read(self, value: int):
@@ -80,3 +83,13 @@ class MainWindow(QMainWindow):
 
 	def set_status(self, status: str):
 		self.status_label.setText(status)
+
+	def _init_widgets(self):
+		self.mode_combo.addItems(get_functions())
+		self.dcv_range_combo.addItems(get_dcv_range())
+		self.dci_range_combo.addItems(get_dci_range())
+		self.dcv_zin_combo.addItems(get_dcv_zin())
+		self.dcv_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
+		self.dci_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
+		self.gpib_addr_spin.setRange(0, 30)
+		self.gpib_addr_spin.setValue(InstrumentConfig.DEFAULT_ADDRESS)
