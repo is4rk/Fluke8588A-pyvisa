@@ -306,8 +306,6 @@
    <zorder>dci_label_4</zorder>
    <zorder>dci_measure_setup_button</zorder>
    <zorder>dcv_widget</zorder>
-   <zorder>layoutWidget</zorder>
-   <zorder>layoutWidget</zorder>
    <zorder>init_widget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
