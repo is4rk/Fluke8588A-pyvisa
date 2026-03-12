@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>dc_meas_setup_form</class>
- <widget class="QWidget" name="dc_meas_setup_form">
+ <class>dc_meas_set_up</class>
+ <widget class="QWidget" name="dc_meas_set_up">
   <property name="geometry">
    <rect>
     <x>0</x>
