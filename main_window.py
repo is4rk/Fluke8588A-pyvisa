@@ -36,6 +36,18 @@ class MainWindow(QMainWindow):
 		self.set_button.pressed.connect(self.set_requested)
 		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested)
 
+	def set_disconnected(self):
+		self.read_button.setEnabled(False)
+		self.mode_combo.setEnabled(False)
+		self.set_button.setEnabled(False)
+		#add function that hides all widgets etc
+
+	def set_connected(self):
+		self.read_button.setEnabled(True)
+		self.mode_combo.setEnabled(True)
+		self.set_button.setEnabled(True)	
+		#add fucntion that shows current mode widgets
+
 	@property
 	def current_gpib_address(self)->int:
 		return self.gpib_addr_spin.value()
