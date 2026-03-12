@@ -18,9 +18,12 @@ class AppController:
 			self._view.set_status("ERROR: not connected.")
 			return
 		try:
-			self._meas_ctrl.read()
+			value=self._instr_ctrl.read()
+			print(value) # REMOVE
+			self._view.setRead(value)
 		except Exception as e:
 			self._view.set_status(f"Read error: {e}")
+		
 	
 	def _on_init(self):
 		if hasattr(self, '_instr_ctrl'):
