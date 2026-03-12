@@ -1,14 +1,6 @@
-from Fluke8588A import Fluke8588A
+from instrument_controller import InstrumentController
 from main_window import MainWindow
-from dataclasses import dataclass, field
-
-@dataclass
-class DcvSettings:
-	range:  str = ""
-	resolution: int = 7
-	input_z: str   = "AUTO"
-	nplc: float = 1.0
-
+from settings import DcvSettings
 
 class AppController:
 
@@ -17,7 +9,7 @@ class AppController:
 		self._view.set_disconnected()
 		self._connect_signals()
 		self._view.show()
-		self._dcv_settings = DcvSettings()
+		self._instr_ctrl=InstrumentController()
 
 	def _connect_signals(self):
 		self._view.read_requested.connect(self._on_read)
@@ -27,7 +19,7 @@ class AppController:
 		self._view.dcv_signal.connect(self._on_dcv_setting_change)
 	
 	def _on_read(self):
-		if not self._instr_ctrl.is_connected:
+		if not self._instr_ctrl.is_connected():
 			self._view.set_status("ERROR: not connected.")
 			return
 		try:
@@ -39,9 +31,9 @@ class AppController:
 	
 	def _on_init(self):
 		if hasattr(self, '_instr_ctrl'):
-			if self._instr_ctrl.is_connected:
+			if self._instr_ctrl.is_connected():
 				self._instr_ctrl.close()
-		self._instr_ctrl=Fluke8588A(self._view.current_gpib_address)
+		self._instr_ctrl=self._instr_ctrl.connect(self._view.current_gpib_address)
 		self._view.set_connected()
 		self._view.set_status("Connected")
 	
@@ -51,7 +43,7 @@ class AppController:
 	def _on_set(self):
 		mode=self._view.current_mode
 		new_settings=self.get_settings_from_mode(mode)
-		pass
+		self._instr_ctrl.set(mode, new_settings)
 
 	def get_settings_from_mode(self, mode: str):
 		if mode == "DCV":
@@ -62,6 +54,7 @@ class AppController:
 
 	def _on_dcv_setting_change(self):
 		self._dcv_settings = DcvSettings(
+			range_mode = "AUTO" if self._view.current_dcv_range == "AUTO" else "MAN",
 			range_val  = self._view.current_dcv_range,
 			resolution = self._view.current_dcv_resolution,
 			zin        = self._view.current_dcv_zin,
