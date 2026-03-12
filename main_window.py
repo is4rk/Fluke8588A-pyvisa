@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
 		#add fucntion that shows current mode widgets
 
 	def set_read(self, value: int):
-		self.measure_display_label.setValue(value)
+		self.measure_display_label.setText(str(value))
 		
 	@property
 	def current_gpib_address(self)->int:
