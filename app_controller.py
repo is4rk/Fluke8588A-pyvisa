@@ -8,6 +8,7 @@ class AppController:
 		self._view.set_disconnected()
 		self._connect_signals()
 		self._view.show()
+		self._instr_ctrl=None
 
 	def _connect_signals(self):
 		self._view.read_requested.connect(self._on_read)
@@ -23,7 +24,7 @@ class AppController:
 			self._view.set_status(f"Read error: {e}")
 	
 	def _on_init(self):
-		if self._instr_ctrl.is_connected():
+		if self._instr_ctrl != None and self._instr_ctrl.is_connected():
 			self._instr_ctrl.close()	
-		self._instr_ctrl=Fluke8588A(self._view.current_gpib_address())
+		self._instr_ctrl=Fluke8588A(self._view.current_gpib_address)
 		self._view.set_connected()

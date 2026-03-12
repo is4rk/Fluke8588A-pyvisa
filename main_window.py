@@ -15,19 +15,14 @@ class MainWindow(QMainWindow):
 	def __init__(self):
 		super().__init__()
 		uic.loadUi(main_window_loc, self)
-		self._init_always_visible()
-	#	self._init_mode_widgets()
+		self._init_visibility()
+		self.set_mode_visible(self.current_mode)
 		self._connect_signals()
 
-	def _init_always_visible(self):
-		for widget in self.findChildren(QWidget):
-			widget.setVisible(False)
-		self.init_button.setVisible(True)
-		self.mode_combo.setVisible(True)
-		self.read_button.setVisible(True)
-		self.set_button.setVisible(True)
-		self.status_label.setVisible(True)
-			
+	def _init_visibility(self):
+		pass
+		#make it hide mode_widgets
+		
 	def _connect_signals(self):
 		#always visible
 		self.init_button.pressed.connect(self.init_requested)
@@ -37,12 +32,14 @@ class MainWindow(QMainWindow):
 		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested)
 
 	def set_disconnected(self):
+		self.init_button.setEnabled(True)
 		self.read_button.setEnabled(False)
 		self.mode_combo.setEnabled(False)
 		self.set_button.setEnabled(False)
 		#add function that hides all widgets etc
 
-	def set_connected(self):
+	def set_connected(self):	
+		self.init_button.setEnabled(True)
 		self.read_button.setEnabled(True)
 		self.mode_combo.setEnabled(True)
 		self.set_button.setEnabled(True)	
@@ -68,9 +65,12 @@ class MainWindow(QMainWindow):
 	def current_dcv_zin(self)->str:
 		return self.dcv_zin_combo.currentText()
 
+	@property
+	def current_mode(self)->str:
+		return self.mode_combo.currentText()
 		
 	def set_mode_visible(self, mode: str):
 		self.dcv_widget.setVisible(mode == "DCV")
-		self.dci_widget.setVisible(mode == "DCI")
-		self.acv_widget.setVisible(mode == "ACV")
-		self.aci_widget.setVisible(mode == "ACI")
+		# self.dci_widget.setVisible(mode == "DCI")
+		# self.acv_widget.setVisible(mode == "ACV")
+		# self.aci_widget.setVisible(mode == "ACI")
