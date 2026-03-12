@@ -20,7 +20,7 @@ class AppController:
 		try:
 			value=self._instr_ctrl.read()
 			print(value) # REMOVE
-			self._view.setRead(value)
+			self._view.set_read(value)
 		except Exception as e:
 			self._view.set_status(f"Read error: {e}")
 		
