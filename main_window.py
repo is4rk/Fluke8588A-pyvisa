@@ -13,6 +13,7 @@ class MainWindow(QMainWindow):
 	read_requested = pyqtSignal()
 	set_requested = pyqtSignal()
 	measurment_setup_requested = pyqtSignal()
+	dcv_signal = pyqtSignal()
 
 	def __init__(self):
 		super().__init__()
@@ -21,6 +22,32 @@ class MainWindow(QMainWindow):
 		self.set_mode_visible(self.current_mode)
 		self._connect_signals()
 		self._init_widgets()
+
+	def _init_visibility(self):
+		pass
+		#make it hide mode_widgets
+		
+	def _connect_signals(self):
+		#always visible
+		self.init_button.pressed.connect(self.init_requested)
+		self.mode_combo.currentTextChanged.connect(self.mode_changed)
+		self.read_button.pressed.connect(self.read_requested)
+		self.set_button.pressed.connect(self.set_requested) #to be 
+		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested) #to be
+		#dcv signals
+		self.dcv_range_combo.currentTextChanged.connect(self.dcv_signal)
+		self.dcv_res_spin.valueChanged.connect(self.dcv_signal)
+		self.dcv_zin_combo.currentTextChanged.connect(self.dcv_signal)
+
+	def _init_widgets(self):
+		self.mode_combo.addItems(get_functions())
+		self.dcv_range_combo.addItems(get_dcv_range())
+		self.dci_range_combo.addItems(get_dci_range())
+		self.dcv_zin_combo.addItems(get_dcv_zin())
+		self.dcv_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
+		self.dci_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
+		self.gpib_addr_spin.setRange(0, 30)
+		self.gpib_addr_spin.setValue(InstrumentConfig.DEFAULT_ADDRESS)
 
 	@property
 	def current_gpib_address(self)->int:
@@ -46,29 +73,10 @@ class MainWindow(QMainWindow):
 	def current_mode(self)->str:
 		return self.mode_combo.currentText()
 
-	def _init_visibility(self):
-		pass
-		#make it hide mode_widgets
-		
-	def _connect_signals(self):
-		#always visible
-		self.init_button.pressed.connect(self.init_requested)
-		self.mode_combo.currentTextChanged.connect(self.mode_changed)
-		self.read_button.pressed.connect(self.read_requested)
-		self.set_button.pressed.connect(self.set_requested)
-		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested)
-
-	def _init_widgets(self):
-		self.mode_combo.addItems(get_functions())
-		self.dcv_range_combo.addItems(get_dcv_range())
-		self.dci_range_combo.addItems(get_dci_range())
-		self.dcv_zin_combo.addItems(get_dcv_zin())
-		self.dcv_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
-		self.dci_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
-		self.gpib_addr_spin.setRange(0, 30)
-		self.gpib_addr_spin.setValue(InstrumentConfig.DEFAULT_ADDRESS)
-
-
+	@property
+	def current_nplc(self)->float:
+		return float(self.nplc_label.currenctText())
+	
 	def set_disconnected(self):
 		self.init_button.setEnabled(True)
 		self.read_button.setEnabled(False)
