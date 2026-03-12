@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
 		self._init_visibility()
 		self.set_mode_visible(self.current_mode)
 		self._connect_signals()
+		self._init_widgets()
 
 	def _init_visibility(self):
 		pass
@@ -44,8 +45,7 @@ class MainWindow(QMainWindow):
 		self.init_button.setEnabled(True)
 		self.read_button.setEnabled(True)
 		self.mode_combo.setEnabled(True)
-		self.set_button.setEnabled(True)
-		self.populate_mode_combo()	
+		self.set_button.setEnabled(True)	
 		#add fucntion that shows current mode widgets
 
 	def set_read(self, value: int):
