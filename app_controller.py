@@ -24,7 +24,7 @@ class AppController:
 	
 	def _on_init(self):
 		if hasattr(self, '_instr_ctrl'):
-			if self._instr_ctrl.is_connected():
+			if self._instr_ctrl.is_connected:
 				self._instr_ctrl.close()
 		self._instr_ctrl=Fluke8588A(self._view.current_gpib_address)
 		self._view.set_connected()
