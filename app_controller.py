@@ -32,8 +32,8 @@ class AppController:
 	def _on_init(self):
 		if hasattr(self, '_instr_ctrl'):
 			if self._instr_ctrl.is_connected():
-				self._instr_ctrl.close()
-		self._instr_ctrl=self._instr_ctrl.connect(self._view.current_gpib_address)
+				self._instr_ctrl.disconnect()
+		self._instr_ctrl.connect(self._view.current_gpib_address)
 		self._view.set_connected()
 		self._view.set_status("Connected")
 	
