@@ -244,16 +244,38 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="init_widget" native="true">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>50</y>
-      <width>89</width>
-      <height>114</height>
+      <x>340</x>
+      <y>20</y>
+      <width>146</width>
+      <height>45</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="main_settings_layout">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="init_button">
+       <property name="text">
+        <string>Initialiaze</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="gpib_addr_spin"/>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="mode_read_set_widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>98</width>
+      <height>108</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QComboBox" name="mode_combo"/>
      </item>
@@ -273,28 +295,20 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>10</y>
-      <width>144</width>
-      <height>36</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="init_button">
-       <property name="text">
-        <string>Initialiaze</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="gpib_addr_spin"/>
-     </item>
-    </layout>
-   </widget>
+   <zorder>mode_read_set_widget</zorder>
+   <zorder>status_label</zorder>
+   <zorder>measure_display_label</zorder>
+   <zorder>dci_range_label</zorder>
+   <zorder>dci_range_combo</zorder>
+   <zorder>dci_res_label</zorder>
+   <zorder>dci_res_spin</zorder>
+   <zorder>dci_label_3</zorder>
+   <zorder>dci_label_4</zorder>
+   <zorder>dci_measure_setup_button</zorder>
+   <zorder>dcv_widget</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>init_widget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -302,7 +316,7 @@
      <x>0</x>
      <y>0</y>
      <width>833</width>
-     <height>30</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
