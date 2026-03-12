@@ -58,5 +58,5 @@ class AppController:
 			range_val  = self._view.current_dcv_range,
 			resolution = self._view.current_dcv_resolution,
 			zin        = self._view.current_dcv_zin,
-			nplc       = self._view.current_nplc,
+			nplc       = 50.0, #hard coded for now
 		)
