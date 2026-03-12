@@ -74,3 +74,6 @@ class MainWindow(QMainWindow):
 		# self.dci_widget.setVisible(mode == "DCI")
 		# self.acv_widget.setVisible(mode == "ACV")
 		# self.aci_widget.setVisible(mode == "ACI")
+
+	def set_status(self, startus: str):
+		self.status_label.setText(str)

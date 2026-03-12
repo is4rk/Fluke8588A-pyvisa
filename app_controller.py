@@ -28,3 +28,4 @@ class AppController:
 				self._instr_ctrl.close()
 		self._instr_ctrl=Fluke8588A(self._view.current_gpib_address)
 		self._view.set_connected()
+		self._view.set_status("Connected")
