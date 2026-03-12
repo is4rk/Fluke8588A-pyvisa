@@ -22,35 +22,6 @@ class MainWindow(QMainWindow):
 		self._connect_signals()
 		self._init_widgets()
 
-	def _init_visibility(self):
-		pass
-		#make it hide mode_widgets
-		
-	def _connect_signals(self):
-		#always visible
-		self.init_button.pressed.connect(self.init_requested)
-		self.mode_combo.currentTextChanged.connect(self.mode_changed)
-		self.read_button.pressed.connect(self.read_requested)
-		self.set_button.pressed.connect(self.set_requested)
-		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested)
-
-	def set_disconnected(self):
-		self.init_button.setEnabled(True)
-		self.read_button.setEnabled(False)
-		self.mode_combo.setEnabled(False)
-		self.set_button.setEnabled(False)
-		#add function that hides all widgets etc
-
-	def set_connected(self):	
-		self.init_button.setEnabled(True)
-		self.read_button.setEnabled(True)
-		self.mode_combo.setEnabled(True)
-		self.set_button.setEnabled(True)	
-		#add fucntion that shows current mode widgets
-
-	def set_read(self, value: int):
-		self.measure_display_label.setText(str(value))
-		
 	@property
 	def current_gpib_address(self)->int:
 		return self.gpib_addr_spin.value()
@@ -74,15 +45,18 @@ class MainWindow(QMainWindow):
 	@property
 	def current_mode(self)->str:
 		return self.mode_combo.currentText()
-		
-	def set_mode_visible(self, mode: str):
-		self.dcv_widget.setVisible(mode == "DCV")
-		# self.dci_widget.setVisible(mode == "DCI")
-		# self.acv_widget.setVisible(mode == "ACV")
-		# self.aci_widget.setVisible(mode == "ACI")
 
-	def set_status(self, status: str):
-		self.status_label.setText(status)
+	def _init_visibility(self):
+		pass
+		#make it hide mode_widgets
+		
+	def _connect_signals(self):
+		#always visible
+		self.init_button.pressed.connect(self.init_requested)
+		self.mode_combo.currentTextChanged.connect(self.mode_changed)
+		self.read_button.pressed.connect(self.read_requested)
+		self.set_button.pressed.connect(self.set_requested)
+		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested)
 
 	def _init_widgets(self):
 		self.mode_combo.addItems(get_functions())
@@ -93,3 +67,30 @@ class MainWindow(QMainWindow):
 		self.dci_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
 		self.gpib_addr_spin.setRange(0, 30)
 		self.gpib_addr_spin.setValue(InstrumentConfig.DEFAULT_ADDRESS)
+
+
+	def set_disconnected(self):
+		self.init_button.setEnabled(True)
+		self.read_button.setEnabled(False)
+		self.mode_combo.setEnabled(False)
+		self.set_button.setEnabled(False)
+		#add function that hides all widgets etc
+
+	def set_connected(self):	
+		self.init_button.setEnabled(True)
+		self.read_button.setEnabled(True)
+		self.mode_combo.setEnabled(True)
+		self.set_button.setEnabled(True)	
+		#add fucntion that shows current mode widgets
+
+	def set_read(self, value: int):
+		self.measure_display_label.setText(str(value))
+	
+	def set_mode_visible(self, mode: str):
+		self.dcv_widget.setVisible(mode == "DCV")
+		# self.dci_widget.setVisible(mode == "DCI")
+		# self.acv_widget.setVisible(mode == "ACV")
+		# self.aci_widget.setVisible(mode == "ACI")
+
+	def set_status(self, status: str):
+		self.status_label.setText(status)

@@ -12,7 +12,8 @@ class AppController:
 	def _connect_signals(self):
 		self._view.read_requested.connect(self._on_read)
 		self._view.init_requested.connect(self._on_init)
-
+		self._view.mode_changed.connect(self._on_mode_change)
+	
 	def _on_read(self):
 		if not self._instr_ctrl.is_connected:
 			self._view.set_status("ERROR: not connected.")
@@ -22,8 +23,7 @@ class AppController:
 			print(value) # REMOVE
 			self._view.set_read(value)
 		except Exception as e:
-			self._view.set_status(f"Read error: {e}")
-		
+			self._view.set_status(f"Read error: {e}")	
 	
 	def _on_init(self):
 		if hasattr(self, '_instr_ctrl'):
@@ -33,4 +33,5 @@ class AppController:
 		self._view.set_connected()
 		self._view.set_status("Connected")
 	
-	
+	def _on_mode_change(self):
+		self._view.set_mode_visible(self._view.current_mode)
