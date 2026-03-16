@@ -18,6 +18,14 @@ AC_DIGIT_VAL = sorted(InstrumentConfig.VALID_RESOLUTIONS_AC_DIGITS)
 
 AUTO_FAST_VALUES = [1e-2, 1e-1, 1, 1e1, 1e2]  # values for autofast at 4,5,6,7,8 digits
 
+HZ=50
+MAX_TIME = 10
+MIN_TIME= 0.0001 
+MAX_NPLC= MAX_TIME*HZ 
+MIN_NPLC = 0.01 #corresponds to 0.0002 seconds, there is a descrepency that is due to machine specs
+
+
+
 
 def get_functions():
     return FUNCTIONS
@@ -42,3 +50,15 @@ def get_dc_digit_val():
 
 def get_ac_digit_val():
     return AC_DIGIT_VAL
+
+def get_max_nplc():
+    return MAX_NPLC
+
+def get_min_nplc():
+    return MIN_NPLC
+
+def get_max_time():
+    return MAX_TIME
+
+def get_min_time():
+    return MIN_TIME
