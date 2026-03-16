@@ -1,11 +1,13 @@
-from instrument_controller import InstrumentController 
+from instrument_controller_test import InstrumentControllerTest as InstrumentController 
 from main_window import MainWindow
+from dc_measurment_setup import DcMeasurmentWindow
 from settings import DcvSettings
 
 class AppController:
 
 	def __init__(self):
 		self._view = MainWindow()
+		self._pop_up = DcMeasurmentWindow()
 		self._view.set_disconnected()
 		self._connect_signals()
 		self._view.show()
@@ -14,11 +16,11 @@ class AppController:
 		self._on_dcv_setting_change()
 
 	def _connect_signals(self):
-		self._view.read_requested.connect(self._on_read)
 		self._view.init_requested.connect(self._on_init)
 		self._view.mode_changed.connect(self._on_mode_change)
+		self._view.read_requested.connect(self._on_read)
 		self._view.set_requested.connect(self._on_set)
-		#mode signals
+		self._view.measurment_setup_requested(self._on_measurment_setup_press)
 		self._view.dcv_signal.connect(self._on_dcv_setting_change)
 	
 	def _on_read(self):
@@ -51,10 +53,11 @@ class AppController:
 	def get_settings_from_mode(self, mode: str):
 		if mode == "DCV":
 			return self._dcv_settings
-		elif mode == "DCI":
-			return self._dci_settings
+		# elif mode == "DCI":
+		# 	return self._dci_settings
 
-
+	def _on_measurment_setup_press(self):
+		pass
 	def _on_dcv_setting_change(self):
 		self._dcv_settings = DcvSettings(
 			range_mode = "AUTO" if self._view.current_dcv_range == "AUTO" else "MAN",
