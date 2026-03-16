@@ -1,4 +1,4 @@
-from instrument_controller import InstrumentController
+from instrument_controller import InstrumentController 
 from main_window import MainWindow
 from settings import DcvSettings
 
@@ -10,11 +10,14 @@ class AppController:
 		self._connect_signals()
 		self._view.show()
 		self._instr_ctrl=InstrumentController()
+		# Initialize settings from current widget values
+		self._on_dcv_setting_change()
 
 	def _connect_signals(self):
 		self._view.read_requested.connect(self._on_read)
 		self._view.init_requested.connect(self._on_init)
 		self._view.mode_changed.connect(self._on_mode_change)
+		self._view.set_requested.connect(self._on_set)
 		#mode signals
 		self._view.dcv_signal.connect(self._on_dcv_setting_change)
 	
