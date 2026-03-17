@@ -9,7 +9,7 @@ main_window_loc = os.path.join(os.path.dirname(__file__), "ui", "mainwindow.ui")
 class MainWindow(QMainWindow):
 	
 	init_requested = pyqtSignal()
-	mode_changed = pyqtSignal(str)
+	mode_changed = pyqtSignal()
 	read_requested = pyqtSignal()
 	set_requested = pyqtSignal()
 	measurment_setup_requested = pyqtSignal()
@@ -74,9 +74,15 @@ class MainWindow(QMainWindow):
 		return self.mode_combo.currentText()
 
 	@property
-	def current_nplc(self)->float:
-		return float(self.nplc_label.currenctText())
+	def current_time(self)->float:
+		return float(self.time_label.currentText())
 	
+	@property
+	def current_nplc(self)->float:
+		return float(self.nplc_label.currentText())
+	
+
+
 	def set_disconnected(self):
 		self.init_button.setEnabled(True)
 		self.read_button.setEnabled(False)
@@ -102,3 +108,12 @@ class MainWindow(QMainWindow):
 
 	def set_status(self, status: str):
 		self.status_label.setText(status)
+
+	def set_aperture_mode(self, mode: str):
+		self.dcv_measure_setup_button.setText(mode)
+
+	def set_time_value(self, time: float):
+		self.time_label.setText(str(time))
+
+	def set_nplc_value(self, nplc: float):
+		self.nplc_label.setText(str(nplc))

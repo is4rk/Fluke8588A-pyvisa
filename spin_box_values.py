@@ -51,6 +51,9 @@ def get_dc_digit_val():
 def get_ac_digit_val():
     return AC_DIGIT_VAL
 
+def get_hz():
+    return HZ
+
 def get_max_nplc():
     return MAX_NPLC
 

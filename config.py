@@ -3,6 +3,10 @@ class InstrumentConfig:
     TIMEOUT_MS = 10_000
     NPLC_MAX = 500
     NPLC_MIN = 0.001  # 20 microseconds at 50Hz
+    
+    MAX_TIME = 10
+    MIN_TIME= 0.0001 
+
     GPIB_PREFIX = "GPIB0::"
     GPIB_SUFFIX = "::INSTR"
     ROOT_DCV = ":VOLT:DC"

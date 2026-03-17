@@ -20,9 +20,9 @@ class InstrumentControllerTest:
             'range_mode': 'AUTO',
             'range_val': '10.0',
             'resolution': 6,
-            'input_z': '10M',
+            'zin': '10M',
             'aperture_mode': 'AUTO',
-            'nplc': 1.0
+            'time': 1.0
         }
         logging.info("InstrumentControllerTest initialized (MOCK MODE)")
         print("[TEST] InstrumentControllerTest initialized (no hardware)")
@@ -126,14 +126,14 @@ class InstrumentControllerTest:
             'range_mode': 'AUTO',
             'range_val': '10.0',
             'resolution': 6,
-            'input_z': '10M',
+            'zin': '10M',
             'aperture_mode': 'AUTO',
-            'nplc': 1.0
+            'time': 1.0
         }
         print("[TEST] Reset complete!")
     
     def init_dcv(self, range_mode: str, range_val: float, resolution_val: int, 
-                 zin_val: str, aperture_mode: str, nplc_val: float) -> None:
+                 zin: str, aperture_mode: str, time: float) -> None:
         """
         Initialize DC voltage measurement mode.
         
@@ -141,9 +141,9 @@ class InstrumentControllerTest:
             range_mode: "AUTO" or "MAN"
             range_val: Range value
             resolution_val: Resolution in digits (4-8)
-            zin_val: Input impedance ("AUTO", "1M", or "10M")
+            zin: Input impedance ("AUTO", "1M", or "10M")
             aperture_mode: Aperture mode ("AUTO", "FAST", or "MAN")
-            nplc_val: NPLC value (0.001 to 500)
+            time: aperture time  value (0.0001 to 10)
             
         Raises:
             RuntimeError: If not connected to instrument
@@ -156,24 +156,24 @@ class InstrumentControllerTest:
         print(f"[TEST]   Range Mode: {range_mode}")
         print(f"[TEST]   Range Value: {range_val}")
         print(f"[TEST]   Resolution: {resolution_val} digits")
-        print(f"[TEST]   Input Impedance: {zin_val}")
+        print(f"[TEST]   Input Impedance: {zin}")
         print(f"[TEST]   Aperture Mode: {aperture_mode}")
-        print(f"[TEST]   NPLC: {nplc_val}")
+        print(f"[TEST]   Time: {time}")
         print(f"[TEST] Would send: :FUNC \"{InstrumentConfig.ROOT_DCV}\"")
         print(f"[TEST] Would send: {InstrumentConfig.ROOT_DCV}:RANG:AUTO {1 if range_mode == 'AUTO' else 0}")
         print(f"[TEST] Would send: {InstrumentConfig.ROOT_DCV}:RANG {range_val}")
         print(f"[TEST] Would send: {InstrumentConfig.ROOT_DCV}:RES {10**(-resolution_val)}")
-        print(f"[TEST] Would send: {InstrumentConfig.ROOT_DCV}:IMP {zin_val}")
+        print(f"[TEST] Would send: {InstrumentConfig.ROOT_DCV}:IMP {zin}")
         print(f"[TEST] Would send: {InstrumentConfig.ROOT_DCV}:APER:MODE {aperture_mode}")
-        print(f"[TEST] Would send: {InstrumentConfig.ROOT_DCV}:NPLC {nplc_val}")
+        print(f"[TEST] Would send: {InstrumentConfig.ROOT_DCV}:APER {time}")
         
         # Update mock state
         self._mock_state['range_mode'] = range_mode
         self._mock_state['range_val'] = str(range_val)
         self._mock_state['resolution'] = resolution_val
-        self._mock_state['input_z'] = zin_val
+        self._mock_state['zin'] = zin
         self._mock_state['aperture_mode'] = aperture_mode
-        self._mock_state['nplc'] = nplc_val
+        self._mock_state['time'] = time
         print("[TEST] DCV initialization complete!")
     
     def write(self, command: str) -> None:
@@ -246,17 +246,18 @@ class InstrumentControllerTest:
             print(f"[TEST]   Range Mode: {settings.range_mode}")
             print(f"[TEST]   Range Value: {settings.range_val}")
             print(f"[TEST]   Resolution: {settings.resolution}")
-            print(f"[TEST]   Input Z: {settings.input_z}")
-            print(f"[TEST]   NPLC: {settings.nplc}")
+            print(f"[TEST]   Input Z: {settings.zin}")
+            print(f"[TEST]   Aperture: {settings.aperture_mode}")            
+            print(f"[TEST]   Time: {settings.time}")
             
             # Call init_dcv
             self.init_dcv(
                 range_mode=settings.range_mode,
                 range_val=settings.range_val,
                 resolution_val=settings.resolution,
-                zin_val=settings.input_z,
+                zin=settings.zin,
                 aperture_mode="AUTO",  # TO CHANGE
-                nplc_val=settings.nplc
+                time=settings.time
             )
             
             print("[TEST] Reading back actual settings from instrument...")
@@ -265,8 +266,9 @@ class InstrumentControllerTest:
                 range_mode=self._mock_state['range_mode'],
                 range_val=self._mock_state['range_val'],
                 resolution=self._mock_state['resolution'],
-                input_z=self._mock_state['input_z'],
-                nplc=self._mock_state['nplc']
+                zin=self._mock_state['zin'],
+                aperture_mode=self._mock_state['aperture_mode'],
+                time=self._mock_state['time']
             )
             
             print(f"[TEST] Actual settings from instrument: {actual_settings}")

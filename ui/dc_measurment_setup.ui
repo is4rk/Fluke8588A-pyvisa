@@ -96,7 +96,7 @@
     </sizepolicy>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::StandardButton::Apply|QDialogButtonBox::StandardButton::Cancel</set>
+    <set>QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::Cancel</set>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">

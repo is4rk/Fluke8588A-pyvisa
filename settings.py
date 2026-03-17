@@ -6,4 +6,5 @@ class DcvSettings:
     range_val:  str
     resolution: int
     zin:        str
-    nplc:       float
+    aperture_mode: str
+    time:       float 

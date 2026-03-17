@@ -218,14 +218,14 @@
      <item row="1" column="3">
       <widget class="QPushButton" name="dcv_measure_setup_button">
        <property name="text">
-        <string/>
+        <string>CLICK</string>
        </property>
       </widget>
      </item>
      <item row="2" column="3">
       <widget class="QLabel" name="time_label">
        <property name="text">
-        <string>TextLabel</string>
+        <string>---</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -235,7 +235,7 @@
      <item row="3" column="3">
       <widget class="QLabel" name="nplc_label">
        <property name="text">
-        <string>TextLabel</string>
+        <string>---</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -314,7 +314,7 @@
      <x>0</x>
      <y>0</y>
      <width>833</width>
-     <height>23</height>
+     <height>30</height>
     </rect>
    </property>
   </widget>

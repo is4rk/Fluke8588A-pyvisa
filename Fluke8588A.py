@@ -150,7 +150,7 @@ class Fluke8588A():
 		Output:
 			set value
 		'''
-		return self.query(root+":NPLC?")
+		return self.query(root+":APER?")
 	def setNplc(self, root, value):
 		'''
 		Sets NPLC value for given root.
@@ -161,12 +161,12 @@ class Fluke8588A():
 		Output:
 			set value as string
 		'''
-		if not InstrumentConfig.NPLC_MIN <= float(value) <= InstrumentConfig.PLC_MAX:
+		if not InstrumentConfig.MIN_TIME <= float(value) <= InstrumentConfig.MAX_TIME:
 			raise ValueError(
-				f"NPLC must be between {InstrumentConfig.NPLC_MIN} "
-				f"and {InstrumentConfig.PLC_MAX}, got {value}"
+				f"TIME must be between {InstrumentConfig.MIN_TIME} "
+				f"and {InstrumentConfig.MAX_TIME}, got {value}"
 			)
-		self.write(root + ":NPLC " + str(value))
+		self.write(root + ":APER " + str(value))
 		return self.getNplc(root)
 
 	def getImp(self, root):
