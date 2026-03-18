@@ -18,7 +18,7 @@ class Fluke8588A():
 	init_dcv(range_mode, range_val, resolution_val, zin_val, aperture_mode, nplc_val) : initialize DC voltage mode
 	setRange(root, value) / getRange(root) : set/get measurement range
 	setResolution(root, value) / getResolution(root) : set/get resolution
-	setNplc(root, value) / getNplc(root) : set/get NPLC value (1plc=50Hz in EU)
+	setTime(root, value) / getTime(root) : set/get NPLC value (1plc=50Hz in EU)
 	setImpedence(root, value) / getImp(root) : set/get input impedance
 	setRangeMode(root, value) / getRangeMode(root) : set/get range mode ("AUTO" or "MAN")
 	setApertureMode(root, value) / getApertureMode(root) : set/get aperture mode ("AUTO", "FAST", or "MAN")
@@ -103,7 +103,7 @@ class Fluke8588A():
 		self._instr.close()
 		self.is_connected = False
 
-	def init_dcv(self, range_mode, range_val,  resolution_val, zin_val, aperture_mode, nplc_val):
+	def init_dcv(self, range_mode, range_val,  resolution_val, zin_val, aperture_mode, time_val):
 		'''
 		Set the machine to dcv mode, and set up parameters
 		'''
@@ -114,7 +114,19 @@ class Fluke8588A():
 		self.setResolution(root, resolution_val)
 		self.setImpedence(root, zin_val)		
 		self.setApertureMode(root, aperture_mode)
-		self.setNplc(root, nplc_val)
+		self.setTime(root, time_val)
+
+	def init_dci(self, range_mode, range_val, resolution_val, aperture_mode, time_val):
+		root=InstrumentConfig.ROOT_DCI
+		self.write(":FUNC \"" + root + "\"")
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setApertureMode(root, aperture_mode)
+		self.setTime(root, time_val)
+
+	def init_acv(self, counter_bit_limit, coupling_mode):
+		pass
 
 	def getApertureMode(self, root):
 		'''
@@ -142,7 +154,7 @@ class Fluke8588A():
 		self.write(root + ":APER:MODE " + str(value))
 		return self.getApertureMode(root)
 	
-	def getNplc(self, root):
+	def getTime(self, root):
 		'''
 		Get Nplc value for given root
 		Input:
@@ -151,7 +163,7 @@ class Fluke8588A():
 			set value
 		'''
 		return self.query(root+":APER?")
-	def setNplc(self, root, value):
+	def setTime(self, root, value):
 		'''
 		Sets NPLC value for given root.
 		1 PLC = 20ms at 50Hz (EU).
@@ -167,7 +179,7 @@ class Fluke8588A():
 				f"and {InstrumentConfig.MAX_TIME}, got {value}"
 			)
 		self.write(root + ":APER " + str(value))
-		return self.getNplc(root)
+		return self.getTime(root)
 
 	def getImp(self, root):
 		'''
