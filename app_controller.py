@@ -12,12 +12,6 @@ class AppController:
 		self._connect_signals()
 		self._view.show()
 		self._instr_ctrl=InstrumentController()
-		# Initialize popup signal values
-		self._current_aperture_mode = "AUTO"
-		self._current_time = 0.01
-		self._current_nplc = 10.0
-		# Initialize settings from current widget values
-		self._on_dcv_setting_change()
 
 	def _connect_signals(self):
 		self._view.init_requested.connect(self._on_init)
@@ -26,11 +20,11 @@ class AppController:
 		self._view.set_requested.connect(self._on_set)
 		self._view.measurment_setup_requested.connect(self._on_measurment_setup_press)
 		self._view.dcv_signal.connect(self._on_dcv_setting_change)
-		# Connect popup signals
+		self._view.dci_signal.connect(self._on_dci_setting_change)
 		self._pop_up.mode_select.connect(self._on_aperture_mode_changed)
 		self._pop_up.time_select.connect(self._on_time_changed)
 		self._pop_up.nplc_select.connect(self._on_nplc_changed)
-	
+		 
 	def _on_read(self):
 		if not self._instr_ctrl.is_connected():
 			self._view.set_status("ERROR: not connected.")
@@ -61,6 +55,8 @@ class AppController:
 	def get_settings_from_mode(self, mode: str):
 		if mode == "DCV":
 			return self._dcv_settings
+		if mode == "DCI":
+			return self._dci_settings
 		# elif mode == "DCI":
 		# 	return self._dci_settings
 
@@ -84,15 +80,11 @@ class AppController:
 
 	def _set_ui_aperture_settings(self):
 		self._view.set_aperture_mode()
-		self._view.set_time_value()\
+		self._view.set_time_value()
 		
 	
-	def _on_dcv_setting_change(self):
-		self._dcv_settings = DcvSettings(
-			range_mode = "AUTO" if self._view.current_dcv_range == "AUTO" else "MAN",
-			range_val  = self._view.current_dcv_range,
-			resolution = self._view.current_dcv_resolution,
-			zin        = self._view.current_dcv_zin,
-			aperture_mode = self._current_aperture_mode,
-			time       = self._current_time, 
-		)
+	def _on_dcv_setting_change(self, settings: DcvSettings):
+		self._dcv_settings = settings
+	
+	def	_on_dci_setting_change(self, settings: DciSettings):
+		self._dci_settings= settings

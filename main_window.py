@@ -1,9 +1,10 @@
 from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QMainWindow, QWidget
+from PyQt6.QtWidgets import QMainWindow
 import os
 from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_zin, get_dc_digit_val
 from config import InstrumentConfig
+from settings import DcvSettings, DciSettings
 main_window_loc = os.path.join(os.path.dirname(__file__), "ui", "mainwindow.ui")
 
 class MainWindow(QMainWindow):
@@ -13,19 +14,16 @@ class MainWindow(QMainWindow):
 	read_requested = pyqtSignal()
 	set_requested = pyqtSignal()
 	measurment_setup_requested = pyqtSignal()
-	dcv_signal = pyqtSignal()
+	dcv_signal = pyqtSignal(DcvSettings)
+	dci_signal = pyqtSignal(DciSettings)
 
 	def __init__(self):
 		super().__init__()
 		uic.loadUi(main_window_loc, self)
-		self._init_visibility()
 		self.set_mode_visible(self.current_mode)
 		self._connect_signals()
 		self._init_widgets()
 
-	def _init_visibility(self):
-		pass
-		#make it hide mode_widgets
 		
 	def _connect_signals(self):
 		#always visible
@@ -33,25 +31,37 @@ class MainWindow(QMainWindow):
 		self.mode_combo.currentTextChanged.connect(self.mode_changed)
 		self.read_button.pressed.connect(self.read_requested)
 		self.set_button.pressed.connect(self.set_requested) #to be 
-		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested) #to be
 		#dcv signals
-		self.dcv_range_combo.currentTextChanged.connect(self.dcv_signal)
-		self.dcv_res_spin.valueChanged.connect(self.dcv_signal)
-		self.dcv_zin_combo.currentTextChanged.connect(self.dcv_signal)
+		self.dcv_range_combo.currentTextChanged.connect(self._on_dcv_changed)
+		self.dcv_res_spin.valueChanged.connect(self._on_dcv_changed)
+		self.dcv_zin_combo.currentTextChanged.connect(self._on_dcv_changed)
+		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested) #to be
+		#dci signals
+		self.dci_range_combo.currentTextChanged.connect(self._on_dci_changed)
+		self.dci_res_spin.valueChanged.connect(self._on_dci_changed)
+		self.dci_measure_setup_button.pressed.connect(self.measurment_setup_requested) #to be
 
 	def _init_widgets(self):
-		self.mode_combo.addItems(get_functions())
-		self.dcv_range_combo.addItems(get_dcv_range())
-		self.dci_range_combo.addItems(get_dci_range())
-		self.dcv_zin_combo.addItems(get_dcv_zin())
-		self.dcv_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
-		self.dci_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
 		self.gpib_addr_spin.setRange(0, 30)
 		self.gpib_addr_spin.setValue(InstrumentConfig.DEFAULT_ADDRESS)
+		self.mode_combo.addItems(get_functions())
+		#dcv
+		self.dcv_range_combo.addItems(get_dcv_range())
+		self.dcv_zin_combo.addItems(get_dcv_zin())
+		self.dcv_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
+		#dci
+		self.dci_range_combo.addItems(get_dci_range())
+		self.dci_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
+		
 
 	@property
 	def current_gpib_address(self)->int:
 		return self.gpib_addr_spin.value()
+
+	@property
+	def current_mode(self)->str:
+		return self.mode_combo.currentText()
+
 
 	@property
 	def current_dcv_range(self)->str:
@@ -70,16 +80,12 @@ class MainWindow(QMainWindow):
 		return self.dcv_zin_combo.currentText()
 
 	@property
-	def current_mode(self)->str:
-		return self.mode_combo.currentText()
-
-	@property
 	def current_time(self)->float:
-		return float(self.time_label.currentText())
+		return float(self.dcv_time_label.currentText())
 	
 	@property
 	def current_nplc(self)->float:
-		return float(self.nplc_label.currentText())
+		return float(self.dcv_nplc_label.currentText())
 	
 
 
@@ -102,6 +108,7 @@ class MainWindow(QMainWindow):
 	
 	def set_mode_visible(self, mode: str):
 		self.dcv_widget.setVisible(mode == "DCV")
+		self.dci_widget.setVisible(mode=="DCI")
 		# self.dci_widget.setVisible(mode == "DCI")
 		# self.acv_widget.setVisible(mode == "ACV")
 		# self.aci_widget.setVisible(mode == "ACI")
@@ -113,7 +120,28 @@ class MainWindow(QMainWindow):
 		self.dcv_measure_setup_button.setText(mode)
 
 	def set_time_value(self, time: float):
-		self.time_label.setText(str(time))
+		self.dcv_time_label.setText(str(time))
 
 	def set_nplc_value(self, nplc: float):
-		self.nplc_label.setText(str(nplc))
+		self.dcv_nplc_label.setText(str(nplc))
+
+	def _on_dcv_changed(self):
+		self.dcv_signal.emit(DcvSettings(
+			range_mode = "AUTO" if self.dcv_range_combo.currentText() == "AUTO" else "MAN",
+			range_val = self.dcv_range_combo.currentText(),
+			resolution = self.dcv_res_spin.value(),
+			zin = self.dcv_zin_combo.currentText(),
+			aperture_mode= self.dcv_measure_setup_button.text(),
+			time = self.dcv_time_label.text()
+    		)
+		)
+		
+	def _on_dci_changed(self):
+		self.dci_signal.emit(DciSettings(
+			range_mode = "AUTO" if self.dci_range_combo.currentText() == "AUTO" else "MAN",
+			range_val = self.dci_range_combo.currentText(),
+			resolution = self.dci_res_spin.value(),
+			aperture_mode = self.dci_measure_setup_button.text(),
+			time = self.dci_time_label.text()
+		)
+	)
