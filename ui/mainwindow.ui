@@ -166,7 +166,7 @@
       <x>20</x>
       <y>40</y>
       <width>98</width>
-      <height>108</height>
+      <height>191</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -176,7 +176,21 @@
      <item>
       <widget class="QPushButton" name="read_button">
        <property name="text">
-        <string>Read</string>
+        <string>Singl. read</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="start_button">
+       <property name="text">
+        <string>Start read</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="stop_button">
+       <property name="text">
+        <string>Stop read</string>
        </property>
       </widget>
      </item>

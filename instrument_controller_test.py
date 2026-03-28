@@ -1,9 +1,9 @@
 ## TESTER TO BE USED IF NOT ABLE TO CONNECT TO MACHINE
 from typing import Optional
 import logging
+import random
 from config import InstrumentConfig
 from settings import DcvSettings
-
 
 class InstrumentControllerTest:
     """
@@ -215,7 +215,12 @@ class InstrumentControllerTest:
         if "*IDN?" in command:
             return "FLUKE,8588A,12345678,1.0.0.0"
         elif ":READ?" in command:
-            return "+1.234567E+00"
+            mock_value = random.uniform(0.995, 1.005)
+            return f"+{mock_value:.6E}"
+        elif "FETCh?" in command or "FETCH?" in command:
+            # Continuous reading — simulate small noise around 1V
+            mock_value = random.uniform(0.995, 1.005)
+            return f"+{mock_value:.6E}"
         else:
             return "OK"
 

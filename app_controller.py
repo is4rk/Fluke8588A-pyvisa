@@ -2,6 +2,7 @@ from instrument_controller_test import InstrumentControllerTest as InstrumentCon
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
 from settings import DcvSettings
+from measurment_controller import ReadingThread
 
 class AppController:
 
@@ -12,6 +13,7 @@ class AppController:
 		self._connect_signals()
 		self._view.show()
 		self._instr_ctrl=InstrumentController()
+		self._reading_thread= None
 
 	def _connect_signals(self):
 		self._view.init_requested.connect(self._on_init)
@@ -24,7 +26,9 @@ class AppController:
 		self._pop_up.mode_select.connect(self._on_aperture_mode_changed)
 		self._pop_up.time_select.connect(self._on_time_changed)
 		self._pop_up.nplc_select.connect(self._on_nplc_changed)
-		 
+		self._view.continuous_start_requested.connect(self._on_continuous_start)
+		self._view.continuous_stop_requested.connect(self._on_continuous_stop)
+
 	def _on_read(self):
 		if not self._instr_ctrl.is_connected():
 			self._view.set_status("ERROR: not connected.")
@@ -88,3 +92,20 @@ class AppController:
 	
 	def	_on_dci_setting_change(self, settings: DciSettings):
 		self._dci_settings= settings
+
+	def _on_continuous_start(self):
+		if self._reading_thread is not None:
+			return
+		self._reading_thread=ReadingThread(self._instr_ctrl)
+		self._reading_thread.reading_ready.connect(self._view.set_read) #emits from measurment_controller are redirected to view
+		self._reading_thread.start()
+		self._view.stop_button.setEnabled(True)
+		self._view.set_status("Continuous reading started.")
+		
+
+	def _on_continuous_stop(self):
+		if self._reading_thread is None:
+			return
+		self._reading_thread.stop()
+		self._reading_thread = None
+		self._view.set_status("Stopped.")

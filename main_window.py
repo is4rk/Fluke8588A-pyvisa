@@ -16,6 +16,9 @@ class MainWindow(QMainWindow):
 	measurment_setup_requested = pyqtSignal()
 	dcv_signal = pyqtSignal(DcvSettings)
 	dci_signal = pyqtSignal(DciSettings)
+	continuous_start_requested = pyqtSignal()
+	continuous_stop_requested  = pyqtSignal()
+
 
 	def __init__(self):
 		super().__init__()
@@ -29,7 +32,6 @@ class MainWindow(QMainWindow):
 		#always visible
 		self.init_button.pressed.connect(self.init_requested)
 		self.mode_combo.currentTextChanged.connect(self.mode_changed)
-		self.read_button.pressed.connect(self.read_requested)
 		self.set_button.pressed.connect(self.set_requested) #to be 
 		#dcv signals
 		self.dcv_range_combo.currentTextChanged.connect(self._on_dcv_changed)
@@ -40,6 +42,10 @@ class MainWindow(QMainWindow):
 		self.dci_range_combo.currentTextChanged.connect(self._on_dci_changed)
 		self.dci_res_spin.valueChanged.connect(self._on_dci_changed)
 		self.dci_measure_setup_button.pressed.connect(self.measurment_setup_requested) #to be
+		#reading 
+		self.read_button.pressed.connect(self.read_requested)
+		self.start_button.pressed.connect(self.continuous_start_requested)
+		self.stop_button.pressed.connect(self.continuous_stop_requested)
 
 	def _init_widgets(self):
 		self.gpib_addr_spin.setRange(0, 30)
@@ -53,6 +59,8 @@ class MainWindow(QMainWindow):
 		self.dci_range_combo.addItems(get_dci_range())
 		self.dci_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
 		
+		#reading
+		self.stop_button.setEnabled(False)
 
 	@property
 	def current_gpib_address(self)->int:
