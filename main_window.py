@@ -5,6 +5,7 @@ import os
 from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_zin, get_dc_digit_val
 from config import InstrumentConfig
 from settings import DcvSettings, DciSettings
+from plot_widget import DmmPlotWidget
 main_window_loc = os.path.join(os.path.dirname(__file__), "ui", "mainwindow.ui")
 
 class MainWindow(QMainWindow):
@@ -26,7 +27,6 @@ class MainWindow(QMainWindow):
 		self.set_mode_visible(self.current_mode)
 		self._connect_signals()
 		self._init_widgets()
-
 		
 	def _connect_signals(self):
 		#always visible

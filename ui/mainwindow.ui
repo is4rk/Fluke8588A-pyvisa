@@ -33,8 +33,8 @@
    <widget class="QLabel" name="measure_display_label">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>110</y>
+      <x>560</x>
+      <y>10</y>
       <width>241</width>
       <height>51</height>
      </rect>
@@ -282,12 +282,23 @@
      </item>
     </layout>
    </widget>
+   <widget class="DmmPlotWidget" name="plot_widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>100</y>
+      <width>431</width>
+      <height>151</height>
+     </rect>
+    </property>
+   </widget>
    <zorder>mode_read_set_widget</zorder>
    <zorder>status_label</zorder>
    <zorder>measure_display_label</zorder>
    <zorder>dcv_widget</zorder>
    <zorder>init_widget</zorder>
    <zorder>dci_widget</zorder>
+   <zorder>plot_widget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -301,6 +312,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DmmPlotWidget</class>
+   <extends>QWidget</extends>
+   <header>plot_widget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
