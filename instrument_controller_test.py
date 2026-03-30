@@ -2,6 +2,7 @@
 from typing import Optional
 import logging
 import random
+import time
 from config import InstrumentConfig
 from settings import DcvSettings
 
@@ -219,6 +220,7 @@ class InstrumentControllerTest:
             return f"+{mock_value:.6E}"
         elif "FETCh?" in command or "FETCH?" in command:
             # Continuous reading — simulate small noise around 1V
+            time.sleep(0.1)
             mock_value = random.uniform(0.995, 1.005)
             return f"+{mock_value:.6E}"
         else:

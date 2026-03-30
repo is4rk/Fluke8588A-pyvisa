@@ -1,7 +1,7 @@
 from instrument_controller_test import InstrumentControllerTest as InstrumentController 
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
-from settings import DcvSettings
+from settings import DcvSettings, DciSettings
 from measurment_controller import ReadingThread
 
 class AppController:
@@ -99,6 +99,7 @@ class AppController:
 		self._reading_thread=ReadingThread(self._instr_ctrl)
 		self._reading_thread.reading_ready.connect(self._view.set_read) #emits from measurment_controller are redirected to view
 		self._reading_thread.start()
+		self._view.start_button.setEnabled(False)
 		self._view.stop_button.setEnabled(True)
 		self._view.set_status("Continuous reading started.")
 		
@@ -109,3 +110,5 @@ class AppController:
 		self._reading_thread.stop()
 		self._reading_thread = None
 		self._view.set_status("Stopped.")
+		self._view.stop_button.setEnabled(False)
+		self._view.start_button.setEnabled(True)

@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
 	dci_signal = pyqtSignal(DciSettings)
 	continuous_start_requested = pyqtSignal()
 	continuous_stop_requested  = pyqtSignal()
-
+	append_value = pyqtSignal(float)	
 
 	def __init__(self):
 		super().__init__()
@@ -27,6 +27,11 @@ class MainWindow(QMainWindow):
 		self.set_mode_visible(self.current_mode)
 		self._connect_signals()
 		self._init_widgets()
+		
+		#TO BE MOVED TO OWN MODULE
+		self.seconds:float=0.0
+		self.data =[]
+		self.time=[]
 		
 	def _connect_signals(self):
 		#always visible
@@ -61,6 +66,9 @@ class MainWindow(QMainWindow):
 		
 		#reading
 		self.stop_button.setEnabled(False)
+		self.start_button.setEnabled(False)
+		#plotting - connect signal to plot widget
+		self.plot_widget._connect_signals(self)
 
 	@property
 	def current_gpib_address(self)->int:
@@ -102,17 +110,27 @@ class MainWindow(QMainWindow):
 		self.read_button.setEnabled(False)
 		self.mode_combo.setEnabled(False)
 		self.set_button.setEnabled(False)
+		self.start_button.setEnabled(False)	
+		self.stop_button.setEnabled(False)
+
 		#add function that hides all widgets etc
 
 	def set_connected(self):	
 		self.init_button.setEnabled(True)
 		self.read_button.setEnabled(True)
 		self.mode_combo.setEnabled(True)
-		self.set_button.setEnabled(True)	
+		self.set_button.setEnabled(True)
+		self.start_button.setEnabled(True)	
+		self.stop_button.setEnabled(False)
 		#add fucntion that shows current mode widgets
 
 	def set_read(self, value: int):
 		self.measure_display_label.setText(str(value))
+		self.seconds+=0.1 #to be changed, by using import time
+		self.time.append(self.seconds)
+		self.data.append(value)
+		self.append_value.emit(float(value))
+		# plotData()
 	
 	def set_mode_visible(self, mode: str):
 		self.dcv_widget.setVisible(mode == "DCV")
