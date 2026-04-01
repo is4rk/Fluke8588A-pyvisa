@@ -18,6 +18,7 @@ class DmmPlotWidget(pg.PlotWidget):
 	def _connect_signals(self, main_window=None):
 		if main_window and hasattr(main_window, 'append_value'):
 			main_window.append_value.connect(self.addValue)
+	
 	def drawTest(self):
 		# Plot initial empty data
 		self.plot(self.time, self.data)

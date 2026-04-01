@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
 	read_requested = pyqtSignal()
 	set_requested = pyqtSignal()
 	measurment_setup_requested = pyqtSignal()
+	trigger_requested = pyqtSignal()
 	dcv_signal = pyqtSignal(DcvSettings)
 	dci_signal = pyqtSignal(DciSettings)
 	continuous_start_requested = pyqtSignal()
@@ -28,16 +29,11 @@ class MainWindow(QMainWindow):
 		self._connect_signals()
 		self._init_widgets()
 		
-		#TO BE MOVED TO OWN MODULE
-		self.seconds:float=0.0
-		self.data =[]
-		self.time=[]
-		
 	def _connect_signals(self):
-		#always visible
+		#init set mode
 		self.init_button.pressed.connect(self.init_requested)
 		self.mode_combo.currentTextChanged.connect(self.mode_changed)
-		self.set_button.pressed.connect(self.set_requested) #to be 
+		self.set_button.pressed.connect(self.set_requested) 
 		#dcv signals
 		self.dcv_range_combo.currentTextChanged.connect(self._on_dcv_changed)
 		self.dcv_res_spin.valueChanged.connect(self._on_dcv_changed)
@@ -51,6 +47,9 @@ class MainWindow(QMainWindow):
 		self.read_button.pressed.connect(self.read_requested)
 		self.start_button.pressed.connect(self.continuous_start_requested)
 		self.stop_button.pressed.connect(self.continuous_stop_requested)
+		#trigger
+		self.trigger_button.pressed.connect(self.trigger_requested) #to be
+		 
 
 	def _init_widgets(self):
 		self.gpib_addr_spin.setRange(0, 30)
@@ -126,11 +125,7 @@ class MainWindow(QMainWindow):
 
 	def set_read(self, value: int):
 		self.measure_display_label.setText(str(value))
-		self.seconds+=0.1 #to be changed, by using import time
-		self.time.append(self.seconds)
-		self.data.append(value)
 		self.append_value.emit(float(value))
-		# plotData()
 	
 	def set_mode_visible(self, mode: str):
 		self.dcv_widget.setVisible(mode == "DCV")

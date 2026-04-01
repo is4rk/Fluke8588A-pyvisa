@@ -292,6 +292,19 @@
      </rect>
     </property>
    </widget>
+   <widget class="QPushButton" name="trigger_button">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>20</y>
+      <width>88</width>
+      <height>34</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Trigger</string>
+    </property>
+   </widget>
    <zorder>mode_read_set_widget</zorder>
    <zorder>status_label</zorder>
    <zorder>measure_display_label</zorder>
@@ -299,6 +312,7 @@
    <zorder>init_widget</zorder>
    <zorder>dci_widget</zorder>
    <zorder>plot_widget</zorder>
+   <zorder>trigger_button</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

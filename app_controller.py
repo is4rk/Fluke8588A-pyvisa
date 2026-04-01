@@ -1,6 +1,7 @@
 from instrument_controller_test import InstrumentControllerTest as InstrumentController 
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
+from trigger_setup import TriggerWindow
 from settings import DcvSettings, DciSettings
 from measurment_controller import ReadingThread
 
@@ -8,7 +9,8 @@ class AppController:
 
 	def __init__(self):
 		self._view = MainWindow()
-		self._pop_up = DcMeasurmentWindow()
+		self._meas_pop_up = DcMeasurmentWindow()
+		self._trigger_pop_up = TriggerWindow()
 		self._view.set_disconnected()
 		self._connect_signals()
 		self._view.show()
@@ -23,9 +25,9 @@ class AppController:
 		self._view.measurment_setup_requested.connect(self._on_measurment_setup_press)
 		self._view.dcv_signal.connect(self._on_dcv_setting_change)
 		self._view.dci_signal.connect(self._on_dci_setting_change)
-		self._pop_up.mode_select.connect(self._on_aperture_mode_changed)
-		self._pop_up.time_select.connect(self._on_time_changed)
-		self._pop_up.nplc_select.connect(self._on_nplc_changed)
+		self._meas_pop_up.mode_select.connect(self._on_aperture_mode_changed)
+		self._meas_pop_up.time_select.connect(self._on_time_changed)
+		self._meas_pop_up.nplc_select.connect(self._on_nplc_changed)
 		self._view.continuous_start_requested.connect(self._on_continuous_start)
 		self._view.continuous_stop_requested.connect(self._on_continuous_stop)
 
@@ -65,8 +67,10 @@ class AppController:
 		# 	return self._dci_settings
 
 	def _on_measurment_setup_press(self):
-		self._pop_up.show()
+		self._meas_pop_up.show()
 
+	def _on_trigger_press(self):
+		self._trigger_pop_up.show()
 	def _on_aperture_mode_changed(self, mode):
 		self._current_aperture_mode = mode
 		self._view.set_aperture_mode(mode)

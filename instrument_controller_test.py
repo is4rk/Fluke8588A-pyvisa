@@ -216,12 +216,12 @@ class InstrumentControllerTest:
         if "*IDN?" in command:
             return "FLUKE,8588A,12345678,1.0.0.0"
         elif ":READ?" in command:
-            mock_value = random.uniform(0.995, 1.005)
+            mock_value = random.uniform(0, 1.005)
             return f"+{mock_value:.6E}"
         elif "FETCh?" in command or "FETCH?" in command:
             # Continuous reading — simulate small noise around 1V
             time.sleep(0.1)
-            mock_value = random.uniform(0.995, 1.005)
+            mock_value = random.uniform(0, 1.005)
             return f"+{mock_value:.6E}"
         else:
             return "OK"
