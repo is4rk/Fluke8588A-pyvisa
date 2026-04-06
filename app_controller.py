@@ -10,7 +10,7 @@ class AppController:
 	def __init__(self):
 		self._view = MainWindow()
 		self._meas_pop_up = DcMeasurmentWindow()
-		self._trigger_pop_up = TriggerWindow()
+		# self._trigger_pop_up = TriggerWindow()
 		self._view.set_disconnected()
 		self._connect_signals()
 		self._view.show()
