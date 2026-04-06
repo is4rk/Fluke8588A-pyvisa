@@ -1,0 +1,118 @@
+from instrument_controller_test import InstrumentControllerTest as InstrumentController 
+from main_window import MainWindow
+from dc_measurment_setup import DcMeasurmentWindow
+from trigger_setup import TriggerWindow
+from settings import DcvSettings, DciSettings
+from measurment_controller import ReadingThread
+
+class AppController:
+
+	def __init__(self):
+		self._view = MainWindow()
+		self._meas_pop_up = DcMeasurmentWindow()
+		# self._trigger_pop_up = TriggerWindow()
+		self._view.set_disconnected()
+		self._connect_signals()
+		self._view.show()
+		self._instr_ctrl=InstrumentController()
+		self._reading_thread= None
+
+	def _connect_signals(self):
+		self._view.init_requested.connect(self._on_init)
+		self._view.mode_changed.connect(self._on_mode_change)
+		self._view.read_requested.connect(self._on_read)
+		self._view.set_requested.connect(self._on_set)
+		self._view.measurment_setup_requested.connect(self._on_measurment_setup_press)
+		self._view.dcv_signal.connect(self._on_dcv_setting_change)
+		self._view.dci_signal.connect(self._on_dci_setting_change)
+		self._meas_pop_up.mode_select.connect(self._on_aperture_mode_changed)
+		self._meas_pop_up.time_select.connect(self._on_time_changed)
+		self._meas_pop_up.nplc_select.connect(self._on_nplc_changed)
+		self._view.continuous_start_requested.connect(self._on_continuous_start)
+		self._view.continuous_stop_requested.connect(self._on_continuous_stop)
+
+	def _on_read(self):
+		if not self._instr_ctrl.is_connected():
+			self._view.set_status("ERROR: not connected.")
+			return
+		try:
+			value=self._instr_ctrl.read()
+			print(value) # REMOVE
+			self._view.set_read(value)
+		except Exception as e:
+			self._view.set_status(f"Read error: {e}")	
+	
+	def _on_init(self):
+		if hasattr(self, '_instr_ctrl'):
+			if self._instr_ctrl.is_connected():
+				self._instr_ctrl.disconnect()
+		self._instr_ctrl.connect(self._view.current_gpib_address)
+		self._view.set_connected()
+		self._view.set_status("Connected")
+	
+	def _on_mode_change(self):
+		self._view.set_mode_visible(self._view.current_mode)
+
+	def _on_set(self):
+		mode=self._view.current_mode
+		new_settings=self.get_settings_from_mode(mode)
+		self._instr_ctrl.set(mode, new_settings)
+
+	def get_settings_from_mode(self, mode: str):
+		if mode == "DCV":
+			return self._dcv_settings
+		if mode == "DCI":
+			return self._dci_settings
+		# elif mode == "DCI":
+		# 	return self._dci_settings
+
+	def _on_measurment_setup_press(self):
+		self._meas_pop_up.show()
+
+	def _on_trigger_press(self):
+		self._trigger_pop_up.show()
+	def _on_aperture_mode_changed(self, mode):
+		self._current_aperture_mode = mode
+		self._view.set_aperture_mode(mode)
+		self._on_dcv_setting_change()
+
+	def _on_time_changed(self, time):
+		self._current_time = time
+		self._view.set_time_value(time)
+		self._on_dcv_setting_change()
+
+	def _on_nplc_changed(self, nplc):
+		self._current_nplc = nplc
+		self._view.set_nplc_value(nplc)
+		self._on_dcv_setting_change()
+
+	def _set_ui_aperture_settings(self):
+		self._view.set_aperture_mode()
+		self._view.set_time_value()
+		
+	
+	def _on_dcv_setting_change(self, settings: DcvSettings):
+		self._dcv_settings = settings
+	
+	def	_on_dci_setting_change(self, settings: DciSettings):
+		self._dci_settings= settings
+
+	def _on_continuous_start(self):
+		if self._reading_thread is not None:
+			return
+		self._reading_thread=ReadingThread(self._instr_ctrl)
+		self._reading_thread.reading_ready.connect(self._view.set_read) #emits from measurment_controller are redirected to view
+		self._reading_thread.start()
+		self._view.start_button.setEnabled(False)
+		self._view.stop_button.setEnabled(True)
+		self._view.set_status("Continuous reading started.")
+		
+
+	def _on_continuous_stop(self):
+		if self._reading_thread is None:
+			return
+		self._reading_thread.stop()
+		self._reading_thread = None
+		self._view.set_status("Stopped.")
+		self._view.stop_button.setEnabled(False)
+		self._view.start_button.setEnabled(True)
