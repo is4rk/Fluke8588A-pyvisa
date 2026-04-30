@@ -125,9 +125,6 @@ class Fluke8588A():
 		self.setApertureMode(root, aperture_mode)
 		self.setTime(root, time_val)
 
-	def init_acv(self, counter_bit_limit, coupling_mode):
-		pass
-
 	def init_aci(self, blimit, counter_Coupling, counter_gate, coupling, filter, range_mode, range_val, resolution_val, secondary, secondary_method):
 		'''
 		Set the machine to aci mode, and set up parameters
@@ -410,9 +407,6 @@ class Fluke8588A():
 		self.write(f"{root}:FILTer {value}")
 		return self.getFilter(root)
 
-	def setSecondary(self, root, value:str):
-		self.write(f"{root}:SECondary {value}")
-
 	def getCounterGate(self, root):
 		return self.query(f"{root}:COUNter:GATE?")
 
@@ -422,7 +416,10 @@ class Fluke8588A():
 
 	def getSecondary(self, root):
 		return self.query(f"{root}:SECondary?")
-
+	def setSecondary(self, root, value:str):
+		self.write(f"{root}:SECondary {value}")
+		return self.getSecondary(root)
+	
 	def getSecondaryMethod(self, root):
 		return self.query(f"{root}:SECondary:METHod?")
 
@@ -472,3 +469,28 @@ class Fluke8588A():
 		return self.query(f"{root}:SHUNt:SORT?")
 
 	#ACV
+	def getBwidth(self, root):
+		return self.query(f"{root}:BWIDth?")
+
+	def setBwidth(self, root, value):
+		self.write(f"{root}:BWIDth {value}")
+		return self.getBwidth(root)
+
+	def getCouplingSignal(self, root):
+		return self.query(f"{root}:COUPling:SIGNal?")
+
+	def setCouplingSignal(self, root, value):
+		self.write(f"{root}:COUPling:SIGNal {value}")
+		return self.getCouplingSignal(root)
+	
+	def init_acv(self, root, blimit, counter_coupling, counter_gate, coupling_signal, filter_val, range_mode, range_val, resolution_val, secondary, secondary_method)
+		self.setBlimit(root, blimit)
+		self.setCounterCoupling(root, counter_coupling)
+		self.setCounterGate(root, counter_gate)
+		self.setCouplingSignal(root, coupling_signal)
+		self.setFilter(root, filter_val)
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setSecondary(root, secondary)
+		self.setSecondaryMethod(root, secondary_method)
