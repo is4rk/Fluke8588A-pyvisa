@@ -128,7 +128,7 @@ class Fluke8588A():
 	def init_acv(self, counter_bit_limit, coupling_mode):
 		pass
 
-	def init_aci(self, blimit, counter_Coupling, counter_gate, coupling, filter, range_mode, range_val, resolution_val, secondary):
+	def init_aci(self, blimit, counter_Coupling, counter_gate, coupling, filter, range_mode, range_val, resolution_val, secondary, secondary_method):
 		'''
 		Set the machine to aci mode, and set up parameters
 		'''
@@ -136,13 +136,37 @@ class Fluke8588A():
 		self.write(":FUNC \"" + root + "\"")
 		self.setBlimit(blimit)
 		self.setCounterCoupling(counter_Coupling)
-		self.setGateAuto(counter_gate)
+		self.setCounterGate(counter_gate)
 		self.setCoupling(coupling)
 		self.setFilter(filter)
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)
 		self.setResolution(root, resolution_val)
 		self.setSecondary(secondary)
+		self.setSecondaryMethod(secondary_method)
+
+	def init_shunt(self, shunt_list_index, shunt_sort=None, add_shunt_attributes=None, add_shunt_differences=None):
+		'''
+		Initialize shunt configuration for current measurements
+		Input:
+			shunt_list_index : int, index of the shunt in the shunt list
+			shunt_sort : optional str, sort order ("MCURrent", "ASSet", "SERial")
+			add_shunt_attributes : optional str, new shunt attributes to add
+			add_shunt_differences : optional list of tuples [(frequency, difference), ...] to add AC-DC differences
+		Output:
+			none
+		'''
+		if add_shunt_attributes is not None:
+			self.addShunt(add_shunt_attributes)
+		
+		if shunt_sort is not None:
+			self.setShuntSort(shunt_sort)
+		
+		self.pickShunt(shunt_list_index)
+		
+		if add_shunt_differences is not None:
+			for frequency, difference in add_shunt_differences:
+				self.addShuntDifference(frequency, difference)
 
 	def init_trigger(self):
 		pass
@@ -388,5 +412,62 @@ class Fluke8588A():
 	def setSecondary(self, value:str):
 		self.write(f":SECondary {value}")
 
+	def getCounterGate(self):
+		return self.query(":COUNter:GATE?")
+
+	def setCounterGate(self, value):
+		self.write(f":COUNter:GATE {value}")
+		return self.getCounterGate()
+
+	def getSecondary(self):
+		return self.query(":SECondary?")
+
+	def getSecondaryMethod(self):
+		return self.query(":SECondary:METHod?")
+
+	def setSecondaryMethod(self, value:str):
+		self.write(f":SECondary:METHod {value}")
+		return self.getSecondaryMethod()
+
+	def getShunt(self, list_index=None):
+		if list_index is not None:
+			return self.query(f":SHUNt? {list_index}")
+		return self.query(":SHUNt?")
+
+	def addShunt(self, attributes:str):
+		self.write(f":SHUNt:ADD {attributes}")
+
+	def getShuntCount(self):
+		return self.query(":SHUNt:COUNt?")
+
+	def getShuntDifference(self):
+		return self.query(":SHUNt:DIFFerence?")
+
+	def addShuntDifference(self, frequency, difference):
+		self.write(f":SHUNt:DIFFerence:ADD {frequency}, {difference}")
+
+	def removeShuntDifference(self, diff_index):
+		self.write(f":SHUNt:DIFFerence:REMove {diff_index}")
+
+	def getShuntList(self):
+		return self.query(":SHUNt:LIST?")
+
+	def modifyShunt(self, list_index, attributes:str):
+		self.write(f":SHUNt:MODify {list_index}, {attributes}")
+
+	def pickShunt(self, list_index):
+		self.write(f":SHUNt:PICK {list_index}")
+
+	def getShuntPick(self):
+		return self.query(":SHUNt:PICK?")
+
+	def removeShunt(self, list_index):
+		self.write(f":SHUNt:REMove {list_index}")
+
+	def setShuntSort(self, sort_order:str):
+		self.write(f":SHUNt:SORT {sort_order}")
+
+	def getShuntSort(self):
+		return self.query(":SHUNt:SORT?")
+
 	#ACV
-	
