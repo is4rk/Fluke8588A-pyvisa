@@ -128,6 +128,26 @@ class Fluke8588A():
 	def init_acv(self, counter_bit_limit, coupling_mode):
 		pass
 
+	def init_aci(self, blimit, counter_Coupling, counter_gate, coupling, filter, range_mode, range_val, resolution_val, secondary):
+		'''
+		Set the machine to aci mode, and set up parameters
+		'''
+		root = InstrumentConfig.ROOT_DCI  # Using DC current root as base for ACI
+		self.write(":FUNC \"" + root + "\"")
+		self.setBlimit(blimit)
+		self.setCounterCoupling(counter_Coupling)
+		self.setGateAuto(counter_gate)
+		self.setCoupling(coupling)
+		self.setFilter(filter)
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setSecondary(secondary)
+
+	def init_trigger(self):
+		pass
+
+
 	def getApertureMode(self, root):
 		'''
 		Get aperture mode for given root
@@ -329,3 +349,44 @@ class Fluke8588A():
 		raise ValueError(
 			f"No significant digit found in resolution value: {value}"
 		)
+
+	#ACI
+	def getBlimit(self):
+		return self.query("COUNTer:BLIMit[:STATe]?")
+
+	def setBlimit(self, value:bool):
+		self.write(f"COUNTer:BLIMit {int(value)}")
+		return self.getBlimit()
+
+	def getCounterCoupling(self):
+		return self.query(":COUNter:COUPling?")
+
+	def setCounterCoupling(self, value):
+		self.write(f":COUNter:COUPling {value}")
+		return self.getCouplingCounter()
+
+	def getGateAuto(self):
+		return self.query(f":COUNter:GATE:AUTO?")
+
+	def setGateAuto(self, value:bool):
+		self.write(f":COUNter:GATE:AUTO {value}")
+		return self.getGateAuto()
+
+	def getCoupling(self):
+			return self.query(":COUPling?")
+
+	def setCoupling(self, value):
+		self.write(f":COUPling {value}")
+
+	def getFilter(self):
+		return self.query(":FILTer?")
+
+	def setFilter(self, value):
+		self.write(f":FILTer {value}")
+		return self.getFilter()
+
+	def setSecondary(self, value:str):
+		self.write(f":SECondary {value}")
+
+	#ACV
+	
