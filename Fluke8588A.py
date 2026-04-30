@@ -125,8 +125,50 @@ class Fluke8588A():
 		self.setApertureMode(root, aperture_mode)
 		self.setTime(root, time_val)
 
-	def init_acv(self, counter_bit_limit, coupling_mode):
+	def init_aci(self, blimit, counter_Coupling, counter_gate, coupling, filter, range_mode, range_val, resolution_val, secondary, secondary_method):
+		'''
+		Set the machine to aci mode, and set up parameters
+		'''
+		root = InstrumentConfig.ROOT_ACI
+		self.write(":FUNC \"" + root + "\"")
+		self.setBlimit(root, blimit)
+		self.setCounterCoupling(root, counter_Coupling)
+		self.setCounterGate(root, counter_gate)
+		self.setCoupling(root, coupling)
+		self.setFilter(root, filter)
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setSecondary(root, secondary)
+		self.setSecondaryMethod(root, secondary_method)
+
+	def init_shunt(self, root, shunt_list_index, shunt_sort=None, add_shunt_attributes=None, add_shunt_differences=None):
+		'''
+		Initialize shunt configuration for current measurements
+		Input:
+			root : SCPI root string e.g. ":CURR:AC"
+			shunt_list_index : int, index of the shunt in the shunt list
+			shunt_sort : optional str, sort order ("MCURrent", "ASSet", "SERial")
+			add_shunt_attributes : optional str, new shunt attributes to add
+			add_shunt_differences : optional list of tuples [(frequency, difference), ...] to add AC-DC differences
+		Output:
+			none
+		'''
+		if add_shunt_attributes is not None:
+			self.addShunt(root, add_shunt_attributes)
+		
+		if shunt_sort is not None:
+			self.setShuntSort(root, shunt_sort)
+		
+		self.pickShunt(root, shunt_list_index)
+		
+		if add_shunt_differences is not None:
+			for frequency, difference in add_shunt_differences:
+				self.addShuntDifference(root, frequency, difference)
+
+	def init_trigger(self):
 		pass
+
 
 	def getApertureMode(self, root):
 		'''
@@ -329,3 +371,126 @@ class Fluke8588A():
 		raise ValueError(
 			f"No significant digit found in resolution value: {value}"
 		)
+
+	#ACI
+	def getBlimit(self, root):
+		return self.query(f"{root}:COUNter:BLIMit[:STATe]?")
+
+	def setBlimit(self, root, value:bool):
+		self.write(f"{root}:COUNter:BLIMit {int(value)}")
+		return self.getBlimit(root)
+
+	def getCounterCoupling(self, root):
+		return self.query(f"{root}:COUNter:COUPling?")
+
+	def setCounterCoupling(self, root, value):
+		self.write(f"{root}:COUNter:COUPling {value}")
+		return self.getCounterCoupling(root)
+
+	def getGateAuto(self, root):
+		return self.query(f"{root}:COUNter:GATE:AUTO?")
+
+	def setGateAuto(self, root, value:bool):
+		self.write(f"{root}:COUNter:GATE:AUTO {value}")
+		return self.getGateAuto(root)
+
+	def getCoupling(self, root):
+			return self.query(f"{root}:COUPling?")
+
+	def setCoupling(self, root, value):
+		self.write(f"{root}:COUPling {value}")
+
+	def getFilter(self, root):
+		return self.query(f"{root}:FILTer?")
+
+	def setFilter(self, root, value):
+		self.write(f"{root}:FILTer {value}")
+		return self.getFilter(root)
+
+	def getCounterGate(self, root):
+		return self.query(f"{root}:COUNter:GATE?")
+
+	def setCounterGate(self, root, value):
+		self.write(f"{root}:COUNter:GATE {value}")
+		return self.getCounterGate(root)
+
+	def getSecondary(self, root):
+		return self.query(f"{root}:SECondary?")
+	def setSecondary(self, root, value:str):
+		self.write(f"{root}:SECondary {value}")
+		return self.getSecondary(root)
+	
+	def getSecondaryMethod(self, root):
+		return self.query(f"{root}:SECondary:METHod?")
+
+	def setSecondaryMethod(self, root, value:str):
+		self.write(f"{root}:SECondary:METHod {value}")
+		return self.getSecondaryMethod(root)
+
+	def getShunt(self, root, list_index=None):
+		if list_index is not None:
+			return self.query(f"{root}:SHUNt? {list_index}")
+		return self.query(f"{root}:SHUNt?")
+
+	def addShunt(self, root, attributes:str):
+		self.write(f"{root}:SHUNt:ADD {attributes}")
+
+	def getShuntCount(self, root):
+		return self.query(f"{root}:SHUNt:COUNt?")
+
+	def getShuntDifference(self, root):
+		return self.query(f"{root}:SHUNt:DIFFerence?")
+
+	def addShuntDifference(self, root, frequency, difference):
+		self.write(f"{root}:SHUNt:DIFFerence:ADD {frequency}, {difference}")
+
+	def removeShuntDifference(self, root, diff_index):
+		self.write(f"{root}:SHUNt:DIFFerence:REMove {diff_index}")
+
+	def getShuntList(self, root):
+		return self.query(f"{root}:SHUNt:LIST?")
+
+	def modifyShunt(self, root, list_index, attributes:str):
+		self.write(f"{root}:SHUNt:MODify {list_index}, {attributes}")
+
+	def pickShunt(self, root, list_index):
+		self.write(f"{root}:SHUNt:PICK {list_index}")
+
+	def getShuntPick(self, root):
+		return self.query(f"{root}:SHUNt:PICK?")
+
+	def removeShunt(self, root, list_index):
+		self.write(f"{root}:SHUNt:REMove {list_index}")
+
+	def setShuntSort(self, root, sort_order:str):
+		self.write(f"{root}:SHUNt:SORT {sort_order}")
+
+	def getShuntSort(self, root):
+		return self.query(f"{root}:SHUNt:SORT?")
+
+	#ACV
+	def getBwidth(self, root):
+		return self.query(f"{root}:BWIDth?")
+
+	def setBwidth(self, root, value):
+		self.write(f"{root}:BWIDth {value}")
+		return self.getBwidth(root)
+
+	def getCouplingSignal(self, root):
+		return self.query(f"{root}:COUPling:SIGNal?")
+
+	def setCouplingSignal(self, root, value):
+		self.write(f"{root}:COUPling:SIGNal {value}")
+		return self.getCouplingSignal(root)
+	
+	def init_acv(self, root, blimit, counter_coupling, counter_gate, coupling_signal, filter_val, range_mode, range_val, resolution_val, secondary, secondary_method)
+		self.setBlimit(root, blimit)
+		self.setCounterCoupling(root, counter_coupling)
+		self.setCounterGate(root, counter_gate)
+		self.setCouplingSignal(root, coupling_signal)
+		self.setFilter(root, filter_val)
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setSecondary(root, secondary)
+		self.setSecondaryMethod(root, secondary_method)
