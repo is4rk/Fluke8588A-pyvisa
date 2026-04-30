@@ -483,7 +483,7 @@ class Fluke8588A():
 		self.write(f"{root}:COUPling:SIGNal {value}")
 		return self.getCouplingSignal(root)
 	
-	def init_acv(self, root, blimit, counter_coupling, counter_gate, coupling_signal, filter_val, range_mode, range_val, resolution_val, secondary, secondary_method)
+	def init_acv(self, root, blimit, counter_coupling, counter_gate, coupling_signal, filter_val, range_mode, range_val, resolution_val, secondary, secondary_method):
 		self.setBlimit(root, blimit)
 		self.setCounterCoupling(root, counter_coupling)
 		self.setCounterGate(root, counter_gate)
