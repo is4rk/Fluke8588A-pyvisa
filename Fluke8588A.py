@@ -166,6 +166,19 @@ class Fluke8588A():
 			for frequency, difference in add_shunt_differences:
 				self.addShuntDifference(root, frequency, difference)
 
+	def init_acv(self, root, blimit, counter_coupling, counter_gate, coupling_signal, filter_val, range_mode, range_val, resolution_val, secondary, secondary_method):
+		self.setBlimit(root, blimit)
+		self.setCounterCoupling(root, counter_coupling)
+		self.setCounterGate(root, counter_gate)
+		self.setCouplingSignal(root, coupling_signal)
+		self.setFilter(root, filter_val)
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setSecondary(root, secondary)
+		self.setSecondaryMethod(root, secondary_method)
+		
+
 	def init_trigger(self):
 		pass
 
@@ -387,12 +400,12 @@ class Fluke8588A():
 		self.write(f"{root}:COUNter:COUPling {value}")
 		return self.getCounterCoupling(root)
 
-	def getGateAuto(self, root):
+	def getGateMode(self, root):
 		return self.query(f"{root}:COUNter:GATE:AUTO?")
 
-	def setGateAuto(self, root, value:bool):
+	def setGateMode(self, root, value:bool):
 		self.write(f"{root}:COUNter:GATE:AUTO {value}")
-		return self.getGateAuto(root)
+		return self.getGateMode(root)
 
 	def getCoupling(self, root):
 			return self.query(f"{root}:COUPling?")
@@ -483,14 +496,79 @@ class Fluke8588A():
 		self.write(f"{root}:COUPling:SIGNal {value}")
 		return self.getCouplingSignal(root)
 	
-	def init_acv(self, root, blimit, counter_coupling, counter_gate, coupling_signal, filter_val, range_mode, range_val, resolution_val, secondary, secondary_method):
-		self.setBlimit(root, blimit)
-		self.setCounterCoupling(root, counter_coupling)
-		self.setCounterGate(root, counter_gate)
-		self.setCouplingSignal(root, coupling_signal)
-		self.setFilter(root, filter_val)
-		self.setRangeMode(root, range_mode)
-		self.setRange(root, range_val)
-		self.setResolution(root, resolution_val)
-		self.setSecondary(root, secondary)
-		self.setSecondaryMethod(root, secondary_method)
+	#TRIGGER ARM1 ARM2
+	def getCount(self, root):
+		return self.query(f"{root}:COUNt?")
+	def setCount(self, root, value):
+		self.write(f"{root}:COUNt {value}")
+		return self.getCount(root)
+	
+	def getDelay(self, root):
+		return self.query(f"{root}:DELay?")
+	def setDelay(self, root, value):
+		self.write(f"{root}:DELay {value}")
+		return self.getDelay(root)
+	
+	def getDelayMode(self, root):
+		return self.query(f"{root}:DELay:AUTO?")
+	def setDelayMode(self, root, value:bool):
+		self.write(f"{root}:DELay:AUTO {value}")
+		return self.getDelay(root)
+	
+	def getEcount(self, root):
+		return self.query(f"{root}:ECOunt?")
+	def setEcount(self, root, value):
+		self.write(f"{root}:ECOunt {value}")
+		return self.getEcount(root)
+
+	def getExternal(self, root):
+		return self.query(f"{root}:EXTernal?")
+	def setExternal(self, root, value):
+		self.write(f"{root}:EXTernal {value}")
+		return self.getExternal(root)
+
+	def getHoldoffAuto(self, root):
+		return self.query(f"{root}:HOLDoff:AUTO?")
+	def setHoldoffAuto(self, root, value):
+		self.write(f"{root}:HOLDoff:AUTO {value}")
+		return self.getHoldoffAuto(root)
+
+	def getHoldoff(self, root):
+		return self.query(f"{root}:HOLDoff?")
+	def setHoldoff(self, root, value):
+		self.write(f"{root}:HOLDoff {value}")
+		return self.getHoldoff(root)
+
+	def setImmediate(self, root):
+		self.write(f"{root}:IMMediate")
+
+	def getLevel(self, root):
+		return self.query(f"{root}:LEVel?")
+	def setLevel(self, root, value):
+		self.write(f"{root}:LEVel {value}")
+		return self.getLevel(root)
+
+	def resetTrigger(self, root):
+		self.write(f"{root}:RESet")
+
+	def setSignal(self, root):
+		self.write(f"{root}:SIGNal")
+
+	def getSlope(self, root):
+		return self.query(f"{root}:SLOPe?")
+	def setSlope(self, root, value):
+		self.write(f"{root}:SLOPe {value}")
+		return self.getSlope(root)
+
+	def getSource(self, root):
+		return self.query(f"{root}:SOURce?")
+	def setSource(self, root, value):
+		self.write(f"{root}:SOURce {value}")
+		return self.getSource(root)
+
+	def getTimer(self, root):
+		return self.query(f"{root}:TIMer?")
+	def setTimer(self, root, value):
+		self.write(f"{root}:TIMer {value}")
+		return self.getTimer(root)
+	
