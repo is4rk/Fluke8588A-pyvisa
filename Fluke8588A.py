@@ -614,7 +614,7 @@ class Fluke8588A():
 		'''
 		return self.query(f"SENSe:ZERO {value}")
 
-	# RESISTANCE
+	# RESISTANCE and FRESISTANCE (only chane is mode, which has True as an extra option)
 	def getWireMode(self, root):
 		return self.query(f"{root}:MODE?")
 	def setWireMode(self, root, value):
@@ -636,5 +636,3 @@ class Fluke8588A():
 		'''
 		self.write(f"{root}:LOWI {value}")
 	
-
-	#FRESISTANCE
