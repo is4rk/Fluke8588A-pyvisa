@@ -572,3 +572,20 @@ class Fluke8588A():
 		self.write(f"{root}:TIMer {value}")
 		return self.getTimer(root)
 	
+
+	#ZERO
+	def zero(self, value):
+		'''
+		input: RANGe || ALL;
+		Output:  1 || 0;
+		Removes residual offsets, applies to active range or function. Returns ‘0’ for success, and ‘1’ for failure;
+		'''
+		return self.query("SENSe:ZERO {value}")
+	
+	def zeroClear(self, value):
+		'''
+		input: RANGe || ALL;
+		Output:  1 || 0;
+		Clears zero, applies to active range or function. Returns ‘0’ for success, and ‘1’ for failure;
+		'''
+		return self.query("SENSe:ZERO {value}")
