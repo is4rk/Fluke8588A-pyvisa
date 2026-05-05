@@ -2,7 +2,7 @@ from Fluke8588A import Fluke8588A
 from typing import Optional, TYPE_CHECKING
 import logging
 from config import InstrumentConfig
-from settings import DcvSettings
+from settings import DcvSettings, DciSettings, OhmsSettings
 
 
 class InstrumentController:
@@ -152,11 +152,11 @@ class InstrumentController:
         Configure instrument with given settings and return actual values.
         
         Args:
-            mode: Measurement mode (e.g., "DCV")
+            mode: Measurement mode (e.g., "DCV", "OHMS")
             settings: Settings dataclass with configuration parameters
             
         Returns:
-            DcvSettings: Actual settings read back from the instrument
+            Settings dataclass: Actual settings read back from the instrument
             
         Raises:
             RuntimeError: If not connected to instrument
@@ -184,6 +184,51 @@ class InstrumentController:
                 resolution=int(self._instrument.getResolution(root)),
                 input_z=self._instrument.getImp(root).strip(),
                 nplc=float(self._instrument.getNplc(root))
+            )
+            
+            return actual_settings
+        
+        elif mode == "OHMS":
+            # Determine root based on wire mode (4-wire uses FRESISTANCE)
+            root = InstrumentConfig.ROOT_FRESISTANCE if settings.mode.startswith("4W") else InstrumentConfig.ROOT_RESISTANCE
+            
+            # Determine range_mode based on range_val
+            range_mode = "AUTO" if settings.range_val == "AUTO ON" else "MAN"
+            
+            # Convert wire mode from UI format to instrument format
+            # "2-WIRE NORMAL" -> "NORMal", "4-WIRE NORMAL" -> "4W NORMAL", etc.
+            wire_mode_map = {
+                "2W NORMAL": "NORMal",
+                "4W NORMAL": "4W NORMal",
+                "4W Tru": "4W Tru",
+                "2W HV": "2W HIV",
+                "4W HV": "4W HIV"
+            }
+            wire_mode = wire_mode_map.get(settings.mode, "NORMal")
+            
+            # Convert filter and low_i to instrument format (0 or 1)
+            filter_val = 1 if settings.filter else 0
+            low_mode_val = 1 if settings.low_i else 0
+            
+            self._instrument.init_resistance(
+                aperture_mode=settings.aperture_mode,
+                time_val=float(settings.time),
+                wire_mode_val=wire_mode,
+                low_mode_val=low_mode_val,
+                range_mode=range_mode,
+                range_val=settings.range_val,
+                resolution_val=settings.resolution,
+                filter_val=filter_val
+            )
+            
+            actual_settings = OhmsSettings(
+                range_val=self._instrument.getRange(root).strip(),
+                resolution=int(self._instrument.getResolution(root)),
+                mode=settings.mode,
+                filter=settings.filter,
+                low_i=settings.low_i,
+                aperture_mode=self._instrument.getApertureMode(root).strip(),
+                time=self._instrument.getTime(root).strip()
             )
             
             return actual_settings

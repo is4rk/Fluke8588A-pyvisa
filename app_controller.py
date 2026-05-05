@@ -2,7 +2,7 @@ from instrument_controller_test import InstrumentControllerTest as InstrumentCon
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
 from trigger_setup import TriggerWindow
-from settings import DcvSettings, DciSettings
+from settings import DcvSettings, DciSettings, OhmsSettings
 from measurment_controller import ReadingThread
 
 class AppController:
@@ -25,6 +25,7 @@ class AppController:
 		self._view.measurment_setup_requested.connect(self._on_measurment_setup_press)
 		self._view.dcv_signal.connect(self._on_dcv_setting_change)
 		self._view.dci_signal.connect(self._on_dci_setting_change)
+		self._view.ohms_signal.connect(self._on_ohms_setting_change)
 		self._meas_pop_up.mode_select.connect(self._on_aperture_mode_changed)
 		self._meas_pop_up.time_select.connect(self._on_time_changed)
 		self._meas_pop_up.nplc_select.connect(self._on_nplc_changed)
@@ -63,6 +64,8 @@ class AppController:
 			return self._dcv_settings
 		if mode == "DCI":
 			return self._dci_settings
+		if mode == "OHMS":
+			return self._ohms_settings
 		# elif mode == "DCI":
 		# 	return self._dci_settings
 
@@ -96,6 +99,9 @@ class AppController:
 	
 	def	_on_dci_setting_change(self, settings: DciSettings):
 		self._dci_settings= settings
+
+	def _on_ohms_setting_change(self, settings: OhmsSettings):
+		self._ohms_settings = settings
 
 	def _on_continuous_start(self):
 		if self._reading_thread is not None:

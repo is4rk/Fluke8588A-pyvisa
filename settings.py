@@ -17,6 +17,16 @@ class DciSettings:
     aperture_mode: str
     time:       float 
 
+@dataclass
+class OhmsSettings:
+    range_val:  str
+    resolution: int
+    mode:       str
+    filter:     bool
+    low_i:      bool
+    aperture_mode: str
+    time:       float
+
 #TO DO, check the bellow
 @dataclass
 class TriggerLayerSettings:

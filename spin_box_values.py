@@ -18,6 +18,10 @@ AC_DIGIT_VAL = sorted(InstrumentConfig.VALID_RESOLUTIONS_AC_DIGITS)
 
 AUTO_FAST_VALUES = [1e-2, 1e-1, 1, 1e1, 1e2]  # values for autofast at 4,5,6,7,8 digits
 
+OHM_MODES = ["2W NORMAL", "4W NORMAL", "4W Tru", "2W HV", "4W HV"]
+OHM_RANGE = ["AUTO ON", "1 Ω", "10 Ω", "100 Ω", "1 kΩ", "100 kΩ", "1 MΩ", "10 MΩ", "100 MΩ", "1 GΩ"]
+OHM_RANGE_VAL = ["AUTO ON", 1, 1e1, 1e2, 1e3, 1e5, 1e6, 1e7, 1e8, 1e9] 
+
 HZ=50
 MAX_TIME = 10
 MIN_TIME= 0.0001 
@@ -65,3 +69,12 @@ def get_max_time():
 
 def get_min_time():
     return MIN_TIME
+
+def get_ohm_modes():
+    return OHM_MODES
+
+def get_ohm_range():
+    return OHM_RANGE
+
+def get_ohm_range_val(value):
+    return OHM_RANGE_VAL[OHM_RANGE.index(value)]

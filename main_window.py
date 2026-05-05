@@ -2,9 +2,9 @@ from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QMainWindow
 import os
-from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_zin, get_dc_digit_val
+from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_zin, get_dc_digit_val, get_ohm_modes, get_ohm_range
 from config import InstrumentConfig
-from settings import DcvSettings, DciSettings
+from settings import DcvSettings, DciSettings, OhmsSettings
 from plot_widget import DmmPlotWidget
 main_window_loc = os.path.join(os.path.dirname(__file__), "ui", "mainwindow.ui")
 
@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
 	trigger_requested = pyqtSignal()
 	dcv_signal = pyqtSignal(DcvSettings)
 	dci_signal = pyqtSignal(DciSettings)
+	ohms_signal = pyqtSignal(OhmsSettings)
 	continuous_start_requested = pyqtSignal()
 	continuous_stop_requested  = pyqtSignal()
 	append_value = pyqtSignal(float)	
@@ -43,6 +44,13 @@ class MainWindow(QMainWindow):
 		self.dci_range_combo.currentTextChanged.connect(self._on_dci_changed)
 		self.dci_res_spin.valueChanged.connect(self._on_dci_changed)
 		self.dci_measure_setup_button.pressed.connect(self.measurment_setup_requested) #to be
+		#ohms signals
+		self.ohm_range_combo.currentTextChanged.connect(self._on_ohms_changed)
+		self.ohm_res_spin.valueChanged.connect(self._on_ohms_changed)
+		self.ohm_mode_combo.currentTextChanged.connect(self._on_ohms_changed)
+		self.ohm_filter_check.stateChanged.connect(self._on_ohms_changed)
+		self.ohm_lowi_check.stateChanged.connect(self._on_ohms_changed)
+		self.ohm_measure_setup.pressed.connect(self.measurment_setup_requested) #to be
 		#reading 
 		self.read_button.pressed.connect(self.read_requested)
 		self.start_button.pressed.connect(self.continuous_start_requested)
@@ -62,6 +70,10 @@ class MainWindow(QMainWindow):
 		#dci
 		self.dci_range_combo.addItems(get_dci_range())
 		self.dci_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
+		#ohms
+		self.ohm_range_combo.addItems(get_ohm_range())
+		self.ohm_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
+		self.ohm_mode_combo.addItems(get_ohm_modes()) 
 		
 		#reading
 		self.stop_button.setEnabled(False)
@@ -102,7 +114,17 @@ class MainWindow(QMainWindow):
 	def current_nplc(self)->float:
 		return float(self.dcv_nplc_label.currentText())
 	
+	@property
+	def current_ohm_range(self)->str:
+		return self.ohm_range_combo.currentText()
 
+	@property
+	def current_ohm_resolution(self)->int:
+		return self.ohm_res_spin.value()
+
+	@property
+	def current_ohm_mode(self)->str:
+		return self.ohm_mode_combo.currentText()
 
 	def set_disconnected(self):
 		self.init_button.setEnabled(True)
@@ -130,7 +152,7 @@ class MainWindow(QMainWindow):
 	def set_mode_visible(self, mode: str):
 		self.dcv_widget.setVisible(mode == "DCV")
 		self.dci_widget.setVisible(mode=="DCI")
-		# self.dci_widget.setVisible(mode == "DCI")
+		self.ohm_widget.setVisible(mode == "OHMS")
 		# self.acv_widget.setVisible(mode == "ACV")
 		# self.aci_widget.setVisible(mode == "ACI")
 
@@ -164,5 +186,17 @@ class MainWindow(QMainWindow):
 			resolution = self.dci_res_spin.value(),
 			aperture_mode = self.dci_measure_setup_button.text(),
 			time = self.dci_time_label.text()
+		)
+	)
+	
+	def _on_ohms_changed(self):
+		self.ohms_signal.emit(OhmsSettings(
+			range_val = self.ohm_range_combo.currentText(),
+			resolution = self.ohm_res_spin.value(),
+			mode = self.ohm_mode_combo.currentText(),
+			filter = self.ohm_filter_check.isChecked(),
+			low_i = self.ohm_lowi_check.isChecked(),
+			aperture_mode = self.ohm_measure_setup.text(),
+			time = self.ohm_time_label.text()
 		)
 	)
