@@ -1,4 +1,4 @@
-from instrument_controller_test import InstrumentControllerTest as InstrumentController 
+from instrument_controller import InstrumentController as InstrumentController 
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
 from trigger_setup import TriggerWindow
@@ -20,14 +20,14 @@ class AppController:
 			resolution=4,
 			zin="Auto",
 			aperture_mode="AUTO",
-			time=0.0
+			time=0.1
 		)
 		self._dci_settings = DciSettings(
 			range_mode="AUTO",
 			range_val="AUTO ON",
 			resolution=4,
 			aperture_mode="AUTO",
-			time=0.0
+			time=0.1
 		)
 		self._ohms_settings = OhmsSettings(
 			range_val="AUTO ON",
@@ -36,7 +36,7 @@ class AppController:
 			filter=False,
 			low_i=False,
 			aperture_mode="AUTO",
-			time=0.0
+			time=0.1
 		)
 		
 		self._connect_signals()
