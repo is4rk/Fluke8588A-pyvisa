@@ -178,12 +178,26 @@ class Fluke8588A():
 		self.setSecondary(root, secondary)
 		self.setSecondaryMethod(root, secondary_method)
 	
-	def init_resistance(self, aperture_mode, time_val, wire_mode_val, range_mode, range_val, resolution_val, filter_val):
+	def init_resistance(self, aperture_mode, time_val, wire_mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
 		root=InstrumentConfig.ROOT_RESISTANCE
 		self.write(":FUNC \"" + root + "\"")
 		self.setApertureMode(root, aperture_mode)
 		self.setTime(root, time_val)
 		self.setWireMode(root, wire_mode_val)
+		self.setLowCurrentMode(root, low_mode_val)
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setFilter(root, filter_val)
+	
+
+	def init_fresistance(self, aperture_mode, time_val, wire_mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
+		root=InstrumentConfig.ROOT_FRESISTANCE
+		self.write(":FUNC \"" + root + "\"")
+		self.setApertureMode(root, aperture_mode)
+		self.setTime(root, time_val)
+		self.setWireMode(root, wire_mode_val)
+		self.setLowCurrentMode(root, low_mode_val)
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)
 		self.setResolution(root, resolution_val)
@@ -605,8 +619,8 @@ class Fluke8588A():
 		return self.query(f"{root}:MODE?")
 	def setWireMode(self, root, value):
 		'''
-		input: (root, NORMal || HIV);
-		Output:  NORMal|| HIV;
+		input: (root, NORMal || HIV || TRUE);
+		Output:  NORMal|| HIV || TRUE ;
 		Sets the 2-wire Ohms mode, returns the mode that has been set in machine.
 		'''
 		self.write(f"{root}:MODE {value}")
