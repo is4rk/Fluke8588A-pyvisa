@@ -12,6 +12,33 @@ class AppController:
 		self._meas_pop_up = DcMeasurmentWindow()
 		# self._trigger_pop_up = TriggerWindow()
 		self._view.set_disconnected()
+		
+		# Initialize settings objects with default values
+		self._dcv_settings = DcvSettings(
+			range_mode="AUTO",
+			range_val="Auto",
+			resolution=4,
+			zin="Auto",
+			aperture_mode="AUTO",
+			time=0.0
+		)
+		self._dci_settings = DciSettings(
+			range_mode="AUTO",
+			range_val="AUTO ON",
+			resolution=4,
+			aperture_mode="AUTO",
+			time=0.0
+		)
+		self._ohms_settings = OhmsSettings(
+			range_val="AUTO ON",
+			resolution=4,
+			mode="2W NORMAL",
+			filter=False,
+			low_i=False,
+			aperture_mode="AUTO",
+			time=0.0
+		)
+		
 		self._connect_signals()
 		self._view.show()
 		self._instr_ctrl=InstrumentController()
@@ -66,8 +93,6 @@ class AppController:
 			return self._dci_settings
 		if mode == "OHMS":
 			return self._ohms_settings
-		# elif mode == "DCI":
-		# 	return self._dci_settings
 
 	def _on_measurment_setup_press(self):
 		self._meas_pop_up.show()
