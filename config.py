@@ -13,6 +13,7 @@ class InstrumentConfig:
     ROOT_DCI = ":CURR:DC"
     ROOT_ACI = ":CURR:AC"
     ROOT_ACV = ":VOLT:AC"
+    ROOT_RESISTANCE = ":RESistance"
     RANGE_MODE_AUTO = 1
     RANGE_MODE_MAN = 0
     RANGE_MODE_AUTO_STR = "AUTO"

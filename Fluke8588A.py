@@ -177,7 +177,17 @@ class Fluke8588A():
 		self.setResolution(root, resolution_val)
 		self.setSecondary(root, secondary)
 		self.setSecondaryMethod(root, secondary_method)
-		
+	
+	def init_resistance(self, aperture_mode, time_val, wire_mode_val, range_mode, range_val, resolution_val, filter_val):
+		root=InstrumentConfig.ROOT_RESISTANCE
+		self.write(":FUNC \"" + root + "\"")
+		self.setApertureMode(root, aperture_mode)
+		self.setTime(root, time_val)
+		self.setWireMode(root, wire_mode_val)
+		self.setRangeMode(root, range_mode)
+		self.setRange(root, range_val)
+		self.setResolution(root, resolution_val)
+		self.setFilter(root, filter_val)
 
 	def init_trigger(self):
 		pass
@@ -588,4 +598,29 @@ class Fluke8588A():
 		Output:  1 || 0;
 		Clears zero, applies to active range or function. Returns ‘0’ for success, and ‘1’ for failure;
 		'''
-		return self.query("SENSe:ZERO {value}")
+		return self.query(f"SENSe:ZERO {value}")
+
+	# RESISTANCE
+	def getWireMode(self, root):
+		return self.query(f"{root}:MODE?")
+	def setWireMode(self, root, value):
+		'''
+		input: (root, NORMal || HIV);
+		Output:  NORMal|| HIV;
+		Sets the 2-wire Ohms mode, returns the mode that has been set in machine.
+		'''
+		self.write(f"{root}:MODE {value}")
+		return self.getWireMode(root)
+	
+	def getLowCurrentMode(self, root):
+		return self.query(f"{root}:LOWI?")
+	def setLowCurrentMode(self, root, value):
+		'''
+		input: (root, 1 || 0);
+		Output:  1 || 0; TO BE CHECKED
+		Sets the Low current mode ON or OFF
+		'''
+		self.write(f"{root}:LOWI {value}")
+	
+
+	#FRESISTANCE
