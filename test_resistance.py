@@ -32,13 +32,13 @@ def test_resistance():
         # Take measurement
         reading = fluke.read()
         print(f"Resistance: {reading}")
-        
+        funct= fluke.query(":FUNC?")
+        print(funct)
         fluke.close()
         
     except Exception as e:
         print(f"Error: {e}")
         raise
-
 
 if __name__ == "__main__":
     test_resistance()
