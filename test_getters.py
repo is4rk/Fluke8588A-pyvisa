@@ -79,7 +79,7 @@ def test_getters():
             range_mode="AUTO",
             range_val="AUTO",
             resolution_val=4,
-            zin_val="AUTO",
+            zin="AUTO",
             aperture_mode="AUTO",
             time_val=1
         )
