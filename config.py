@@ -5,7 +5,7 @@ class InstrumentConfig:
     NPLC_MIN = 0.001  # 20 microseconds at 50Hz
     
     MAX_TIME = 10
-    MIN_TIME= 0.0001 
+    MIN_TIME= 0.000001  #1 micro sec
 
     GPIB_PREFIX = "GPIB0::"
     GPIB_SUFFIX = "::INSTR"
