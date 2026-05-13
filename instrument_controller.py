@@ -93,7 +93,7 @@ class InstrumentController:
         self._instrument.reset()
     
     def init_dcv(self, range_mode: str, range_val: float, resolution_val: int, 
-                 zin_val: str, aperture_mode: str, nplc_val: float) -> None:
+                 zin_val: str, aperture_mode: str, time_val: float) -> None:
         """
         Initialize DC voltage measurement mode.
         
@@ -103,7 +103,7 @@ class InstrumentController:
             resolution_val: Resolution in digits (4-8)
             zin_val: Input impedance ("AUTO", "1M", or "10M")
             aperture_mode: Aperture mode ("AUTO", "FAST", or "MAN")
-            nplc_val: NPLC value (0.001 to 500)
+            time_val: 0.00001 to 10 seconds
             
         Raises:
             RuntimeError: If not connected to instrument
@@ -112,7 +112,7 @@ class InstrumentController:
             raise RuntimeError("Cannot initialize DCV: not connected to instrument")
         
         self._instrument.init_dcv(range_mode, range_val, resolution_val, 
-                                  zin_val, aperture_mode, nplc_val)
+                                  zin_val, aperture_mode, time_val)
     
     def write(self, command: str) -> None:
         """
@@ -175,7 +175,7 @@ class InstrumentController:
                 resolution_val=settings.resolution,
                 zin=settings.zin,
                 aperture_mode="AUTO",  # TO CHANGE
-                nplc_val=settings.nplc
+                time=settings.time
             )
             
             actual_settings = DcvSettings(

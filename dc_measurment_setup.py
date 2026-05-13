@@ -52,5 +52,3 @@ class DcMeasurmentWindow(QWidget):
 	#the machine has minimum aperture of 0.0001 seconds, but minumim nplc of 0.01, so if the user tries selecting a value inbetween 0.0002 and 0.0001, the nplc no longer correspon to the seconds
 	def _update_nplc(self):
 		self.nplc_spin.setValue(float(self.time_spin.value()*get_hz() if self.time_spin.value()>=0.0002 else 0.01))
-
-
