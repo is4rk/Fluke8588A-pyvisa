@@ -180,10 +180,11 @@ class InstrumentController:
             
             actual_settings = DcvSettings(
                 range_mode=self._instrument.getRangeMode(root).strip(),
-                range_val=self._instrument.getRange(root).strip(),
+                range_val=str(self._instrument.getRange(root)),
                 resolution=int(self._instrument.getResolution(root)),
-                input_z=self._instrument.getImp(root).strip(),
-                nplc=float(self._instrument.getNplc(root))
+                zin=self._instrument.getImp(root).strip(),
+                aperture_mode=self._instrument.getApertureMode(root).strip(),
+                time=self._instrument.getTime(root)
             )
             
             return actual_settings
@@ -222,13 +223,13 @@ class InstrumentController:
             )
             
             actual_settings = OhmsSettings(
-                range_val=self._instrument.getRange(root).strip(),
+                range_val=str(self._instrument.getRange(root)),
                 resolution=int(self._instrument.getResolution(root)),
                 mode=settings.mode,
                 filter=settings.filter,
                 low_i=settings.low_i,
                 aperture_mode=self._instrument.getApertureMode(root).strip(),
-                time=self._instrument.getTime(root).strip()
+                time=self._instrument.getTime(root)
             )
             
             return actual_settings
