@@ -144,7 +144,7 @@ class InstrumentControllerTest:
             resolution_val: Resolution in digits (4-8)
             zin: Input impedance ("AUTO", "1M", or "10M")
             aperture_mode: Aperture mode ("AUTO", "FAST", or "MAN")
-            time: aperture time  value (0.0001 to 10)
+            time: aperture time  value (0.000001 to 10)
             
         Raises:
             RuntimeError: If not connected to instrument
