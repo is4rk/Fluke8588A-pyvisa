@@ -173,7 +173,7 @@ class InstrumentController:
                 range_mode=settings.range_mode,
                 range_val=settings.range_val,
                 resolution_val=settings.resolution,
-                zin=settings.input_z,
+                zin=settings.zin,
                 aperture_mode="AUTO",  # TO CHANGE
                 nplc_val=settings.nplc
             )
