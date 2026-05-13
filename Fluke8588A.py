@@ -108,7 +108,7 @@ class Fluke8588A():
 		Set the machine to dcv mode, and set up parameters
 		'''
 		root=InstrumentConfig.ROOT_DCV
-		self.write(":FUNC \"" + root[1:] + "\"")
+		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)
 		self.setResolution(root, resolution_val)
@@ -118,7 +118,7 @@ class Fluke8588A():
 
 	def init_dci(self, range_mode, range_val, resolution_val, aperture_mode, time_val):
 		root=InstrumentConfig.ROOT_DCI
-		self.write(":FUNC \"" + root[1:] + "\"")
+		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)
 		self.setResolution(root, resolution_val)
@@ -130,7 +130,7 @@ class Fluke8588A():
 		Set the machine to aci mode, and set up parameters
 		'''
 		root = InstrumentConfig.ROOT_ACI
-		self.write(":FUNC \"" + root[1:] + "\"")
+		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
 		self.setBlimit(root, blimit)
 		self.setCounterCoupling(root, counter_Coupling)
 		self.setCounterGate(root, counter_gate)
@@ -180,7 +180,7 @@ class Fluke8588A():
 	
 	def init_resistance(self, aperture_mode, time_val, wire_mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
 		root=InstrumentConfig.ROOT_RESISTANCE
-		self.write(":FUNC \"" + root[1:] + "\"")
+		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
 		self.setApertureMode(root, aperture_mode)
 		self.setTime(root, time_val)
 		self.setWireMode(root, wire_mode_val)
@@ -193,7 +193,7 @@ class Fluke8588A():
 
 	def init_fresistance(self, aperture_mode, time_val, wire_mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
 		root=InstrumentConfig.ROOT_FRESISTANCE
-		self.write(":FUNC \"" + root[1:] + "\"")
+		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
 		self.setApertureMode(root, aperture_mode)
 		self.setTime(root, time_val)
 		self.setWireMode(root, wire_mode_val)
