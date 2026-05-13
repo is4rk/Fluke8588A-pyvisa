@@ -1,4 +1,4 @@
-from instrument_controller import InstrumentController as InstrumentController 
+from instrument_controller_test import InstrumentControllerTest as InstrumentController 
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
 from trigger_setup import TriggerWindow
@@ -84,7 +84,19 @@ class AppController:
 	def _on_set(self):
 		mode=self._view.current_mode
 		new_settings=self.get_settings_from_mode(mode)
-		self._instr_ctrl.set(mode, new_settings)
+		actual_settings=self._instr_ctrl.set(mode, new_settings)
+		
+		#Update internal settings with what the instrument actually accepted
+		if mode == "DCV":
+			self._dcv_settings = actual_settings
+		elif mode == "DCI":
+			self._dci_settings = actual_settings
+		elif mode == "OHMS":
+			self._ohms_settings = actual_settings
+		
+		# Update the GUI to reflect actual settings
+		self._view.set_status(f"{mode} settings applied")
+		self._refresh_ui_settings()
 
 	def get_settings_from_mode(self, mode: str):
 		if mode == "DCV":
@@ -93,6 +105,16 @@ class AppController:
 			return self._dci_settings
 		if mode == "OHMS":
 			return self._ohms_settings
+	
+	def _refresh_ui_settings(self):
+		"""Update UI to show current settings from app controller"""
+		mode = self._view.current_mode
+		if mode == "DCV":
+			self._view.dcv_signal.emit(self._dcv_settings)
+		elif mode == "DCI":
+			self._view.dci_signal.emit(self._dci_settings)
+		elif mode == "OHMS":
+			self._view.ohms_signal.emit(self._ohms_settings)
 
 	def _on_measurment_setup_press(self):
 		self._meas_pop_up.show()
