@@ -213,7 +213,7 @@ class Fluke8588A():
 		Input:
 			Root
 		Output:
-			"AUTO", "FAST", "MAN"
+			string, "AUTO", "FAST", "MAN"
 		'''
 		return self.query(root+":APER:MODE?")
 	def setApertureMode(self, root, value):
@@ -223,7 +223,7 @@ class Fluke8588A():
 			root  : SCPI root string e.g. ":VOLT:DC"
 			value : "AUTO", "FAST", or "MAN"
 		Output:
-			set value: "AUTO", "FAST", or "MAN"
+			string, set value: "AUTO", "FAST", or "MAN"
 		'''
 		if value not in InstrumentConfig.VALID_APERTURE_MODES:
 			raise ValueError(
@@ -249,7 +249,7 @@ class Fluke8588A():
 			root  : SCPI root string e.g. ":VOLT:DC"
 			value : float between 20μ and 10. Seconds
 		Output:
-			set value as string
+			float, set value as string
 		'''
 		if not InstrumentConfig.MIN_TIME <= float(value) <= InstrumentConfig.MAX_TIME:
 			raise ValueError(
@@ -275,7 +275,7 @@ class Fluke8588A():
 			root  : SCPI root string e.g. ":VOLT:DC"
 			value : "AUTO", "1M", or "10M"
 		Output:
-			set value: "AUTO", "1M", or "10M"
+			string, set value: "AUTO", "1M", or "10M"
 		'''
 		if value not in InstrumentConfig.VALID_IMPEDANCES_DCV:
 			raise ValueError(
@@ -292,7 +292,7 @@ class Fluke8588A():
 		Input:
 			root, value
 		Output:
-			"AUTO" or "MAN"
+			string, "AUTO" or "MAN"
 		'''
 		response = self.query(root+":RANG:AUTO?")
 		value_int = int(float(response))
@@ -309,7 +309,7 @@ class Fluke8588A():
 			root  : SCPI root string e.g. ":VOLT:DC"
 			value : "AUTO" or "MAN"
 		Output:
-			set value: "AUTO" or "MAN"
+			string, set value: "AUTO" or "MAN"
 		'''
 		if value == InstrumentConfig.RANGE_MODE_AUTO_STR:
 			converted_value = InstrumentConfig.RANGE_MODE_AUTO
@@ -331,16 +331,16 @@ class Fluke8588A():
 		Input:
 			root
 		Output:
-			set value
+			float, set value
 		'''
-		return self.query(root+":RANG?")
+		return float(self.query(root+":RANG?"))
 	def setRange(self, root, value):
 		'''
 		Set range value for given root
 		Input:
 			root, desired value
 		Output:
-			set value
+			string, set value
 		'''
 		self.write(root+":RANG "+str(value))
 		return self.getRange(root)
@@ -351,9 +351,9 @@ class Fluke8588A():
 		Input:
 			root
 		Output:
-			set value
+			float, set value
 		'''
-		return self.query(root+":RES?")
+		return float(self.query(root+":RES?"))
 	def setResolution(self, root, value):
 		'''
 		Sets resolution in digits for given root.
@@ -362,7 +362,7 @@ class Fluke8588A():
 			root  : SCPI root string e.g. ":VOLT:DC"
 			value : int or str, number of digits (4–8 for DC, 4–7 for AC)
 		Output:
-			set value in digits (int)
+			float, set value in digits
 
 		Example:
 			setResolution(":VOLT:DC", 4) --> measures 1.2348 V  (returns 4)
