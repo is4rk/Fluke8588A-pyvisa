@@ -32,6 +32,7 @@ def test_resistance():
         # Take measurement
         reading = fluke.read()
         print(f"Resistance: {reading}")
+        funct=":FUNC \"" + ":CURR:DC"+ "\""
         funct= fluke.query(":FUNC?")
         print(funct)
         fluke.close()
