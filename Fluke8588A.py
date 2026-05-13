@@ -239,16 +239,15 @@ class Fluke8588A():
 		Input:
 			root
 		Output:
-			set value
+			float, set value
 		'''
-		return self.query(root+":APER?")
+		return float(self.query(root+":APER?"))
 	def setTime(self, root, value):
 		'''
-		Sets NPLC value for given root.
-		1 PLC = 20ms at 50Hz (EU).
+		Sets seonds value for given root.
 		Input:
 			root  : SCPI root string e.g. ":VOLT:DC"
-			value : float between 0.001 (20μs) and 500 (10s)
+			value : float between 20μ and 10. Seconds
 		Output:
 			set value as string
 		'''
@@ -266,7 +265,7 @@ class Fluke8588A():
 		Input:
 			root
 		Output:
-			set value
+			string, set value
 		'''
 		return self.query(root+":IMP?")
 	def setImpedence(self, root, value):
