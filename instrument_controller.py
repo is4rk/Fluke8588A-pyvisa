@@ -173,9 +173,9 @@ class InstrumentController:
                 range_mode=settings.range_mode,
                 range_val=settings.range_val,
                 resolution_val=settings.resolution,
-                zin=settings.zin,
-                aperture_mode="AUTO",  # TO CHANGE
-                time=settings.time
+                zin_val=settings.zin,
+                aperture_mode=settings.aperture_mode,
+                time_val=settings.time
             )
             
             actual_settings = DcvSettings(
