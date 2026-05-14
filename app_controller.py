@@ -124,17 +124,44 @@ class AppController:
 	def _on_aperture_mode_changed(self, mode):
 		self._current_aperture_mode = mode
 		self._view.set_aperture_mode(mode)
-		self._on_dcv_setting_change()
+		current_mode = self._view.current_mode
+		if current_mode == "DCV":
+			self._dcv_settings.aperture_mode = mode
+			self._on_dcv_setting_change(self._dcv_settings)
+		elif current_mode == "DCI":
+			self._dci_settings.aperture_mode = mode
+			self._on_dci_setting_change(self._dci_settings)
+		elif current_mode == "OHMS":
+			self._ohms_settings.aperture_mode = mode
+			self._on_ohms_setting_change(self._ohms_settings)
 
 	def _on_time_changed(self, time):
 		self._current_time = time
 		self._view.set_time_value(time)
-		self._on_dcv_setting_change()
+		current_mode = self._view.current_mode
+		if current_mode == "DCV":
+			self._dcv_settings.time = time
+			self._on_dcv_setting_change(self._dcv_settings)
+		elif current_mode == "DCI":
+			self._dci_settings.time = time
+			self._on_dci_setting_change(self._dci_settings)
+		elif current_mode == "OHMS":
+			self._ohms_settings.time = time
+			self._on_ohms_setting_change(self._ohms_settings)
 
 	def _on_nplc_changed(self, nplc):
 		self._current_nplc = nplc
 		self._view.set_nplc_value(nplc)
-		self._on_dcv_setting_change()
+		current_mode = self._view.current_mode
+		if current_mode == "DCV":
+			self._dcv_settings.resolution = nplc
+			self._on_dcv_setting_change(self._dcv_settings)
+		elif current_mode == "DCI":
+			self._dci_settings.resolution = nplc
+			self._on_dci_setting_change(self._dci_settings)
+		elif current_mode == "OHMS":
+			self._ohms_settings.resolution = nplc
+			self._on_ohms_setting_change(self._ohms_settings)
 
 	def _set_ui_aperture_settings(self):
 		self._view.set_aperture_mode()
