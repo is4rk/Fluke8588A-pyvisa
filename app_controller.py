@@ -179,6 +179,7 @@ class AppController:
 			aperture_mode=settings.aperture_mode,
 			time=settings.time
 		)
+		print(translated_settings.zin)
 		self._dcv_settings = translated_settings
 
 	
