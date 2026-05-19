@@ -3,7 +3,7 @@ from config import *
 class Translator:
     def __init__(self):
         """Initialize the translator with any necessary calibration data."""
-        pass
+        self.error_value="no_trans"
     
     def impedence_to_machine(self, value):
         """
@@ -15,10 +15,10 @@ class Translator:
         Returns:
             float: The translated machine value
         """
-        gui_val=[InstrumentConfig.VALID_IMPEDANCES_DCV]
+        gui_val=InstrumentConfig.VALID_IMPEDANCES_DCV
         machine_val=[DCV_ZIN]
         mapping=dict(zip(gui_val, machine_val))
-        return mapping[value]
+        return mapping.get(value, self.error_value)
     
     def machine_to_gui(self, machine_value):
         """
