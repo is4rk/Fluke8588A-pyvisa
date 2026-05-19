@@ -6,7 +6,7 @@ from config import InstrumentConfig
 FUNCTIONS = ["", "DCV", "DCI", "ACV", "ACI", "OHMS", "DIGITIZE"]
 
 DCV_RANGE =     ["Auto", "100 mV", "1 V", "10 V", "100 V", "1 kV"]
-DCV_RANGE_VAL = ["Auto", 1e-1, 1, 1e1, 1e2, 1e3]
+DCV_RANGE_VAL = ["AUTO ON", 1e-1, 1, 1e1, 1e2, 1e3]
 
 DCI_RANGE =     ["AUTO ON", "10 μA", "100 μA", "1 mA", "10 mA", "100 mA", "1 A", "10 A", "30 A"]
 DCI_RANGE_VAL = ["AUTO ON", 1e-7, 1e-6, 1e-3, 1e-2, 1e-1, 1, 1e1, 3e1]
