@@ -15,9 +15,10 @@ class Translator:
         Returns:
             float: The translated machine value
         """
-        gui_val=InstrumentConfig.VALID_IMPEDANCES_DCV
-        machine_val=[DCV_ZIN]
-        mapping=dict(zip(gui_val, machine_val))
+        gui_val = DCV_ZIN  # ["Auto", "10 MΩ", "1 MΩ"]
+        machine_val = InstrumentConfig.VALID_IMPEDANCES_DCV
+        # ["AUTO", "10M", "1M"]  # Corresponding instrument values
+        mapping = dict(zip(gui_val, machine_val))
         return mapping.get(value, self.error_value)
     
     def machine_to_gui(self, machine_value):
@@ -30,5 +31,7 @@ class Translator:
         Returns:
             float: The translated GUI value
         """
-        gui_impedance = machine_value / 1.0  # Placeholder conversion
-        return gui_impedance
+        gui_val = DCV_ZIN  # ["Auto", "10 MΩ", "1 MΩ"]
+        machine_val = InstrumentConfig.VALID_IMPEDANCES_DCV  # ["AUTO", "10M", "1M"]
+        reverse_mapping = dict(zip(machine_val, gui_val))
+        return reverse_mapping.get(machine_value, self.error_value)
