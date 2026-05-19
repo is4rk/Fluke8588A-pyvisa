@@ -6,14 +6,14 @@ from config import InstrumentConfig
 FUNCTIONS = ["", "DCV", "DCI", "ACV", "ACI", "OHMS", "DIGITIZE"]
 
 DCV_RANGE =     ["Auto", "100 mV", "1 V", "10 V", "100 V", "1 kV"]
-DCV_RANGE_VAL = ["AUTO ON", 1e-1, 1, 1e1, 1e2, 1e3]
+DCV_RANGE_VAL = ["AUTO", 1e-1, 1, 1e1, 1e2, 1e3] #CHECK IF AUTO OR AUTO ON
 
 DCI_RANGE =     ["AUTO ON", "10 μA", "100 μA", "1 mA", "10 mA", "100 mA", "1 A", "10 A", "30 A"]
 DCI_RANGE_VAL = ["AUTO ON", 1e-7, 1e-6, 1e-3, 1e-2, 1e-1, 1, 1e1, 3e1]
 
 DCV_ZIN = ["Auto", "10 MΩ", "1 MΩ"]
 
-DC_DIGIT_VAL = sorted(InstrumentConfig.VALID_RESOLUTIONS_DC_DIGITS)  # single source of truth
+DC_DIGIT_VAL = sorted(InstrumentConfig.VALID_RESOLUTIONS_DC_DIGITS) 
 AC_DIGIT_VAL = sorted(InstrumentConfig.VALID_RESOLUTIONS_AC_DIGITS)
 
 AUTO_FAST_VALUES = [1e-2, 1e-1, 1, 1e1, 1e2]  # values for autofast at 4,5,6,7,8 digits
