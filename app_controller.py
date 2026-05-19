@@ -173,7 +173,7 @@ class AppController:
 	def _on_dcv_setting_change(self, settings: DcvSettings):
 		translated_settings = DcvSettings(
 			range_mode=settings.range_mode,
-			range_val=settings.range_val,
+			range_val=self._translator.gui_to_machine(settings.range_val),
 			resolution=settings.resolution,
 			zin=self._translator.gui_to_machine(settings.zin),
 			aperture_mode=settings.aperture_mode,
