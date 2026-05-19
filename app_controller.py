@@ -171,12 +171,6 @@ class AppController:
 		
 	
 	def _on_dcv_setting_change(self, settings: DcvSettings):
-		self._dcv_settings = settings
-	
-	def	_on_dci_setting_change(self, settings: DciSettings):
-		self._dci_settings= settings
-
-	def _on_ohms_setting_change(self, settings: OhmsSettings):
 		translated_settings = DcvSettings(
 			range_mode=settings.range_mode,
 			range_val=settings.range_val,
@@ -186,6 +180,14 @@ class AppController:
 			time=settings.time
 		)
 		self._dcv_settings = translated_settings
+
+	
+	def	_on_dci_setting_change(self, settings: DciSettings):
+		self._dci_settings= settings
+
+	def _on_ohms_setting_change(self, settings: OhmsSettings):
+		self._ohms_settings = settings
+
 	def _on_continuous_start(self):
 		if self._reading_thread is not None:
 			return
