@@ -5,7 +5,7 @@ class Translator:
         """Initialize the translator with any necessary calibration data."""
         self.error_value="no_trans"
     
-    def impedence_to_machine(self, value):
+    def gui_to_machine(self, value):
         """
         Convert GUI impedance value to machine value.
         
