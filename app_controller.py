@@ -4,6 +4,7 @@ from dc_measurment_setup import DcMeasurmentWindow
 from trigger_setup import TriggerWindow
 from settings import DcvSettings, DciSettings, OhmsSettings
 from measurment_controller import ReadingThread
+from translator import Translator
 
 class AppController:
 
@@ -16,9 +17,9 @@ class AppController:
 		# Initialize settings objects with default values
 		self._dcv_settings = DcvSettings(
 			range_mode="AUTO",
-			range_val="Auto",
+			range_val="AUTO ON",
 			resolution=4,
-			zin="Auto",
+			zin="AUTO",
 			aperture_mode="AUTO",
 			time=0.1
 		)
@@ -43,6 +44,7 @@ class AppController:
 		self._view.show()
 		self._instr_ctrl=InstrumentController()
 		self._reading_thread= None
+		self._translator = Translator()
 
 	def _connect_signals(self):
 		self._view.init_requested.connect(self._on_init)
@@ -175,8 +177,15 @@ class AppController:
 		self._dci_settings= settings
 
 	def _on_ohms_setting_change(self, settings: OhmsSettings):
-		self._ohms_settings = settings
-
+		translated_settings = DcvSettings(
+			range_mode=settings.range_mode,
+			range_val=settings.range_val,
+			resolution=settings.resolution,
+			zin=self._translator.gui_to_machine(settings.zin),
+			aperture_mode=settings.aperture_mode,
+			time=settings.time
+		)
+		self._dcv_settings = translated_settings
 	def _on_continuous_start(self):
 		if self._reading_thread is not None:
 			return
