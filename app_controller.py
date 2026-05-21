@@ -252,7 +252,7 @@ class AppController:
 		if self.TEST_MODE: print(f">>> _on_continuous_stop")
 		if self._reading_thread is None:
 			if self.TEST_MODE: print(f"<<< _on_continuous_stop (no thread running)")
-			returnTrue
+			return True
 		self._reading_thread.stop()
 		self._reading_thread = None
 		self._view.set_status("Stopped.")
