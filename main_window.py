@@ -191,6 +191,7 @@ class MainWindow(QMainWindow):
 	
 	def _on_ohms_changed(self):
 		self.ohms_signal.emit(OhmsSettings(
+			four = True, #viewer doesnt hanle logic, so it just sets to true
 			range_val = self.ohm_range_combo.currentText(),
 			resolution = self.ohm_res_spin.value(),
 			mode = self.ohm_mode_combo.currentText(),
