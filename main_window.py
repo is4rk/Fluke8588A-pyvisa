@@ -2,7 +2,7 @@ from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QMainWindow
 import os
-from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_zin, get_dc_digit_val, get_ohm_modes, get_ohm_range
+from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_impedence, get_dc_digit_val, get_ohm_modes, get_ohm_range
 from config import InstrumentConfig
 from settings import DcvSettings, DciSettings, OhmsSettings
 from plot_widget import DmmPlotWidget
@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
 		self.mode_combo.addItems(get_functions())
 		#dcv
 		self.dcv_range_combo.addItems(get_dcv_range())
-		self.dcv_zin_combo.addItems(get_dcv_zin())
+		self.dcv_zin_combo.addItems(get_dcv_impedence())
 		self.dcv_res_spin.setRange(min(get_dc_digit_val()), max(get_dc_digit_val()))
 		#dci
 		self.dci_range_combo.addItems(get_dci_range())

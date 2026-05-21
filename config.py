@@ -23,8 +23,14 @@ class InstrumentConfig:
 
     # Instrument-defined valid values — used by Fluke8588A for input validation
     VALID_APERTURE_MODES = ["AUTO", "FAST", "MAN"]
-    VALID_IMPEDANCES_DCV = ["AUTO", "10M", "1M"]
     VALID_RESOLUTIONS_DC = [1e-4, 1e-5, 1e-6, 1e-7, 1e-8]
     VALID_RESOLUTIONS_DC_DIGITS = [4, 5, 6, 7, 8]
     VALID_RESOLUTIONS_AC = [1e-4, 1e-5, 1e-6, 1e-7]
     VALID_RESOLUTIONS_AC_DIGITS = [4, 5, 6, 7]
+
+    #range values
+    DCV_RANGE_VAL = ["AUTO", 1e-1, 1, 1e1, 1e2, 1e3] #CHECK IF AUTO OR AUTO ON
+    DCI_RANGE_VAL = ["AUTO ON", 1e-7, 1e-6, 1e-3, 1e-2, 1e-1, 1, 1e1, 3e1]
+    OHM_RANGE_VAL = ["AUTO ON", 1, 1e1, 1e2, 1e3, 1e5, 1e6, 1e7, 1e8, 1e9] 
+    OHM_MODES_VAL = ["NORMal" "NORMal", "TRUE","HIV", "HIV"]
+    IMPEDANCES_DCV_VAL = ["AUTO", "10M", "1M"]

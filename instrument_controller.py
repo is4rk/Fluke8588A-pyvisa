@@ -189,45 +189,44 @@ class InstrumentController:
             
             return actual_settings
         
-        elif mode == "OHMS":
-            # Determine root based on wire mode (4-wire uses FRESISTANCE)
-            root = InstrumentConfig.ROOT_FRESISTANCE if settings.mode.startswith("4W") else InstrumentConfig.ROOT_RESISTANCE
-            
+        elif mode == "OHMS":    
             # Determine range_mode based on range_val
             range_mode = "AUTO" if settings.range_val == "AUTO ON" else "MAN"
-            
-            # Convert wire mode from UI format to instrument format
-            # "2-WIRE NORMAL" -> "NORMal", "4-WIRE NORMAL" -> "4W NORMAL", etc.
-            wire_mode_map = {
-                "2W NORMAL": "NORMal",
-                "4W NORMAL": "4W NORMal",
-                "4W Tru": "4W Tru",
-                "2W HV": "2W HIV",
-                "4W HV": "4W HIV"
-            }
-            wire_mode = wire_mode_map.get(settings.mode, "NORMal")
-            
             # Convert filter and low_i to instrument format (0 or 1)
             filter_val = 1 if settings.filter else 0
             low_mode_val = 1 if settings.low_i else 0
             
-            self._instrument.init_resistance(
-                aperture_mode=settings.aperture_mode,
-                time_val=float(settings.time),
-                wire_mode_val=wire_mode,
-                low_mode_val=low_mode_val,
-                range_mode=range_mode,
-                range_val=settings.range_val,
-                resolution_val=settings.resolution,
-                filter_val=filter_val
-            )
-            
+            if settings.four==True:
+                self._instrument._init_fresistance(
+                    aperture_mode=settings.aperture_mode,
+                    time_val=float(settings.time),
+                    wire_mode_val=settings.wire_mode,
+                    low_mode_val=low_mode_val,
+                    range_mode=range_mode,
+                    range_val=settings.range_val,
+                    resolution_val=settings.resolution,
+                    filter_val=filter_val
+                )
+
+            elif settings.four==False:
+                self._instrument.init_resistance(
+                    aperture_mode=settings.aperture_mode,
+                    time_val=float(settings.time),
+                    wire_mode_val=settings.wire_mode,
+                    low_mode_val=low_mode_val,
+                    range_mode=range_mode,
+                    range_val=settings.range_val,
+                    resolution_val=settings.resolution,
+                    filter_val=filter_val
+                )
+                
             actual_settings = OhmsSettings(
+                four=settings.four,
                 range_val=str(self._instrument.getRange(root)),
                 resolution=int(self._instrument.getResolution(root)),
-                mode=settings.mode,
-                filter=settings.filter,
-                low_i=settings.low_i,
+                mode=self._instrument.getWireMode(),
+                filter=self._instrument.getFilter(),
+                low_i=settings._instument.getLowCurrentMode(),
                 aperture_mode=self._instrument.getApertureMode(root).strip(),
                 time=self._instrument.getTime(root)
             )

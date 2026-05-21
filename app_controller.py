@@ -7,6 +7,7 @@ from measurment_controller import ReadingThread
 from translator import Translator
 
 class AppController:
+	TEST_MODE = True  # Set to False to disable debug output
 
 	def __init__(self):
 		self._view = MainWindow()
@@ -31,6 +32,7 @@ class AppController:
 			time=0.1
 		)
 		self._ohms_settings = OhmsSettings(
+			four=False, #four wire or 2 wire
 			range_val="AUTO ON",
 			resolution=4,
 			mode="2W NORMAL",
@@ -62,29 +64,38 @@ class AppController:
 		self._view.continuous_stop_requested.connect(self._on_continuous_stop)
 
 	def _on_read(self):
+		if self.TEST_MODE: print(f">>> _on_read")
 		if not self._instr_ctrl.is_connected():
 			self._view.set_status("ERROR: not connected.")
+			if self.TEST_MODE: print(f"<<< _on_read (not connected)")
 			return
 		try:
 			value=self._instr_ctrl.read()
 			print(value) # REMOVE
 			self._view.set_read(value)
+			if self.TEST_MODE: print(f"<<< _on_read (value={value})")
 		except Exception as e:
-			self._view.set_status(f"Read error: {e}")	
+			self._view.set_status(f"Read error: {e}")
+			if self.TEST_MODE: print(f"<<< _on_read (error={e})")	
 	
 	def _on_init(self):
+		if self.TEST_MODE: print(f">>> _on_init (gpib_address={self._view.current_gpib_address})")
 		if hasattr(self, '_instr_ctrl'):
 			if self._instr_ctrl.is_connected():
 				self._instr_ctrl.disconnect()
 		self._instr_ctrl.connect(self._view.current_gpib_address)
 		self._view.set_connected()
 		self._view.set_status("Connected")
+		if self.TEST_MODE: print(f"<<< _on_init")
 	
 	def _on_mode_change(self):
+		if self.TEST_MODE: print(f">>> _on_mode_change (mode={self._view.current_mode})")
 		self._view.set_mode_visible(self._view.current_mode)
+		if self.TEST_MODE: print(f"<<< _on_mode_change")
 
 	def _on_set(self):
 		mode=self._view.current_mode
+		if self.TEST_MODE: print(f">>> _on_set (mode={mode})")
 		new_settings=self.get_settings_from_mode(mode)
 		actual_settings=self._instr_ctrl.set(mode, new_settings)
 		
@@ -99,6 +110,7 @@ class AppController:
 		# Update the GUI to reflect actual settings
 		self._view.set_status(f"{mode} settings applied")
 		self._refresh_ui_settings()
+		if self.TEST_MODE: print(f"<<< _on_set")
 
 	def get_settings_from_mode(self, mode: str):
 		if mode == "DCV":
@@ -124,6 +136,7 @@ class AppController:
 	def _on_trigger_press(self):
 		self._trigger_pop_up.show()
 	def _on_aperture_mode_changed(self, mode):
+		if self.TEST_MODE: print(f">>> _on_aperture_mode_changed (mode={mode})")
 		self._current_aperture_mode = mode
 		self._view.set_aperture_mode(mode)
 		current_mode = self._view.current_mode
@@ -136,8 +149,10 @@ class AppController:
 		elif current_mode == "OHMS":
 			self._ohms_settings.aperture_mode = mode
 			self._on_ohms_setting_change(self._ohms_settings)
+		if self.TEST_MODE: print(f"<<< _on_aperture_mode_changed")
 
 	def _on_time_changed(self, time):
+		if self.TEST_MODE: print(f">>> _on_time_changed (time={time})")
 		self._current_time = time
 		self._view.set_time_value(time)
 		current_mode = self._view.current_mode
@@ -150,8 +165,10 @@ class AppController:
 		elif current_mode == "OHMS":
 			self._ohms_settings.time = time
 			self._on_ohms_setting_change(self._ohms_settings)
+		if self.TEST_MODE: print(f"<<< _on_time_changed")
 
 	def _on_nplc_changed(self, nplc):
+		if self.TEST_MODE: print(f">>> _on_nplc_changed (nplc={nplc})")
 		self._current_nplc = nplc
 		self._view.set_nplc_value(nplc)
 		current_mode = self._view.current_mode
@@ -164,6 +181,7 @@ class AppController:
 		elif current_mode == "OHMS":
 			self._ohms_settings.resolution = nplc
 			self._on_ohms_setting_change(self._ohms_settings)
+		if self.TEST_MODE: print(f"<<< _on_nplc_changed")
 
 	def _set_ui_aperture_settings(self):
 		self._view.set_aperture_mode()
@@ -171,6 +189,7 @@ class AppController:
 		
 	
 	def _on_dcv_setting_change(self, settings: DcvSettings):
+		if self.TEST_MODE: print(f">>> _on_dcv_setting_change (range_val={settings.range_val}, resolution={settings.resolution}, zin={settings.zin})")
 		translated_settings = DcvSettings(
 			range_mode=settings.range_mode,
 			range_val=self._translator.gui_to_machine(settings.range_val),
@@ -181,16 +200,44 @@ class AppController:
 		)
 		print(translated_settings.zin)
 		self._dcv_settings = translated_settings
+		if self.TEST_MODE: print(f"<<< _on_dcv_setting_change")
 
 	
 	def	_on_dci_setting_change(self, settings: DciSettings):
-		self._dci_settings= settings
+		if self.TEST_MODE: print(f">>> _on_dci_setting_change (range_val={settings.range_val}, resolution={settings.resolution})")
+		translated_settings = DciSettings(
+			range_mode=settings.range_mode,
+			range_val=self._translator.gui_to_machine(settings.range_val),
+			resolution=settings.resolution,
+			aperture_mode=settings.aperture_mode,
+			time=settings.time
+		)
+		self._dci_settings = translated_settings
+		if self.TEST_MODE: print(f"<<< _on_dci_setting_change")
 
 	def _on_ohms_setting_change(self, settings: OhmsSettings):
-		self._ohms_settings = settings
+		if self.TEST_MODE: print(f">>> _on_ohms_setting_change (range_val={settings.range_val}, mode={settings.mode}, resolution={settings.resolution})")
+		translated_settings = OhmsSettings(
+			four=settings.four,
+			range_val=self._translator.gui_to_machine(settings.range_val),
+			resolution=settings.resolution,
+			mode=settings.mode,
+			filter=settings.filter,
+			low_i=settings.low_i,
+			aperture_mode=settings.aperture_mode,
+			time=settings.time
+		)
+		self._ohms_settings = translated_settings
+		if settings.mode.startswith("4W"):
+			self._ohms_settings.four=True
+		elif settings.mode.startswith("2W"):
+			self._ohms_settings.four=False
+		if self.TEST_MODE: print(f"<<< _on_ohms_setting_change")
 
 	def _on_continuous_start(self):
+		if self.TEST_MODE: print(f">>> _on_continuous_start")
 		if self._reading_thread is not None:
+			if self.TEST_MODE: print(f"<<< _on_continuous_start (thread already running)")
 			return
 		self._reading_thread=ReadingThread(self._instr_ctrl)
 		self._reading_thread.reading_ready.connect(self._view.set_read) #emits from measurment_controller are redirected to view
@@ -198,13 +245,17 @@ class AppController:
 		self._view.start_button.setEnabled(False)
 		self._view.stop_button.setEnabled(True)
 		self._view.set_status("Continuous reading started.")
+		if self.TEST_MODE: print(f"<<< _on_continuous_start")
 		
 
 	def _on_continuous_stop(self):
+		if self.TEST_MODE: print(f">>> _on_continuous_stop")
 		if self._reading_thread is None:
-			return
+			if self.TEST_MODE: print(f"<<< _on_continuous_stop (no thread running)")
+			returnTrue
 		self._reading_thread.stop()
 		self._reading_thread = None
 		self._view.set_status("Stopped.")
 		self._view.stop_button.setEnabled(False)
 		self._view.start_button.setEnabled(True)
+		if self.TEST_MODE: print(f"<<< _on_continuous_stop")

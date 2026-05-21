@@ -189,7 +189,7 @@ classDiagram
         DCV_RANGE_VAL$
         DCI_RANGE$
         DCI_RANGE_VAL$
-        DCV_ZIN$
+        DCV_IMPEDENCE$
         DC_DIGIT_VAL$
         AC_DIGIT_VAL$
         AUTO_FAST_VALUES$
