@@ -1,4 +1,4 @@
-from instrument_controller import InstrumentController as InstrumentController 
+from instrument_controller_test import InstrumentControllerTest as InstrumentController 
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
 from trigger_setup import TriggerWindow
@@ -192,12 +192,13 @@ class AppController:
 		if self.TEST_MODE: print(f">>> _on_dcv_setting_change (range_val={settings.range_val}, resolution={settings.resolution}, zin={settings.zin})")
 		translated_settings = DcvSettings(
 			range_mode=settings.range_mode,
-			range_val=self._translator.gui_to_machine(settings.range_val),
+			range_val=self._translator.translate("dcv_range", settings.range_val),
 			resolution=settings.resolution,
-			zin=self._translator.gui_to_machine(settings.zin),
+			zin=self._translator.translate("impedence", settings.zin),
 			aperture_mode=settings.aperture_mode,
 			time=settings.time
 		)
+		if self.TEST_MODE: print(f"    TRANSLATED: range_val={translated_settings.range_val}, zin={translated_settings.zin}")
 		print(translated_settings.zin)
 		self._dcv_settings = translated_settings
 		if self.TEST_MODE: print(f"<<< _on_dcv_setting_change")
@@ -207,11 +208,12 @@ class AppController:
 		if self.TEST_MODE: print(f">>> _on_dci_setting_change (range_val={settings.range_val}, resolution={settings.resolution})")
 		translated_settings = DciSettings(
 			range_mode=settings.range_mode,
-			range_val=self._translator.gui_to_machine(settings.range_val),
+			range_val=self._translator.translate("dci_range", settings.range_val),
 			resolution=settings.resolution,
 			aperture_mode=settings.aperture_mode,
 			time=settings.time
 		)
+		if self.TEST_MODE: print(f"    TRANSLATED: range_val={translated_settings.range_val}")
 		self._dci_settings = translated_settings
 		if self.TEST_MODE: print(f"<<< _on_dci_setting_change")
 
@@ -219,14 +221,15 @@ class AppController:
 		if self.TEST_MODE: print(f">>> _on_ohms_setting_change (range_val={settings.range_val}, mode={settings.mode}, resolution={settings.resolution})")
 		translated_settings = OhmsSettings(
 			four=settings.four,
-			range_val=self._translator.gui_to_machine(settings.range_val),
+			range_val=self._translator.translate("ohm_range", settings.range_val),
 			resolution=settings.resolution,
-			mode=settings.mode,
+			mode=self._translator.translate("ohm_mode", settings.mode),
 			filter=settings.filter,
 			low_i=settings.low_i,
 			aperture_mode=settings.aperture_mode,
 			time=settings.time
 		)
+		if self.TEST_MODE: print(f"    TRANSLATED: range_val={translated_settings.range_val}, mode={translated_settings.mode}")
 		self._ohms_settings = translated_settings
 		if settings.mode.startswith("4W"):
 			self._ohms_settings.four=True
