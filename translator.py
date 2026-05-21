@@ -11,7 +11,7 @@ class Translator:
             "dcv_range": dict(zip(DCV_RANGE, _inst_conf.DCV_RANGE_VAL)),
             "dci_range": dict(zip(DCI_RANGE, _inst_conf.DCI_RANGE_VAL)),
             "ohm_range": dict(zip(OHM_RANGE, _inst_conf.OHM_RANGE_VAL)),
-            "ohm_mode" : dict(zip(OHM_MODES), _inst_conf.OHM_MODES_VAL)
+            "ohm_mode" : dict(zip(OHM_MODES, _inst_conf.OHM_MODES_VAL))
         }
         
         # Machine → GUI mappings by parameter type (reversed)
