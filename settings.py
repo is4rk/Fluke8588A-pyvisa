@@ -19,6 +19,7 @@ class DciSettings:
 
 @dataclass
 class OhmsSettings:
+    four: bool
     range_val:  str
     resolution: int
     mode:       str
