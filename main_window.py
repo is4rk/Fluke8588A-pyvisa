@@ -164,9 +164,13 @@ class MainWindow(QMainWindow):
 
 	def set_time_value(self, time: float):
 		self.dcv_time_label.setText(str(time))
+		self.dci_time_label.setText(str(time))
+		self.ohm_time_label.setText(str(time))
 
 	def set_nplc_value(self, nplc: float):
 		self.dcv_nplc_label.setText(str(nplc))
+		self.dci_nplc_label.setText(str(nplc))
+		self.ohm_nplc_label.setText(str(nplc))
 
 	def _on_dcv_changed(self):
 		self.dcv_signal.emit(DcvSettings(
