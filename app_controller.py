@@ -105,7 +105,7 @@ class AppController:
 		if mode == "DCV":
 			gui_settings = DcvSettings(
 				range_mode=actual_settings.range_mode,
-				range_val=self._translator.translate_reverse("dcv_range", actual_settings.range_val),
+				range_val=actual_settings.range_val,
 				resolution=actual_settings.resolution,
 				zin=self._translator.translate_reverse("impedence", actual_settings.zin),
 				aperture_mode=actual_settings.aperture_mode,
@@ -115,7 +115,7 @@ class AppController:
 		elif mode == "DCI":
 			gui_settings = DciSettings(
 				range_mode=actual_settings.range_mode,
-				range_val=self._translator.translate_reverse("dci_range", actual_settings.range_val),
+				range_val=actual_settings.range_val,
 				resolution=actual_settings.resolution,
 				aperture_mode=actual_settings.aperture_mode,
 				time=actual_settings.time
@@ -124,7 +124,7 @@ class AppController:
 		elif mode == "OHMS":
 			gui_settings = OhmsSettings(
 				four=actual_settings.four,
-				range_val=self._translator.translate_reverse("ohm_range", actual_settings.range_val),
+				range_val=actual_settings.range_val,
 				resolution=actual_settings.resolution,
 				mode=self._translator.translate_reverse("ohm_mode", actual_settings.mode),
 				filter=actual_settings.filter,
