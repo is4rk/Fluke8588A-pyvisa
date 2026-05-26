@@ -351,9 +351,10 @@ class Fluke8588A():
 		Input:
 			root
 		Output:
-			float, set value
+			int, digit count (4-8 for DC, 4-7 for AC)
 		'''
-		return float(self.query(root+":RES?"))
+		raw_resolution = float(self.query(root+":RES?"))
+		return self.__anti_convert_resolution(raw_resolution)
 	def setResolution(self, root, value):
 		'''
 		Sets resolution in digits for given root.
