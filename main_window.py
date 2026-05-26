@@ -161,6 +161,8 @@ class MainWindow(QMainWindow):
 
 	def set_aperture_mode(self, mode: str):
 		self.dcv_measure_setup_button.setText(mode)
+		self.dci_measure_setup_button.setText(mode)
+		self.ohm_measure_setup.setText(mode)
 
 	def set_time_value(self, time: float):
 		self.dcv_time_label.setText(str(time))
