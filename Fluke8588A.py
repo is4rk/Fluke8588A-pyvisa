@@ -277,10 +277,10 @@ class Fluke8588A():
 		Output:
 			string, set value: "AUTO", "1M", or "10M"
 		'''
-		if value not in InstrumentConfig.VALID_IMPEDANCES_DCV:
+		if value not in InstrumentConfig.IMPEDANCES_DCV_VAL:
 			raise ValueError(
 				f"Invalid impedance '{value}'. "
-				f"Expected one of {InstrumentConfig.VALID_IMPEDANCES_DCV}"
+				f"Expected one of {InstrumentConfig.IMPEDANCES_DCV_VAL}"
 			)
 		self.write(root + ":IMP " + str(value))
 		return self.getImp(root)
