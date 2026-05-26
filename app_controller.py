@@ -97,17 +97,45 @@ class AppController:
 		mode=self._view.current_mode
 		if self.TEST_MODE: print(f">>> _on_set (mode={mode})")
 		new_settings=self.get_settings_from_mode(mode)
+		if self.TEST_MODE: print(f"    SEND_TO_INSTRUMENT: {new_settings}")
 		actual_settings=self._instr_ctrl.set(mode, new_settings)
+		if self.TEST_MODE: print(f"    RECEIVED_FROM_INSTRUMENT: {actual_settings}")
 		
-		#Update internal settings with what the instrument actually accepted
+		#Reverse-translate machine values back to GUI format
 		if mode == "DCV":
-			self._dcv_settings = actual_settings
+			gui_settings = DcvSettings(
+				range_mode=actual_settings.range_mode,
+				range_val=self._translator.translate_reverse("dcv_range", actual_settings.range_val),
+				resolution=actual_settings.resolution,
+				zin=self._translator.translate_reverse("impedence", actual_settings.zin),
+				aperture_mode=actual_settings.aperture_mode,
+				time=actual_settings.time
+			)
+			self._dcv_settings = gui_settings
 		elif mode == "DCI":
-			self._dci_settings = actual_settings
+			gui_settings = DciSettings(
+				range_mode=actual_settings.range_mode,
+				range_val=self._translator.translate_reverse("dci_range", actual_settings.range_val),
+				resolution=actual_settings.resolution,
+				aperture_mode=actual_settings.aperture_mode,
+				time=actual_settings.time
+			)
+			self._dci_settings = gui_settings
 		elif mode == "OHMS":
-			self._ohms_settings = actual_settings
+			gui_settings = OhmsSettings(
+				four=actual_settings.four,
+				range_val=self._translator.translate_reverse("ohm_range", actual_settings.range_val),
+				resolution=actual_settings.resolution,
+				mode=self._translator.translate_reverse("ohm_mode", actual_settings.mode),
+				filter=actual_settings.filter,
+				low_i=actual_settings.low_i,
+				aperture_mode=actual_settings.aperture_mode,
+				time=actual_settings.time
+			)
+			self._ohms_settings = gui_settings
 		
 		# Update the GUI to reflect actual settings
+		if self.TEST_MODE: print(f"    REVERSE_TRANSLATED: {gui_settings}")
 		self._view.set_status(f"{mode} settings applied")
 		self._refresh_ui_settings()
 		if self.TEST_MODE: print(f"<<< _on_set")
@@ -131,10 +159,14 @@ class AppController:
 			self._view.ohms_signal.emit(self._ohms_settings)
 
 	def _on_measurment_setup_press(self):
+		if self.TEST_MODE: print(f">>> _on_measurment_setup_press")
 		self._meas_pop_up.show()
+		if self.TEST_MODE: print(f"<<< _on_measurment_setup_press")
 
 	def _on_trigger_press(self):
+		if self.TEST_MODE: print(f">>> _on_trigger_press")
 		self._trigger_pop_up.show()
+		if self.TEST_MODE: print(f"<<< _on_trigger_press")
 	def _on_aperture_mode_changed(self, mode):
 		if self.TEST_MODE: print(f">>> _on_aperture_mode_changed (mode={mode})")
 		self._current_aperture_mode = mode
@@ -191,12 +223,11 @@ class AppController:
 			time=settings.time
 		)
 		if self.TEST_MODE: print(f"    TRANSLATED: range_val={translated_settings.range_val}, zin={translated_settings.zin}")
-		print(translated_settings.zin)
 		self._dcv_settings = translated_settings
-		if self.TEST_MODE: print(f"<<< _on_dcv_setting_change")
+		if self.TEST_MODE: print(f"<<< _on_dcv_setting_change (stored={self._dcv_settings})")
 
 	
-	def	_on_dci_setting_change(self, settings: DciSettings):
+	def _on_dci_setting_change(self, settings: DciSettings):
 		if self.TEST_MODE: print(f">>> _on_dci_setting_change (range_val={settings.range_val}, resolution={settings.resolution})")
 		translated_settings = DciSettings(
 			range_mode=settings.range_mode,
@@ -207,7 +238,7 @@ class AppController:
 		)
 		if self.TEST_MODE: print(f"    TRANSLATED: range_val={translated_settings.range_val}")
 		self._dci_settings = translated_settings
-		if self.TEST_MODE: print(f"<<< _on_dci_setting_change")
+		if self.TEST_MODE: print(f"<<< _on_dci_setting_change (stored={self._dci_settings})")
 
 	def _on_ohms_setting_change(self, settings: OhmsSettings):
 		if self.TEST_MODE: print(f">>> _on_ohms_setting_change (range_val={settings.range_val}, mode={settings.mode}, resolution={settings.resolution})")
@@ -227,7 +258,7 @@ class AppController:
 			self._ohms_settings.four=True
 		elif settings.mode.startswith("2W"):
 			self._ohms_settings.four=False
-		if self.TEST_MODE: print(f"<<< _on_ohms_setting_change")
+		if self.TEST_MODE: print(f"<<< _on_ohms_setting_change (stored={self._ohms_settings})")
 
 	def _on_continuous_start(self):
 		if self.TEST_MODE: print(f">>> _on_continuous_start")
