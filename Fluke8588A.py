@@ -230,8 +230,12 @@ class Fluke8588A():
 				f"Invalid aperture mode '{value}'. "
 				f"Expected one of {InstrumentConfig.VALID_APERTURE_MODES}"
 			)
-		self.write(root + ":APER:MODE " + str(value))
-		return self.getApertureMode(root)
+		cmd = root + ":APER:MODE " + str(value)
+		logging.info(f"[APERTURE] Sending: {cmd}")
+		self.write(cmd)
+		result = self.getApertureMode(root)
+		logging.info(f"[APERTURE] Query result: {result}")
+		return result
 	
 	def getTime(self, root):
 		'''
