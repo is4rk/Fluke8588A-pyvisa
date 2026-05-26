@@ -1,4 +1,4 @@
-from instrument_controller_test import InstrumentControllerTest as InstrumentController 
+from instrument_controller import InstrumentController as InstrumentController 
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
 from trigger_setup import TriggerWindow
