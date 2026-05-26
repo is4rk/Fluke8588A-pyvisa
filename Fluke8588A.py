@@ -178,10 +178,10 @@ class Fluke8588A():
 		self.setSecondary(root, secondary)
 		self.setSecondaryMethod(root, secondary_method)
 	
-	def init_resistance(self, aperture_mode, time_val, wire_mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
+	def init_resistance(self, aperture_mode, time_val, mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
 		root=InstrumentConfig.ROOT_RESISTANCE
 		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
-		self.setWireMode(root, wire_mode_val)
+		self.setWireMode(root, mode_val)
 		self.setLowCurrentMode(root, low_mode_val)
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)
@@ -191,10 +191,10 @@ class Fluke8588A():
 		self.setApertureMode(root, aperture_mode)
 	
 
-	def init_fresistance(self, aperture_mode, time_val, wire_mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
+	def init_fresistance(self, aperture_mode, time_val, mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
 		root=InstrumentConfig.ROOT_FRESISTANCE
 		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
-		self.setWireMode(root, wire_mode_val)
+		self.setWireMode(root, mode_val)
 		self.setLowCurrentMode(root, low_mode_val)
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)

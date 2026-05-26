@@ -200,7 +200,7 @@ class InstrumentController:
                 self._instrument._init_fresistance(
                     aperture_mode=settings.aperture_mode,
                     time_val=float(settings.time),
-                    wire_mode_val=settings.wire_mode,
+                    mode_val=settings.mode,
                     low_mode_val=low_mode_val,
                     range_mode=range_mode,
                     range_val=settings.range_val,
@@ -212,7 +212,7 @@ class InstrumentController:
                 self._instrument.init_resistance(
                     aperture_mode=settings.aperture_mode,
                     time_val=float(settings.time),
-                    wire_mode_val=settings.wire_mode,
+                    mode_val=settings.mode,
                     low_mode_val=low_mode_val,
                     range_mode=range_mode,
                     range_val=settings.range_val,

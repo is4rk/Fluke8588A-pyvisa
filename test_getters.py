@@ -22,7 +22,7 @@ def test_getters():
         fluke.init_resistance(
             aperture_mode="AUTO",
             time_val=1,
-            wire_mode_val="NORMal",
+            mode_val="NORMal",
             low_mode_val=0,
             range_mode="AUTO",
             range_val="AUTO",
