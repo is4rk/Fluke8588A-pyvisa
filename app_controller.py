@@ -168,19 +168,11 @@ class AppController:
 		if self.TEST_MODE: print(f"<<< _on_time_changed")
 
 	def _on_nplc_changed(self, nplc):
+		# NPLC is handled via _on_time_changed (same value, different units)
+		# This just updates the display label for reference
 		if self.TEST_MODE: print(f">>> _on_nplc_changed (nplc={nplc})")
 		self._current_nplc = nplc
 		self._view.set_nplc_value(nplc)
-		current_mode = self._view.current_mode
-		if current_mode == "DCV":
-			self._dcv_settings.resolution = nplc
-			self._on_dcv_setting_change(self._dcv_settings)
-		elif current_mode == "DCI":
-			self._dci_settings.resolution = nplc
-			self._on_dci_setting_change(self._dci_settings)
-		elif current_mode == "OHMS":
-			self._ohms_settings.resolution = nplc
-			self._on_ohms_setting_change(self._ohms_settings)
 		if self.TEST_MODE: print(f"<<< _on_nplc_changed")
 
 	def _set_ui_aperture_settings(self):
