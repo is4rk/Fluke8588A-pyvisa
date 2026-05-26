@@ -113,8 +113,8 @@ class Fluke8588A():
 		self.setRange(root, range_val)
 		self.setResolution(root, resolution_val)
 		self.setImpedence(root, zin_val)		
-		self.setApertureMode(root, aperture_mode)
 		self.setTime(root, time_val)
+		self.setApertureMode(root, aperture_mode)
 
 	def init_dci(self, range_mode, range_val, resolution_val, aperture_mode, time_val):
 		root=InstrumentConfig.ROOT_DCI
@@ -122,8 +122,8 @@ class Fluke8588A():
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)
 		self.setResolution(root, resolution_val)
-		self.setApertureMode(root, aperture_mode)
 		self.setTime(root, time_val)
+		self.setApertureMode(root, aperture_mode)
 
 	def init_aci(self, blimit, counter_Coupling, counter_gate, coupling, filter, range_mode, range_val, resolution_val, secondary, secondary_method):
 		'''
@@ -181,27 +181,27 @@ class Fluke8588A():
 	def init_resistance(self, aperture_mode, time_val, wire_mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
 		root=InstrumentConfig.ROOT_RESISTANCE
 		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
-		self.setApertureMode(root, aperture_mode)
-		self.setTime(root, time_val)
 		self.setWireMode(root, wire_mode_val)
 		self.setLowCurrentMode(root, low_mode_val)
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)
 		self.setResolution(root, resolution_val)
 		self.setFilter(root, filter_val)
+		self.setTime(root, time_val)
+		self.setApertureMode(root, aperture_mode)
 	
 
 	def init_fresistance(self, aperture_mode, time_val, wire_mode_val, low_mode_val, range_mode, range_val, resolution_val, filter_val):
 		root=InstrumentConfig.ROOT_FRESISTANCE
 		self.write(":FUNC \"" + root[1:] + "\"") #[1:] serve a rimuovere il : dal root, cosi da avere la formattazione corretta per la stringa
-		self.setApertureMode(root, aperture_mode)
-		self.setTime(root, time_val)
 		self.setWireMode(root, wire_mode_val)
 		self.setLowCurrentMode(root, low_mode_val)
 		self.setRangeMode(root, range_mode)
 		self.setRange(root, range_val)
 		self.setResolution(root, resolution_val)
 		self.setFilter(root, filter_val)
+		self.setTime(root, time_val)
+		self.setApertureMode(root, aperture_mode)
 
 	def init_trigger(self):
 		pass
