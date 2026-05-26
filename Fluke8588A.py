@@ -391,11 +391,13 @@ class Fluke8588A():
 	def __convert_resolution(self, value):
 		return 10**(-value)
 
-	# Fluke returns resolution as a float e.g. 1E-4.
-	# Python floating point may store this as 0.00010000000000000005.
-	# This function recovers the digit count by counting leading zeros after
-	# the decimal point until the first '1' is found.
 	def __anti_convert_resolution(self, value):
+		# Check if value is already in digit format (4-8)
+		# This handles machines that return resolution as digit count directly
+		if value >= 4 and value <= 8 and value == int(value):
+			return int(value)
+		
+		# Otherwise, convert from scientific notation (1E-4 -> 4 digits)
 		formatted = f"{float(value):.17f}"
 		after_decimal = formatted.split(".")[1]
 		for i, digit in enumerate(after_decimal, start=1):
