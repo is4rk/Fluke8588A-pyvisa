@@ -20,7 +20,7 @@ class AppController:
 			range_mode="MAN",
 			range_val="1 V",
 			resolution=4,
-			zin="Auto",
+			zin="AUTO",
 			aperture_mode="AUTO",
 			time=0.1
 		)
