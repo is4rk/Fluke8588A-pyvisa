@@ -105,7 +105,7 @@ class AppController:
 		if mode == "DCV":
 			gui_settings = DcvSettings(
 				range_mode=actual_settings.range_mode,
-				range_val=actual_settings.range_val,
+				range_val=self._translator.translate_reverse("dcv_range", actual_settings.range_val),
 				resolution=actual_settings.resolution,
 				zin=self._translator.translate_reverse("impedence", actual_settings.zin),
 				aperture_mode=actual_settings.aperture_mode,
@@ -115,7 +115,7 @@ class AppController:
 		elif mode == "DCI":
 			gui_settings = DciSettings(
 				range_mode=actual_settings.range_mode,
-				range_val=actual_settings.range_val,
+				range_val=self._translator.translate_reverse("dci_range", actual_settings.range_val),
 				resolution=actual_settings.resolution,
 				aperture_mode=actual_settings.aperture_mode,
 				time=actual_settings.time
@@ -124,7 +124,7 @@ class AppController:
 		elif mode == "OHMS":
 			gui_settings = OhmsSettings(
 				four=actual_settings.four,
-				range_val=actual_settings.range_val,
+				range_val=self._translator.translate_reverse("ohm_range", actual_settings.range_val),
 				resolution=actual_settings.resolution,
 				mode=self._translator.translate_reverse("ohm_mode", actual_settings.mode),
 				filter=actual_settings.filter,
@@ -152,11 +152,11 @@ class AppController:
 		"""Update UI to show current settings from app controller"""
 		mode = self._view.current_mode
 		if mode == "DCV":
-			self._view.dcv_signal.emit(self._dcv_settings)
+			self._view._on_dcv_settings_received(self._dcv_settings)
 		elif mode == "DCI":
-			self._view.dci_signal.emit(self._dci_settings)
+			self._view._on_dci_settings_received(self._dci_settings)
 		elif mode == "OHMS":
-			self._view.ohms_signal.emit(self._ohms_settings)
+			self._view._on_ohms_settings_received(self._ohms_settings)
 
 	def _on_measurment_setup_press(self):
 		if self.TEST_MODE: print(f">>> _on_measurment_setup_press")
@@ -246,7 +246,7 @@ class AppController:
 			four=settings.four,
 			range_val=self._translator.translate("ohm_range", settings.range_val),
 			resolution=settings.resolution,
-			mode=self._translator.translate("ohm_mode", settings.mode),
+			mode= settings.mode,
 			filter=settings.filter,
 			low_i=settings.low_i,
 			aperture_mode=settings.aperture_mode,

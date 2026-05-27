@@ -207,3 +207,28 @@ class MainWindow(QMainWindow):
 			time = self.ohm_time_label.text()
 		)
 	)
+
+	def _on_dcv_settings_received(self, settings: DcvSettings):
+		"""Update UI when settings are received from instrument"""
+		self.dcv_range_combo.setCurrentText(settings.range_val)
+		self.dcv_res_spin.setValue(settings.resolution)
+		self.dcv_zin_combo.setCurrentText(settings.zin)
+		self.dcv_measure_setup_button.setText(settings.aperture_mode)
+		self.dcv_time_label.setText(str(settings.time))
+
+	def _on_dci_settings_received(self, settings: DciSettings):
+		"""Update UI when settings are received from instrument"""
+		self.dci_range_combo.setCurrentText(settings.range_val)
+		self.dci_res_spin.setValue(settings.resolution)
+		self.dci_measure_setup_button.setText(settings.aperture_mode)
+		self.dci_time_label.setText(str(settings.time))
+
+	def _on_ohms_settings_received(self, settings: OhmsSettings):
+		"""Update UI when settings are received from instrument"""
+		self.ohm_range_combo.setCurrentText(settings.range_val)
+		self.ohm_res_spin.setValue(settings.resolution)
+		self.ohm_mode_combo.setCurrentText(settings.mode)
+		self.ohm_filter_check.setChecked(settings.filter)
+		self.ohm_lowi_check.setChecked(settings.low_i)
+		self.ohm_measure_setup.setText(settings.aperture_mode)
+		self.ohm_time_label.setText(str(settings.time))
