@@ -179,11 +179,11 @@ class InstrumentController:
             )
             
             actual_settings = DcvSettings(
-                range_mode=self._instrument.getRangeMode(root).strip(),
+                range_mode=self._instrument.getRangeMode(root),
                 range_val=str(self._instrument.getRange(root)),
                 resolution=int(self._instrument.getResolution(root)),
-                zin=self._instrument.getImp(root).strip(),
-                aperture_mode=self._instrument.getApertureMode(root).strip(),
+                zin=self._instrument.getImp(root),
+                aperture_mode=self._instrument.getApertureMode(root),
                 time=self._instrument.getTime(root)
             )
             
@@ -230,7 +230,7 @@ class InstrumentController:
                 mode=self._instrument.getWireMode(root),
                 filter=self._instrument.getFilter(root),
                 low_i=self._instrument.getLowCurrentMode(root),
-                aperture_mode=self._instrument.getApertureMode(root).strip(),
+                aperture_mode=self._instrument.getApertureMode(root),
                 time=self._instrument.getTime(root)
             )
             

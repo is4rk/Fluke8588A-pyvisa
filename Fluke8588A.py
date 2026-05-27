@@ -215,7 +215,7 @@ class Fluke8588A():
 		Output:
 			string, "AUTO", "FAST", "MAN"
 		'''
-		return self.query(root+":APER:MODE?")
+		return self.query(root+":APER:MODE?").strip()
 	def setApertureMode(self, root, value):
 		'''
 		Sets aperture mode for given root.
@@ -271,7 +271,7 @@ class Fluke8588A():
 		Output:
 			string, set value
 		'''
-		return self.query(root+":IMP?")
+		return self.query(root+":IMP?").strip()
 	def setImpedence(self, root, value):
 		'''
 		Sets input impedance for given root.
@@ -298,11 +298,10 @@ class Fluke8588A():
 		Output:
 			string, "AUTO" or "MAN"
 		'''
-		response = self.query(root+":RANG:AUTO?")
-		value_int = int(float(response))
-		if value_int == InstrumentConfig.RANGE_MODE_AUTO:
+		response = int(float(self.query(root+":RANG:AUTO?")))
+		if response == InstrumentConfig.RANGE_MODE_AUTO:
 			return InstrumentConfig.RANGE_MODE_AUTO_STR
-		elif value_int == InstrumentConfig.RANGE_MODE_MAN:
+		elif response == InstrumentConfig.RANGE_MODE_MAN:
 			return InstrumentConfig.RANGE_MODE_MAN_STR
 		else:
 			raise ValueError(f"Unexpected range mode value: {response}")
@@ -337,7 +336,7 @@ class Fluke8588A():
 		Output:
 			float, set value
 		'''
-		return float(self.query(root+":RANG?"))
+		return float(self.query(root+":RANG?")).strip()
 	def setRange(self, root, value):
 		'''
 		Set range value for given root
@@ -444,7 +443,7 @@ class Fluke8588A():
 		self.write(f"{root}:COUPling {value}")
 
 	def getFilter(self, root):
-		return self.query(f"{root}:FILTer?")
+		return self.query(f"{root}:FILTer?").strip()
 
 	def setFilter(self, root, value):
 		self.write(f"{root}:FILTer {value}")
@@ -622,7 +621,7 @@ class Fluke8588A():
 
 	# RESISTANCE and FRESISTANCE (only chane is mode, which has True as an extra option)
 	def getWireMode(self, root):
-		return self.query(f"{root}:MODE?")
+		return bool(int(self.query(f"{root}:MODE?").strip()))
 	def setWireMode(self, root, value):
 		'''
 		input: (root, NORMal || HIV || TRUE);
@@ -633,7 +632,7 @@ class Fluke8588A():
 		return self.getWireMode(root)
 	
 	def getLowCurrentMode(self, root):
-		return self.query(f"{root}:LOWI?")
+		return bool(int(self.query(f"{root}:LOWI?").strip()))
 	def setLowCurrentMode(self, root, value):
 		'''
 		input: (root, 1 || 0);

@@ -32,5 +32,5 @@ class InstrumentConfig:
     DCV_RANGE_VAL = ["AUTO", 1e-1, 1, 1e1, 1e2, 1e3] #CHECK IF AUTO OR AUTO ON
     DCI_RANGE_VAL = ["AUTO ON", 1e-7, 1e-6, 1e-3, 1e-2, 1e-1, 1, 1e1, 3e1]
     OHM_RANGE_VAL = ["AUTO ON", 1, 1e1, 1e2, 1e3, 1e5, 1e6, 1e7, 1e8, 1e9] 
-    OHM_MODES_VAL = ["NORMal", "NORMal", "TRUE","HIV", "HIV"]
+    OHM_MODES_VAL = ["NORM", "NORM", "TRUE","HIV", "HIV"]
     IMPEDANCES_DCV_VAL = ["AUTO", "10M", "1M"]
