@@ -190,6 +190,7 @@ class InstrumentController:
             return actual_settings
         
         elif mode == "OHMS":    
+            root= InstrumentConfig.ROOT_RESISTANCE #sets as default
             # Determine range_mode based on range_val
             range_mode = "AUTO" if settings.range_val == "AUTO ON" else "MAN"
             # Convert filter and low_i to instrument format (0 or 1)
@@ -197,7 +198,8 @@ class InstrumentController:
             low_mode_val = 1 if settings.low_i else 0
             
             if settings.four==True:
-                self._instrument._init_fresistance(
+                root= InstrumentConfig.ROOT_FRESISTANCE
+                self._instrument.init_fresistance(
                     aperture_mode=settings.aperture_mode,
                     time_val=float(settings.time),
                     mode_val=settings.mode,
@@ -209,6 +211,7 @@ class InstrumentController:
                 )
 
             elif settings.four==False:
+                root= InstrumentConfig.ROOT_RESISTANCE
                 self._instrument.init_resistance(
                     aperture_mode=settings.aperture_mode,
                     time_val=float(settings.time),
