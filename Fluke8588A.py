@@ -336,7 +336,7 @@ class Fluke8588A():
 		Output:
 			float, set value
 		'''
-		return float(self.query(root+":RANG?")).strip()
+		return float(self.query(root+":RANG?").strip())
 	def setRange(self, root, value):
 		'''
 		Set range value for given root
@@ -621,7 +621,7 @@ class Fluke8588A():
 
 	# RESISTANCE and FRESISTANCE (only chane is mode, which has True as an extra option)
 	def getWireMode(self, root):
-		return self.query(f"{root}:MODE?").strip()
+		return bool(int(self.query(f"{root}:MODE?").strip()))
 	def setWireMode(self, root, value):
 		'''
 		input: (root, NORMal || HIV || TRUE);
