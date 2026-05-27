@@ -8,7 +8,7 @@ from translator import Translator
 
 class AppController:
 	TEST_MODE = True  # Set to False to disable debug output
-
+	
 	def __init__(self):
 		self._view = MainWindow()
 		self._meas_pop_up = DcMeasurmentWindow()
@@ -17,23 +17,23 @@ class AppController:
 		
 		# Initialize settings objects with default values
 		self._dcv_settings = DcvSettings(
-			range_mode="AUTO",
-			range_val="AUTO ON",
+			range_mode="MAN",
+			range_val="1 V",
 			resolution=4,
-			zin="AUTO",
+			zin="Auto",
 			aperture_mode="AUTO",
 			time=0.1
 		)
 		self._dci_settings = DciSettings(
-			range_mode="AUTO",
-			range_val="AUTO ON",
+			range_mode="MAN",
+			range_val="1 A",
 			resolution=4,
 			aperture_mode="AUTO",
 			time=0.1
 		)
 		self._ohms_settings = OhmsSettings(
-			four=False, #four wire or 2 wire
-			range_val="AUTO ON",
+			four=False,
+			range_val="1 kΩ",
 			resolution=4,
 			mode="2W NORMAL",
 			filter=False,
