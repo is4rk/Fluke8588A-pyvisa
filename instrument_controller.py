@@ -227,9 +227,9 @@ class InstrumentController:
                 four=settings.four,
                 range_val=str(self._instrument.getRange(root)),
                 resolution=int(self._instrument.getResolution(root)),
-                mode=self._instrument.getWireMode(),
-                filter=self._instrument.getFilter(),
-                low_i=settings._instument.getLowCurrentMode(),
+                mode=self._instrument.getWireMode(root),
+                filter=self._instrument.getFilter(root),
+                low_i=self._instrument.getLowCurrentMode(root),
                 aperture_mode=self._instrument.getApertureMode(root).strip(),
                 time=self._instrument.getTime(root)
             )
