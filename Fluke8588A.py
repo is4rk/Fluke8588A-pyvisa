@@ -443,7 +443,7 @@ class Fluke8588A():
 		self.write(f"{root}:COUPling {value}")
 
 	def getFilter(self, root):
-		return self.query(f"{root}:FILTer?").strip()
+		return bool(int(self.query(f"{root}:FILTer?").strip()))
 
 	def setFilter(self, root, value):
 		self.write(f"{root}:FILTer {value}")
