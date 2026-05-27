@@ -621,7 +621,7 @@ class Fluke8588A():
 
 	# RESISTANCE and FRESISTANCE (only chane is mode, which has True as an extra option)
 	def getWireMode(self, root):
-		return bool(int(self.query(f"{root}:MODE?").strip()))
+		return self.query(f"{root}:MODE?").strip()
 	def setWireMode(self, root, value):
 		'''
 		input: (root, NORMal || HIV || TRUE);
