@@ -46,4 +46,23 @@ class Translator:
             str: The GUI value, or error_value if not found
         """
         mapping = self._machine_to_gui_maps.get(param_type, {})
-        return mapping.get(machine_value, self.error_value)
+        
+        #Strip whitespace if string
+        machine_value_stripped = str(machine_value).strip()
+        
+        #Try direct lookup first
+        if machine_value_stripped in mapping:
+            return mapping[machine_value_stripped]
+        if machine_value in mapping:
+            return mapping[machine_value]
+        
+        #Try numeric conversion for range/mode parameters
+        if param_type in ["dcv_range", "dci_range", "ohm_range", "ohm_mode"]:
+            try:
+                numeric_value = float(machine_value_stripped)
+                if numeric_value in mapping:
+                    return mapping[numeric_value]
+            except (ValueError, TypeError):
+                pass
+        
+        return self.error_value
