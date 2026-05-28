@@ -37,7 +37,7 @@ class DcMeasurmentWindow(QWidget):
 		elif self.fast_check.isChecked():
 			mode = "FAST"
 		else:
-			mode = "MANUAL"
+			mode = "MAN"
 		self.mode_select.emit(mode)
 		self.time_select.emit(self.time_spin.value())
 		self.nplc_select.emit(self.nplc_spin.value())

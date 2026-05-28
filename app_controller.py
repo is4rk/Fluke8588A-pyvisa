@@ -223,7 +223,7 @@ class AppController:
 	def _on_dcv_setting_change(self, settings: DcvSettings):
 		if self.TEST_MODE: print(f">>> _on_dcv_setting_change (range_val={settings.range_val}, resolution={settings.resolution}, zin={settings.zin})")
 		translated_settings = DcvSettings(
-			range_mode="AUTO" if settings.range_val == "AUTO ON" else "MAN",
+			range_mode=settings.range_mode,
 			range_val = self._translator.translate("dcv_range", settings.range_val),
 			resolution=settings.resolution,
 			zin=self._translator.translate("impedence", settings.zin),
@@ -238,7 +238,7 @@ class AppController:
 	def _on_dci_setting_change(self, settings: DciSettings):
 		if self.TEST_MODE: print(f">>> _on_dci_setting_change (range_val={settings.range_val}, resolution={settings.resolution})")
 		translated_settings = DciSettings(
-			range_mode="AUTO" if settings.range_val == "AUTO ON" else "MAN",
+			range_mode=settings.range_mode,
 			range_val=self._translator.translate("dci_range", settings.range_val),
 			resolution=settings.resolution,
 			aperture_mode=settings.aperture_mode,
