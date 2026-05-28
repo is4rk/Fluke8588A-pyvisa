@@ -14,7 +14,6 @@ class AppController:
 		self._meas_pop_up = DcMeasurmentWindow()
 		# self._trigger_pop_up = TriggerWindow()
 		self._view.set_disconnected()
-		
 		# Initialize settings objects with default values
 		self._dcv_settings = DcvSettings(
 			range_mode="MAN",
