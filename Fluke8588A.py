@@ -299,6 +299,7 @@ class Fluke8588A():
 			string, "AUTO" or "MAN"
 		'''
 		response = int(float(self.query(root+":RANG:AUTO?")))
+		print(response)
 		if response == InstrumentConfig.RANGE_MODE_AUTO:
 			return InstrumentConfig.RANGE_MODE_AUTO_STR
 		elif response == InstrumentConfig.RANGE_MODE_MAN:
