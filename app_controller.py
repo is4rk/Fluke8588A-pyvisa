@@ -103,7 +103,7 @@ class AppController:
 		#Reverse-translate machine values back to GUI format
 		if mode == "DCV":
 			gui_settings = DcvSettings(
-				range_mode=
+				range_mode=self.range_mode,
 				range_val=self._translator.translate_reverse("dcv_range", actual_settings.range_val),
 				resolution=actual_settings.resolution,
 				zin=self._translator.translate_reverse("impedence", actual_settings.zin),
