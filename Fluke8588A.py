@@ -299,13 +299,12 @@ class Fluke8588A():
 			string, "AUTO" or "MAN"
 		'''
 		response = int(float(self.query(root+":RANG:AUTO?")))
-		print(response)
-		if response == InstrumentConfig.RANGE_MODE_AUTO:
+		if response != 0:
 			return InstrumentConfig.RANGE_MODE_AUTO_STR
-		elif response == InstrumentConfig.RANGE_MODE_MAN:
+		elif response == 0:
 			return InstrumentConfig.RANGE_MODE_MAN_STR
 		else:
-			raise ValueError(f"Unexpected range mode value: {response}")
+			raise ValueError(f"Unexpected range mode value returned by machine: {response}")
 	def setRangeMode(self, root, value):
 		'''
 		Sets range mode for given root.
