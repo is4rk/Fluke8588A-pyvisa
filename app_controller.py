@@ -19,8 +19,8 @@ class AppController:
 			range_mode="MAN",
 			range_val="1 V",
 			resolution=4,
-			zin="AUTO",
-			aperture_mode="AUTO",
+			zin="Auto",
+			aperture_mode="MAN",
 			time=0.1
 		)
 		self._dci_settings = DciSettings(
@@ -46,6 +46,15 @@ class AppController:
 		self._instr_ctrl=InstrumentController()
 		self._reading_thread= None
 		self._translator = Translator()
+		self._pre_translate_defaults()
+
+	def _pre_translate_defaults(self):
+		"""Translate default GUI settings to machine format upon initialization."""
+		if self.TEST_MODE: print(">>> _pre_translate_defaults")
+		self._on_dcv_setting_change(self._dcv_settings)
+		self._on_dci_setting_change(self._dci_settings)
+		self._on_ohms_setting_change(self._ohms_settings)
+		if self.TEST_MODE: print("<<< _pre_translate_defaults")
 
 	def _connect_signals(self):
 		self._view.init_requested.connect(self._on_init)
