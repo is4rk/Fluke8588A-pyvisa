@@ -102,10 +102,9 @@ class AppController:
 		
 		#Reverse-translate machine values back to GUI format
 		if mode == "DCV":
-			range_val = self._translator.translate_reverse("dcv_range", actual_settings.range_val)
 			gui_settings = DcvSettings(
-				range_mode="AUTO" if range_val == "AUTO ON" else "MAN",
-				range_val=range_val,
+				range_mode=
+				range_val=self._translator.translate_reverse("dcv_range", actual_settings.range_val),
 				resolution=actual_settings.resolution,
 				zin=self._translator.translate_reverse("impedence", actual_settings.zin),
 				aperture_mode=actual_settings.aperture_mode,
@@ -113,20 +112,18 @@ class AppController:
 			)
 			self._dcv_settings = gui_settings
 		elif mode == "DCI":
-			range_val = self._translator.translate_reverse("dci_range", actual_settings.range_val)
 			gui_settings = DciSettings(
-				range_mode="AUTO" if range_val == "AUTO ON" else "MAN",
-				range_val=range_val,
+				range_mode=self.range_mode,
+				range_val=self._translator.translate_reverse("dci_range", actual_settings.range_val),
 				resolution=actual_settings.resolution,
 				aperture_mode=actual_settings.aperture_mode,
 				time=actual_settings.time
 			)
 			self._dci_settings = gui_settings
 		elif mode == "OHMS":
-			range_val = self._translator.translate_reverse("ohm_range", actual_settings.range_val)
 			gui_settings = OhmsSettings(
 				four=actual_settings.four,
-				range_val=range_val,
+				range_val=self._translator.translate_reverse("ohm_range", actual_settings.range_val),
 				resolution=actual_settings.resolution,
 				mode=self._translator.translate_reverse("ohm_mode", actual_settings.mode),
 				filter=actual_settings.filter,
