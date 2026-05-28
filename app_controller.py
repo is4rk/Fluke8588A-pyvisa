@@ -177,34 +177,18 @@ class AppController:
 		if self.TEST_MODE: print(f"<<< _on_trigger_press")
 	def _on_aperture_mode_changed(self, mode):
 		if self.TEST_MODE: print(f">>> _on_aperture_mode_changed (mode={mode})")
-		self._current_aperture_mode = mode
 		self._view.set_aperture_mode(mode)
 		current_mode = self._view.current_mode
-		if current_mode == "DCV":
-			self._dcv_settings.aperture_mode = mode
-			self._on_dcv_setting_change(self._dcv_settings)
-		elif current_mode == "DCI":
-			self._dci_settings.aperture_mode = mode
-			self._on_dci_setting_change(self._dci_settings)
-		elif current_mode == "OHMS":
-			self._ohms_settings.aperture_mode = mode
-			self._on_ohms_setting_change(self._ohms_settings)
+		settings = self.get_settings_from_mode(current_mode)
+		settings.aperture_mode = mode
 		if self.TEST_MODE: print(f"<<< _on_aperture_mode_changed")
 
 	def _on_time_changed(self, time):
 		if self.TEST_MODE: print(f">>> _on_time_changed (time={time})")
-		self._current_time = time
 		self._view.set_time_value(time)
 		current_mode = self._view.current_mode
-		if current_mode == "DCV":
-			self._dcv_settings.time = time
-			self._on_dcv_setting_change(self._dcv_settings)
-		elif current_mode == "DCI":
-			self._dci_settings.time = time
-			self._on_dci_setting_change(self._dci_settings)
-		elif current_mode == "OHMS":
-			self._ohms_settings.time = time
-			self._on_ohms_setting_change(self._ohms_settings)
+		settings = self.get_settings_from_mode(current_mode)
+		settings.time = time
 		if self.TEST_MODE: print(f"<<< _on_time_changed")
 
 	def _on_nplc_changed(self, nplc):
