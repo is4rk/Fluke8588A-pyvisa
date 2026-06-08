@@ -163,46 +163,51 @@ class AppController:
 		self._view.set_mode_visible(self._view.current_mode)
 		if self.TEST_MODE: print(f"<<< _on_mode_change")
 
+	def _load_cntrl_settings(self):
+		with open(config.JSON_CNTRL_FILE_NAME, "r") as f:
+			return json.load(f)
+
 	def _on_set(self):
 		mode=self._view.current_mode
 		if self.TEST_MODE: print(f">>> _on_set (mode={mode})")
-		new_settings=self.get_settings_from_mode(mode)
-		if self.TEST_MODE: print(f"    SEND_TO_INSTRUMENT: {new_settings}")
-		actual_settings=self._instr_ctrl.set(mode, new_settings)
+		self._translate_gui_json()
+		settings = self._load_cntrl_settings() #dictionary
+		if self.TEST_MODE: print(f"    SEND_TO_INSTRUMENT: {settings}")
+		actual_settings=self._instr_ctrl.set(mode, settings[mode.lower().strip()])
 		if self.TEST_MODE: print(f"    RECEIVED_FROM_INSTRUMENT: {actual_settings}")
 		
 		#Reverse-translate machine values back to GUI format
-		if mode == "DCV":
-			gui_settings = DcvSettings(
-				range_mode=actual_settings.range_mode,
-				range_val=self._translator.translate_reverse("dcv_range", actual_settings.range_val),
-				resolution=actual_settings.resolution,
-				zin=self._translator.translate_reverse("impedence", actual_settings.zin),
-				aperture_mode=actual_settings.aperture_mode,
-				time=actual_settings.time
-			)
-			self._dcv_settings = gui_settings
-		elif mode == "DCI":
-			gui_settings = DciSettings(
-				range_mode=actual_settings.range_mode,
-				range_val=self._translator.translate_reverse("dci_range", actual_settings.range_val),
-				resolution=actual_settings.resolution,
-				aperture_mode=actual_settings.aperture_mode,
-				time=actual_settings.time
-			)
-			self._dci_settings = gui_settings
-		elif mode == "OHMS":
-			gui_settings = OhmsSettings(
-				four=actual_settings.four,
-				range_val=self._translator.translate_reverse("ohm_range", actual_settings.range_val),
-				resolution=actual_settings.resolution,
-				mode=self._translator.translate_reverse("ohm_mode", actual_settings.mode),
-				filter=actual_settings.filter,
-				low_i=actual_settings.low_i,
-				aperture_mode=actual_settings.aperture_mode,
-				time=actual_settings.time
-			)
-			self._ohms_settings = gui_settings
+		# if mode == "DCV":
+		# 	gui_settings = DcvSettings(
+		# 		range_mode=actual_settings.range_mode,
+		# 		range_val=self._translator.translate_reverse("dcv_range", actual_settings.range_val),
+		# 		resolution=actual_settings.resolution,
+		# 		zin=self._translator.translate_reverse("impedence", actual_settings.zin),
+		# 		aperture_mode=actual_settings.aperture_mode,
+		# 		time=actual_settings.time
+		# 	)
+		# 	self._dcv_settings = gui_settings
+		# elif mode == "DCI":
+		# 	gui_settings = DciSettings(
+		# 		range_mode=actual_settings.range_mode,
+		# 		range_val=self._translator.translate_reverse("dci_range", actual_settings.range_val),
+		# 		resolution=actual_settings.resolution,
+		# 		aperture_mode=actual_settings.aperture_mode,
+		# 		time=actual_settings.time
+		# 	)
+		# 	self._dci_settings = gui_settings
+		# elif mode == "OHMS":
+		# 	gui_settings = OhmsSettings(
+		# 		four=actual_settings.four,
+		# 		range_val=self._translator.translate_reverse("ohm_range", actual_settings.range_val),
+		# 		resolution=actual_settings.resolution,
+		# 		mode=self._translator.translate_reverse("ohm_mode", actual_settings.mode),
+		# 		filter=actual_settings.filter,
+		# 		low_i=actual_settings.low_i,
+		# 		aperture_mode=actual_settings.aperture_mode,
+		# 		time=actual_settings.time
+		# 	)
+		# 	self._ohms_settings = gui_settings
 		
 		# Update the GUI to reflect actual settings
 		if self.TEST_MODE: print(f"    REVERSE_TRANSLATED: {gui_settings}")

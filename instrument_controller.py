@@ -147,16 +147,16 @@ class InstrumentController:
         
         return self._instrument.query(command)
 
-    def set(self, mode: str, settings):
+    def set(self, mode: str, settings: dict) -> dict:
         """
         Configure instrument with given settings and return actual values.
         
         Args:
             mode: Measurement mode (e.g., "DCV", "OHMS")
-            settings: Settings dataclass with configuration parameters
+            settings: Dictionary with configuration parameters
             
         Returns:
-            Settings dataclass: Actual settings read back from the instrument
+            dict: Actual settings read back from the instrument
             
         Raises:
             RuntimeError: If not connected to instrument
@@ -164,74 +164,72 @@ class InstrumentController:
         if not self.is_connected():
             raise RuntimeError("Cannot set mode: not connected to instrument")
         
-        if mode == "DCV":
-            from app_controller import DcvSettings
-            
+        if mode == "dcv":
             root = InstrumentConfig.ROOT_DCV
             
             self._instrument.init_dcv(
-                range_mode=settings.range_mode,
-                range_val=settings.range_val,
-                resolution_val=settings.resolution,
-                zin_val=settings.zin,
-                aperture_mode=settings.aperture_mode,
-                time_val=settings.time
+                range_mode=settings.get("range_mode"),
+                range_val=settings.get("range_val"),
+                resolution_val=settings.get("resolution"),
+                zin_val=settings.get("zin"),
+                aperture_mode=settings.get("aperture_mode"),
+                time_val=settings.get("time")
             )
             
-            actual_settings = DcvSettings(
-                range_mode=self._instrument.getRangeMode(root),
-                range_val=str(self._instrument.getRange(root)),
-                resolution=int(self._instrument.getResolution(root)),
-                zin=self._instrument.getImp(root),
-                aperture_mode=self._instrument.getApertureMode(root),
-                time=self._instrument.getTime(root)
-            )
+            actual_settings = {
+                "range_mode": self._instrument.getRangeMode(root),
+                "range_val": str(self._instrument.getRange(root)),
+                "resolution": int(self._instrument.getResolution(root)),
+                "zin": self._instrument.getImp(root),
+                "aperture_mode": self._instrument.getApertureMode(root),
+                "time": self._instrument.getTime(root)
+            }
             
             return actual_settings
         
-        elif mode == "OHMS":    
-            root= InstrumentConfig.ROOT_RESISTANCE #sets as default
+        elif mode == "ohms":    
+            root = InstrumentConfig.ROOT_RESISTANCE  # sets as default
             # Determine range_mode based on range_val
-            range_mode = "AUTO" if settings.range_val == "AUTO ON" else "MAN"
+            range_mode = "AUTO" if settings.get("range_val") == "AUTO ON" else "MAN"
             # Convert filter and low_i to instrument format (0 or 1)
-            filter_val = 1 if settings.filter else 0
-            low_mode_val = 1 if settings.low_i else 0
+            filter_val = 1 if settings.get("filter") else 0
+            low_mode_val = 1 if settings.get("low_i") else 0
             
-            if settings.four==True:
-                root= InstrumentConfig.ROOT_FRESISTANCE
+            if settings.get("four") == True:
+                root = InstrumentConfig.ROOT_FRESISTANCE
                 self._instrument.init_fresistance(
-                    aperture_mode=settings.aperture_mode,
-                    time_val=float(settings.time),
-                    mode_val=settings.mode,
+                    aperture_mode=settings.get("aperture_mode"),
+                    time_val=float(settings.get("time")),
+                    mode_val=settings.get("mode"),
                     low_mode_val=low_mode_val,
                     range_mode=range_mode,
-                    range_val=settings.range_val,
-                    resolution_val=settings.resolution,
+                    range_val=settings.get("range_val"),
+                    resolution_val=settings.get("resolution"),
                     filter_val=filter_val
                 )
 
-            elif settings.four==False:
-                root= InstrumentConfig.ROOT_RESISTANCE
+            elif settings.get("four") == False:
+                root = InstrumentConfig.ROOT_RESISTANCE
                 self._instrument.init_resistance(
-                    aperture_mode=settings.aperture_mode,
-                    time_val=float(settings.time),
-                    mode_val=settings.mode,
+                    aperture_mode=settings.get("aperture_mode"),
+                    time_val=float(settings.get("time")),
+                    mode_val=settings.get("mode"),
                     low_mode_val=low_mode_val,
                     range_mode=range_mode,
-                    range_val=settings.range_val,
-                    resolution_val=settings.resolution,
+                    range_val=settings.get("range_val"),
+                    resolution_val=settings.get("resolution"),
                     filter_val=filter_val
                 )
                 
-            actual_settings = OhmsSettings(
-                four=settings.four,
-                range_val=str(self._instrument.getRange(root)),
-                resolution=int(self._instrument.getResolution(root)),
-                mode=self._instrument.getWireMode(root),
-                filter=self._instrument.getFilter(root),
-                low_i=self._instrument.getLowCurrentMode(root),
-                aperture_mode=self._instrument.getApertureMode(root),
-                time=self._instrument.getTime(root)
-            )
+            actual_settings = {
+                "four": settings.get("four"),
+                "range_val": str(self._instrument.getRange(root)),
+                "resolution": int(self._instrument.getResolution(root)),
+                "mode": self._instrument.getWireMode(root),
+                "filter": self._instrument.getFilter(root),
+                "low_i": self._instrument.getLowCurrentMode(root),
+                "aperture_mode": self._instrument.getApertureMode(root),
+                "time": self._instrument.getTime(root)
+            }
             
             return actual_settings

@@ -5,7 +5,6 @@ import os, json
 from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_impedence, get_dc_digit_val, get_ohm_modes, get_ohm_range
 from config import InstrumentConfig
 import config 
-from settings import DcvSettings, DciSettings, OhmsSettings
 from plot_widget import DmmPlotWidget
 main_window_loc = os.path.join(os.path.dirname(__file__), "ui", "mainwindow.ui")
 
@@ -17,9 +16,6 @@ class MainWindow(QMainWindow):
 	set_requested = pyqtSignal()
 	measurment_setup_requested = pyqtSignal()
 	trigger_requested = pyqtSignal()
-	dcv_signal = pyqtSignal(DcvSettings)
-	dci_signal = pyqtSignal(DciSettings)
-	ohms_signal = pyqtSignal(OhmsSettings)
 	continuous_start_requested = pyqtSignal()
 	continuous_stop_requested  = pyqtSignal()
 	append_value = pyqtSignal(float)	
