@@ -34,3 +34,6 @@ class InstrumentConfig:
     OHM_RANGE_VAL = ["AUTO ON", 1, 1e1, 1e2, 1e3, 1e5, 1e6, 1e7, 1e8, 1e9] 
     OHM_MODES_VAL = ["NORM", "NORM", "TRUE","HIV", "HIV"]
     IMPEDANCES_DCV_VAL = ["AUTO", "10M", "1M"]
+
+JSON_GUI_FILE_NAME = ".gui_settings.json"
+JSON_CNTRL_FILE_NAME =  ".cntrl_settings.json"

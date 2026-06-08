@@ -5,7 +5,7 @@ from trigger_setup import TriggerWindow
 from settings import DcvSettings, DciSettings, OhmsSettings
 from measurment_controller import ReadingThread
 from translator import Translator
-
+import config, json
 class AppController:
 	TEST_MODE = True  # Set to False to disable debug output
 	
@@ -86,6 +86,68 @@ class AppController:
 			self._view.set_status(f"Read error: {e}")
 			if self.TEST_MODE: print(f"<<< _on_read (error={e})")	
 	
+	def _translate_gui_json(self):
+		with open(config.JSON_GUI_FILE_NAME, "r") as f:
+			settings = json.load(f)
+		translated_json = self._translate_json(settings)
+		with open(config.JSON_CNTRL_FILE_NAME, "w") as f:
+			json.dump(translated_json, f)
+
+	def _translate_json(self, settings: dict) -> dict:
+		"""
+		Translate GUI JSON settings to machine format using mode-specific translation functions.
+		
+		Args:
+			settings: Dictionary with measurement mode keys ('dcv', 'dci', 'ohms')
+			          containing GUI format settings
+			
+		Returns:
+			Dictionary with same structure but values translated to machine format
+		"""
+		translated = {}
+		
+		if "dcv" in settings:
+			translated["dcv"] = self._translator.translate_dcv(settings["dcv"])
+		
+		if "dci" in settings:
+			translated["dci"] = self._translator.translate_dci(settings["dci"])
+		
+		if "ohms" in settings:
+			translated["ohms"] = self._translator.translate_ohms(settings["ohms"])
+		
+		return translated
+
+	def _reverse_translate_gui_json(self):
+		with open(config.JSON_CNTRL_FILE_NAME, "r") as f:
+			settings = json.load(f)
+		translated_json = self._reverse_translate_json(settings)
+		with open(config.JSON_GUI_FILE_NAME, "w") as f:
+			json.dump(translated_json, f)
+	
+	def _reverse_translate_json(self, settings: dict) -> dict:
+		"""
+		Translate CNTRL JSON settings (machine format) back to GUI format using mode-specific reverse translation functions.
+		
+		Args:
+			settings: Dictionary with measurement mode keys ('dcv', 'dci', 'ohms')
+			          containing machine format settings
+			
+		Returns:
+			Dictionary with same structure but values translated back to GUI format
+		"""
+		translated = {}
+		
+		if "dcv" in settings:
+			translated["dcv"] = self._translator.translate_dcv_reverse(settings["dcv"])
+		
+		if "dci" in settings:
+			translated["dci"] = self._translator.translate_dci_reverse(settings["dci"])
+		
+		if "ohms" in settings:
+			translated["ohms"] = self._translator.translate_ohms_reverse(settings["ohms"])
+		
+		return translated
+
 	def _on_init(self):
 		if self.TEST_MODE: print(f">>> _on_init (gpib_address={self._view.current_gpib_address})")
 		if hasattr(self, '_instr_ctrl'):

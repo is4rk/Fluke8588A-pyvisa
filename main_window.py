@@ -1,9 +1,10 @@
 from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QMainWindow
-import os
+import os, json
 from spin_box_values import get_functions, get_dcv_range, get_dci_range, get_dcv_impedence, get_dc_digit_val, get_ohm_modes, get_ohm_range
 from config import InstrumentConfig
+import config 
 from settings import DcvSettings, DciSettings, OhmsSettings
 from plot_widget import DmmPlotWidget
 main_window_loc = os.path.join(os.path.dirname(__file__), "ui", "mainwindow.ui")
@@ -145,6 +146,44 @@ class MainWindow(QMainWindow):
 		self.stop_button.setEnabled(False)
 		#add fucntion that shows current mode widgets
 
+
+	def _save_to_json(self):
+		settings = {
+			"dcv": {
+				"range_mode": "AUTO" if self.dcv_range_combo.currentText() == "AUTO" else "MAN",
+				"range_val": self.dcv_range_combo.currentText(),
+				"resolution": self.dcv_res_spin.value(),
+				"zin": self.dcv_zin_combo.currentText(),
+				"aperture_mode": self.dcv_measure_setup_button.text(),
+				"time": self.dcv_time_label.text()
+			},
+			"dci": {
+				"range_mode": "AUTO" if self.dci_range_combo.currentText() == "AUTO" else "MAN",
+				"range_val": self.dci_range_combo.currentText(),
+				"resolution": self.dci_res_spin.value(),
+				"aperture_mode": self.dci_measure_setup_button.text(),
+				"time": self.dci_time_label.text()
+			},
+			# "acv": {
+			# 	pass
+			# },
+			# "aci": {
+			# 	pass
+			# },	
+			"ohms": {
+				"four": True, #viewer doesnt hanle logic, so it just sets to true
+				"range_val": self.ohm_range_combo.currentText(),
+				"resolution": self.ohm_res_spin.value(),
+				"mode": self.ohm_mode_combo.currentText(),
+				"filter": self.ohm_filter_check.isChecked(),
+				"low_i": self.ohm_lowi_check.isChecked(),
+				"aperture_mode": self.ohm_measure_setup.text(),
+				"time": self.ohm_time_label.text()
+			},
+		}
+		with open(config.JSON_GUI_FILE_NAME, "w") as f:
+			json.dump(settings, f)	
+		
 	def set_read(self, value: int):
 		self.measure_display_label.setText(str(value))
 		self.append_value.emit(float(value))
