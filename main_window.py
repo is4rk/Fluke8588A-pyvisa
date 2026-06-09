@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
 			# 	pass
 			# },	
 			"ohms": {
-				"four": True, #TODO forse implementare scelta qua
+    			"four": "4W" in self.ohm_mode_combo.currentText(),
 				"range_val": self.ohm_range_combo.currentText(),
 				"resolution": self.ohm_res_spin.value(),
 				"mode": self.ohm_mode_combo.currentText(),
