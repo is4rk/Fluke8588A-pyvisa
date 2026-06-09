@@ -130,12 +130,12 @@ class AppController:
 			return json.load(f)
 
 	def _on_set(self):
-		mode=self._view.current_mode
+		mode=self._view.current_mode.lower().strip()
 		if self.TEST_MODE: print(f">>> _on_set (mode={mode})")
 		self._translate_gui_json()
 		settings = self._load_cntrl_settings() #dictionary
 		if self.TEST_MODE: print(f"    SEND_TO_INSTRUMENT: {settings}")
-		actual_settings=self._instr_ctrl.set(mode, settings[mode.lower().strip()]) 
+		actual_settings=self._instr_ctrl.set(mode, settings[mode]) 
 		if self.TEST_MODE: print(f"    RECEIVED_FROM_INSTRUMENT: {actual_settings}")
 		with open(config.JSON_CNTRL_FILE_NAME, "w") as f:
 			settings[mode.lower().strip()]=actual_settings
