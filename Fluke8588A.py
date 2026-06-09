@@ -397,7 +397,8 @@ class Fluke8588A():
 	def __anti_convert_resolution(self, value):
 		# Check if value is already in digit format (4-8)
 		# This handles machines that return resolution as digit count directly
-		if value >= 4 and value <= 8 and value == int(value):
+		print(f"THE VALUE GIVEN TO _ANTI CONVERT IS:{value}")
+		if value >= 1 and value <= 8 and value == int(value):
 			return int(value)
 		
 		# Otherwise, convert from scientific notation (1E-4 -> 4 digits)
