@@ -176,7 +176,7 @@ class Translator:
             "four": ohms_dict.get("four"),
             "range_val": self._translate_reverse("ohm_range", ohms_dict.get("range_val")),
             "resolution": ohms_dict.get("resolution"),
-            "mode": self._translate_reverse("ohm_mode", ohms_dict.get("mode")),
+            "mode": "4W "+self._translate_reverse("ohm_mode", ohms_dict.get("mode")) if ohms_dict.get("four") else "2W " + self._translate_reverse("ohm_mode", ohms_dict.get("mode")),
             "filter": ohms_dict.get("filter"),
             "low_i": ohms_dict.get("low_i"),
             "aperture_mode": ohms_dict.get("aperture_mode"),
