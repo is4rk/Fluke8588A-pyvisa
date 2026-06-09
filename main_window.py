@@ -45,9 +45,6 @@ class MainWindow(QMainWindow):
 		#trigger
 		self.trigger_button.pressed.connect(self.trigger_requested) #to be
 
-		#recive set
-		self.		 
-
 	def _init_widgets(self):
 		self.gpib_addr_spin.setRange(0, 30)
 		self.gpib_addr_spin.setValue(InstrumentConfig.DEFAULT_ADDRESS)
