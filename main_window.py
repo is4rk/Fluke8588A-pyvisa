@@ -31,22 +31,12 @@ class MainWindow(QMainWindow):
 		#init set mode
 		self.init_button.pressed.connect(self.init_requested)
 		self.mode_combo.currentTextChanged.connect(self.mode_changed)
-		self.set_button.pressed.connect(self.set_requested) 
+		self.set_button.pressed.connect(self.start_set_process) 
 		#dcv signals
-		self.dcv_range_combo.currentTextChanged.connect(self._save_to_json)
-		self.dcv_res_spin.valueChanged.connect(self._save_to_json)
-		self.dcv_zin_combo.currentTextChanged.connect(self._save_to_json)
 		self.dcv_measure_setup_button.pressed.connect(self.measurment_setup_requested) #to be
 		#dci signals
-		self.dci_range_combo.currentTextChanged.connect(self._save_to_json)
-		self.dci_res_spin.valueChanged.connect(self._save_to_json)
 		self.dci_measure_setup_button.pressed.connect(self.measurment_setup_requested) #to be
 		#ohms signals
-		self.ohm_range_combo.currentTextChanged.connect(self._save_to_json)
-		self.ohm_res_spin.valueChanged.connect(self._save_to_json)
-		self.ohm_mode_combo.currentTextChanged.connect(self._save_to_json)
-		self.ohm_filter_check.stateChanged.connect(self._save_to_json)
-		self.ohm_lowi_check.stateChanged.connect(self._save_to_json)
 		self.ohm_measure_setup.pressed.connect(self.measurment_setup_requested) #to be
 		#reading 
 		self.read_button.pressed.connect(self.read_requested)
@@ -54,7 +44,9 @@ class MainWindow(QMainWindow):
 		self.stop_button.pressed.connect(self.continuous_stop_requested)
 		#trigger
 		self.trigger_button.pressed.connect(self.trigger_requested) #to be
-		 
+
+		#recive set
+		self.		 
 
 	def _init_widgets(self):
 		self.gpib_addr_spin.setRange(0, 30)
@@ -167,7 +159,7 @@ class MainWindow(QMainWindow):
 			# 	pass
 			# },	
 			"ohms": {
-				"four": True, #viewer doesnt hanle logic, so it just sets to true
+				"four": True, #TODO forse implementare scelta qua
 				"range_val": self.ohm_range_combo.currentText(),
 				"resolution": self.ohm_res_spin.value(),
 				"mode": self.ohm_mode_combo.currentText(),
@@ -192,11 +184,11 @@ class MainWindow(QMainWindow):
 				self.dcv_res_spin.blockSignals(True)
 				self.dcv_zin_combo.blockSignals(True)
 				
-				self.dcv_range_combo.setCurrentText(str(dcv.get("range_val", "1 V")))
-				self.dcv_res_spin.setValue(int(dcv.get("resolution", 4)))
-				self.dcv_zin_combo.setCurrentText(str(dcv.get("zin", "Auto")))
-				self.dcv_measure_setup_button.setText(str(dcv.get("aperture_mode", "MAN")))
-				self.dcv_time_label.setText(str(dcv.get("time", 0.1)))
+				self.dcv_range_combo.setCurrentText(str(dcv.get("range_val")))
+				self.dcv_res_spin.setValue(int(dcv.get("resolution")))
+				self.dcv_zin_combo.setCurrentText(str(dcv.get("zin")))
+				self.dcv_measure_setup_button.setText(str(dcv.get("aperture_mode")))
+				self.dcv_time_label.setText(str(dcv.get("time")))
 				
 				self.dcv_range_combo.blockSignals(False)
 				self.dcv_res_spin.blockSignals(False)
@@ -208,10 +200,10 @@ class MainWindow(QMainWindow):
 				self.dci_range_combo.blockSignals(True)
 				self.dci_res_spin.blockSignals(True)
 				
-				self.dci_range_combo.setCurrentText(str(dci.get("range_val", "1 A")))
-				self.dci_res_spin.setValue(int(dci.get("resolution", 4)))
-				self.dci_measure_setup_button.setText(str(dci.get("aperture_mode", "AUTO")))
-				self.dci_time_label.setText(str(dci.get("time", 0.1)))
+				self.dci_range_combo.setCurrentText(str(dci.get("range_val")))
+				self.dci_res_spin.setValue(int(dci.get("resolution")))
+				self.dci_measure_setup_button.setText(str(dci.get("aperture_mode")))
+				self.dci_time_label.setText(str(dci.get("time")))
 				
 				self.dci_range_combo.blockSignals(False)
 				self.dci_res_spin.blockSignals(False)
@@ -225,13 +217,13 @@ class MainWindow(QMainWindow):
 				self.ohm_filter_check.blockSignals(True)
 				self.ohm_lowi_check.blockSignals(True)
 				
-				self.ohm_range_combo.setCurrentText(str(ohms.get("range_val", "1 kΩ")))
-				self.ohm_res_spin.setValue(int(ohms.get("resolution", 4)))
-				self.ohm_mode_combo.setCurrentText(str(ohms.get("mode", "2W NORMAL")))
-				self.ohm_filter_check.setChecked(bool(ohms.get("filter", False)))
-				self.ohm_lowi_check.setChecked(bool(ohms.get("low_i", False)))
-				self.ohm_measure_setup.setText(str(ohms.get("aperture_mode", "AUTO")))
-				self.ohm_time_label.setText(str(ohms.get("time", 0.1)))
+				self.ohm_range_combo.setCurrentText(str(ohms.get("range_val")))
+				self.ohm_res_spin.setValue(int(ohms.get("resolution")))
+				self.ohm_mode_combo.setCurrentText(str(ohms.get("mode")))
+				self.ohm_filter_check.setChecked(bool(ohms.get("filter")))
+				self.ohm_lowi_check.setChecked(bool(ohms.get("low_i")))
+				self.ohm_measure_setup.setText(str(ohms.get("aperture_mode")))
+				self.ohm_time_label.setText(str(ohms.get("time")))
 				
 				self.ohm_range_combo.blockSignals(False)
 				self.ohm_res_spin.blockSignals(False)
@@ -273,3 +265,65 @@ class MainWindow(QMainWindow):
 		self.dci_nplc_label.setText(str(nplc))
 		self.ohm_nplc_label.setText(str(nplc))
 	
+	def start_set_process(self):
+		self._save_to_json()
+		self.set_requested.emit()
+
+	def refreshUi(self):
+		"""Read GUI settings from JSON file and update all UI widgets"""
+		try:
+			with open(config.JSON_GUI_FILE_NAME, "r") as f:
+				new_settings = json.load(f)
+			
+			# Update DCV widgets
+			if "dcv" in new_settings:
+				dcv = new_settings["dcv"]
+				self.dcv_range_combo.blockSignals(True)
+				self.dcv_res_spin.blockSignals(True)
+				self.dcv_zin_combo.blockSignals(True)
+				self.dcv_range_combo.setCurrentText(str(dcv.get("range_val")))
+				self.dcv_res_spin.setValue(int(dcv.get("resolution")))
+				self.dcv_zin_combo.setCurrentText(str(dcv.get("zin")))
+				self.dcv_measure_setup_button.setText(str(dcv.get("aperture_mode")))
+				self.dcv_time_label.setText(str(dcv.get("time")))
+				self.dcv_range_combo.blockSignals(False)
+				self.dcv_res_spin.blockSignals(False)
+				self.dcv_zin_combo.blockSignals(False)
+			
+			# Update DCI widgets
+			if "dci" in new_settings:
+				dci = new_settings["dci"]
+				self.dci_range_combo.blockSignals(True)
+				self.dci_res_spin.blockSignals(True)
+				self.dci_range_combo.setCurrentText(str(dci.get("range_val")))
+				self.dci_res_spin.setValue(int(dci.get("resolution")))
+				self.dci_measure_setup_button.setText(str(dci.get("aperture_mode")))
+				self.dci_time_label.setText(str(dci.get("time")))
+				self.dci_range_combo.blockSignals(False)
+				self.dci_res_spin.blockSignals(False)
+			
+			# Update OHMS widgets
+			if "ohms" in new_settings:
+				ohms = new_settings["ohms"]
+				self.ohm_range_combo.blockSignals(True)
+				self.ohm_res_spin.blockSignals(True)
+				self.ohm_mode_combo.blockSignals(True)
+				self.ohm_filter_check.blockSignals(True)
+				self.ohm_lowi_check.blockSignals(True)
+				self.ohm_range_combo.setCurrentText(str(ohms.get("range_val")))
+				self.ohm_res_spin.setValue(int(ohms.get("resolution")))
+				self.ohm_mode_combo.setCurrentText(str(ohms.get("mode")))
+				self.ohm_filter_check.setChecked(bool(ohms.get("filter")))
+				self.ohm_lowi_check.setChecked(bool(ohms.get("low_i")))
+				self.ohm_measure_setup.setText(str(ohms.get("aperture_mode")))
+				self.ohm_time_label.setText(str(ohms.get("time")))
+				self.ohm_range_combo.blockSignals(False)
+				self.ohm_res_spin.blockSignals(False)
+				self.ohm_mode_combo.blockSignals(False)
+				self.ohm_filter_check.blockSignals(False)
+				self.ohm_lowi_check.blockSignals(False)
+		
+		except FileNotFoundError:
+			print(f"GUI settings file not found: {config.JSON_GUI_FILE_NAME}")
+		except (KeyError, ValueError) as e:
+			print(f"Error loading GUI settings: {e}")

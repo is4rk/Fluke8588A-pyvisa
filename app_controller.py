@@ -2,59 +2,24 @@ from instrument_controller import InstrumentController as InstrumentController
 from main_window import MainWindow
 from dc_measurment_setup import DcMeasurmentWindow
 from trigger_setup import TriggerWindow
-from settings import DcvSettings, DciSettings, OhmsSettings
 from measurment_controller import ReadingThread
 from translator import Translator
 import config, json
 class AppController:
 	TEST_MODE = True  # Set to False to disable debug output
-	
 	def __init__(self):
 		self._view = MainWindow()
 		self._meas_pop_up = DcMeasurmentWindow()
 		# self._trigger_pop_up = TriggerWindow()
 		self._view.set_disconnected()
 		# Initialize settings objects with default values
-		self._dcv_settings = DcvSettings(
-			range_mode="MAN",
-			range_val="1 V",
-			resolution=4,
-			zin="Auto",
-			aperture_mode="MAN",
-			time=0.1
-		)
-		self._dci_settings = DciSettings(
-			range_mode="MAN",
-			range_val="1 A",
-			resolution=4,
-			aperture_mode="AUTO",
-			time=0.1
-		)
-		self._ohms_settings = OhmsSettings(
-			four=False,
-			range_val="1 kΩ",
-			resolution=4,
-			mode="2W NORMAL",
-			filter=False,
-			low_i=False,
-			aperture_mode="AUTO",
-			time=0.1
-		)
+		
 		
 		self._connect_signals()
 		self._view.show()
 		self._instr_ctrl=InstrumentController()
 		self._reading_thread= None
 		self._translator = Translator()
-		self._pre_translate_defaults()
-
-	def _pre_translate_defaults(self):
-		"""Translate default GUI settings to machine format upon initialization."""
-		if self.TEST_MODE: print(">>> _pre_translate_defaults")
-		self._on_dcv_setting_change(self._dcv_settings)
-		self._on_dci_setting_change(self._dci_settings)
-		self._on_ohms_setting_change(self._ohms_settings)
-		if self.TEST_MODE: print("<<< _pre_translate_defaults")
 
 	def _connect_signals(self):
 		self._view.init_requested.connect(self._on_init)
@@ -62,9 +27,6 @@ class AppController:
 		self._view.read_requested.connect(self._on_read)
 		self._view.set_requested.connect(self._on_set)
 		self._view.measurment_setup_requested.connect(self._on_measurment_setup_press)
-		self._view.dcv_signal.connect(self._on_dcv_setting_change)
-		self._view.dci_signal.connect(self._on_dci_setting_change)
-		self._view.ohms_signal.connect(self._on_ohms_setting_change)
 		self._meas_pop_up.mode_select.connect(self._on_aperture_mode_changed)
 		self._meas_pop_up.time_select.connect(self._on_time_changed)
 		self._meas_pop_up.nplc_select.connect(self._on_nplc_changed)
@@ -173,66 +135,22 @@ class AppController:
 		self._translate_gui_json()
 		settings = self._load_cntrl_settings() #dictionary
 		if self.TEST_MODE: print(f"    SEND_TO_INSTRUMENT: {settings}")
-		actual_settings=self._instr_ctrl.set(mode, settings[mode.lower().strip()])
+		actual_settings=self._instr_ctrl.set(mode, settings[mode.lower().strip()]) 
 		if self.TEST_MODE: print(f"    RECEIVED_FROM_INSTRUMENT: {actual_settings}")
-		
-		#Reverse-translate machine values back to GUI format
-		# if mode == "DCV":
-		# 	gui_settings = DcvSettings(
-		# 		range_mode=actual_settings.range_mode,
-		# 		range_val=self._translator.translate_reverse("dcv_range", actual_settings.range_val),
-		# 		resolution=actual_settings.resolution,
-		# 		zin=self._translator.translate_reverse("impedence", actual_settings.zin),
-		# 		aperture_mode=actual_settings.aperture_mode,
-		# 		time=actual_settings.time
-		# 	)
-		# 	self._dcv_settings = gui_settings
-		# elif mode == "DCI":
-		# 	gui_settings = DciSettings(
-		# 		range_mode=actual_settings.range_mode,
-		# 		range_val=self._translator.translate_reverse("dci_range", actual_settings.range_val),
-		# 		resolution=actual_settings.resolution,
-		# 		aperture_mode=actual_settings.aperture_mode,
-		# 		time=actual_settings.time
-		# 	)
-		# 	self._dci_settings = gui_settings
-		# elif mode == "OHMS":
-		# 	gui_settings = OhmsSettings(
-		# 		four=actual_settings.four,
-		# 		range_val=self._translator.translate_reverse("ohm_range", actual_settings.range_val),
-		# 		resolution=actual_settings.resolution,
-		# 		mode=self._translator.translate_reverse("ohm_mode", actual_settings.mode),
-		# 		filter=actual_settings.filter,
-		# 		low_i=actual_settings.low_i,
-		# 		aperture_mode=actual_settings.aperture_mode,
-		# 		time=actual_settings.time
-		# 	)
-		# 	self._ohms_settings = gui_settings
-		
+		with open(config.JSON_CNTRL_FILE_NAME, "w") as f:
+			settings[mode.lower().strip()]=actual_settings
+			json.dump(settings, f)
+		self._reverse_translate_gui_json()
 		# Update the GUI to reflect actual settings
-		if self.TEST_MODE: print(f"    REVERSE_TRANSLATED: {gui_settings}")
 		self._view.set_status(f"{mode} settings applied")
 		self._refresh_ui_settings()
 		if self.TEST_MODE: print(f"<<< _on_set")
 
-	def get_settings_from_mode(self, mode: str):
-		if mode == "DCV":
-			return self._dcv_settings
-		if mode == "DCI":
-			return self._dci_settings
-		if mode == "OHMS":
-			return self._ohms_settings
-	
 	def _refresh_ui_settings(self):
 		"""Update UI to show current settings from app controller"""
-		mode = self._view.current_mode
-		if mode == "DCV":
-			self._view._on_dcv_settings_received(self._dcv_settings)
-		elif mode == "DCI":
-			self._view._on_dci_settings_received(self._dci_settings)
-		elif mode == "OHMS":
-			self._view._on_ohms_settings_received(self._ohms_settings)
-
+		if self.TEST_MODE: print(f"<<< _refresh_ui ")
+		self._view.refreshUi()
+		
 	def _on_measurment_setup_press(self):
 		if self.TEST_MODE: print(f">>> _on_measurment_setup_press")
 		self._meas_pop_up.show()
@@ -242,21 +160,16 @@ class AppController:
 		if self.TEST_MODE: print(f">>> _on_trigger_press")
 		self._trigger_pop_up.show()
 		if self.TEST_MODE: print(f"<<< _on_trigger_press")
+
 	def _on_aperture_mode_changed(self, mode):
 		if self.TEST_MODE: print(f">>> _on_aperture_mode_changed (mode={mode})")
 		self._view.set_aperture_mode(mode)
-		current_mode = self._view.current_mode
-		settings = self.get_settings_from_mode(current_mode)
-		settings.aperture_mode = mode
 		if self.TEST_MODE: print(f"<<< _on_aperture_mode_changed")
 
 	def _on_time_changed(self, time):
 		if self.TEST_MODE: print(f">>> _on_time_changed (time={time})")
 		self._view.set_time_value(time)
-		current_mode = self._view.current_mode
-		settings = self.get_settings_from_mode(current_mode)
-		settings.time = time
-		if self.TEST_MODE: print(f"<<< _on_time_changed")
+
 
 	def _on_nplc_changed(self, nplc):
 		# NPLC is handled via _on_time_changed (same value, different units)
@@ -269,56 +182,7 @@ class AppController:
 	def _set_ui_aperture_settings(self):
 		self._view.set_aperture_mode()
 		self._view.set_time_value()
-		
 	
-	def _on_dcv_setting_change(self, settings: DcvSettings):
-		if self.TEST_MODE: print(f">>> _on_dcv_setting_change (range_val={settings.range_val}, resolution={settings.resolution}, zin={settings.zin})")
-		translated_settings = DcvSettings(
-			range_mode=settings.range_mode,
-			range_val = self._translator.translate("dcv_range", settings.range_val),
-			resolution=settings.resolution,
-			zin=self._translator.translate("impedence", settings.zin),
-			aperture_mode=settings.aperture_mode,
-			time=settings.time
-		)
-		if self.TEST_MODE: print(f"    TRANSLATED: range_val={translated_settings.range_val}, zin={translated_settings.zin}")
-		self._dcv_settings = translated_settings
-		if self.TEST_MODE: print(f"<<< _on_dcv_setting_change (stored={self._dcv_settings})")
-
-	
-	def _on_dci_setting_change(self, settings: DciSettings):
-		if self.TEST_MODE: print(f">>> _on_dci_setting_change (range_val={settings.range_val}, resolution={settings.resolution})")
-		translated_settings = DciSettings(
-			range_mode=settings.range_mode,
-			range_val=self._translator.translate("dci_range", settings.range_val),
-			resolution=settings.resolution,
-			aperture_mode=settings.aperture_mode,
-			time=settings.time
-		)
-		if self.TEST_MODE: print(f"    TRANSLATED: range_val={translated_settings.range_val}")
-		self._dci_settings = translated_settings
-		if self.TEST_MODE: print(f"<<< _on_dci_setting_change (stored={self._dci_settings})")
-
-	def _on_ohms_setting_change(self, settings: OhmsSettings):
-		if self.TEST_MODE: print(f">>> _on_ohms_setting_change (range_val={settings.range_val}, mode={settings.mode}, resolution={settings.resolution})")
-		translated_settings = OhmsSettings(
-			four=settings.four,
-			range_val=self._translator.translate("ohm_range", settings.range_val),
-			resolution=settings.resolution,
-			mode= settings.mode,
-			filter=settings.filter,
-			low_i=settings.low_i,
-			aperture_mode=settings.aperture_mode,
-			time=settings.time
-		)
-		if self.TEST_MODE: print(f"    TRANSLATED: range_val={translated_settings.range_val}, mode={translated_settings.mode}")
-		self._ohms_settings = translated_settings
-		if settings.mode.startswith("4W"):
-			self._ohms_settings.four=True
-		elif settings.mode.startswith("2W"):
-			self._ohms_settings.four=False
-		if self.TEST_MODE: print(f"<<< _on_ohms_setting_change (stored={self._ohms_settings})")
-
 	def _on_continuous_start(self):
 		if self.TEST_MODE: print(f">>> _on_continuous_start")
 		if self._reading_thread is not None:
