@@ -234,3 +234,4 @@ class InstrumentController:
             }
             
             return actual_settings
+        return "Incorrect MODE"
