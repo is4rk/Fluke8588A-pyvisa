@@ -163,7 +163,6 @@ class InstrumentController:
         """
         if not self.is_connected():
             raise RuntimeError("Cannot set mode: not connected to instrument")
-        print("IM HERRE")
         if mode == "dcv":
             root = InstrumentConfig.ROOT_DCV
             
@@ -184,7 +183,6 @@ class InstrumentController:
                 "aperture_mode": self._instrument.getApertureMode(root),
                 "time": self._instrument.getTime(root)
             }
-            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             print(actual_settings)
             return actual_settings
         
