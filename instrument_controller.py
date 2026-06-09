@@ -184,7 +184,8 @@ class InstrumentController:
                 "aperture_mode": self._instrument.getApertureMode(root),
                 "time": self._instrument.getTime(root)
             }
-            
+            print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+            print(actual_settings)
             return actual_settings
         
         elif mode == "ohms":    
