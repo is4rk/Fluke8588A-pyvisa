@@ -163,7 +163,7 @@ class InstrumentController:
         """
         if not self.is_connected():
             raise RuntimeError("Cannot set mode: not connected to instrument")
-        
+        print("IM HERRE")
         if mode == "dcv":
             root = InstrumentConfig.ROOT_DCV
             
